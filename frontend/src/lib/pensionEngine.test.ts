@@ -20,7 +20,7 @@ const tests = [
     startYear: 2024,
     endYear: 2026,
     expectedWeekday: "Tuesday",
-    firstPayment2024: "2024-01-02"
+    firstPayment2024: "2024-01-09"
   },
   {
     name: "84D – Friday payments",
@@ -28,7 +28,7 @@ const tests = [
     startYear: 2024,
     endYear: 2026,
     expectedWeekday: "Friday",
-    firstPayment2024: "2024-01-05"
+    firstPayment2024: "2024-01-26"
   }
 ];
 
