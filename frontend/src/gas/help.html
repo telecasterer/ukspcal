@@ -1,0 +1,163 @@
+<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+
+    <!-- STICKY HEADER -->
+    <div class="modal-header">
+
+      <div class="modal-header-main">
+        <h2>UK State Pension Payment Dates – User Guide</h2>
+        <button class="modal-close"
+                id="closeHelp"
+                aria-label="Close help">
+          ✕
+        </button>
+      </div>
+
+      <div id="aboutContent" class="modal-about"></div>
+
+    </div>
+
+    <!-- SCROLLABLE BODY -->
+    <div class="modal-body">
+      <div class="help-doc">
+
+        <p class="muted">
+          This tool runs entirely in your browser and does request or store any personal data.
+        </p>
+
+        <h3>What this tool does</h3>
+        <p>
+          This tool calculates your UK State Pension payment dates based on
+          published payment rules and UK bank holidays.
+        </p>
+
+        <ul>
+          <li>
+            Calculates payment dates using a repeating payment cycle
+            (normally every 28 days).
+          </li>
+          <li>
+            Determines your <strong>normal payment weekday</strong> from the 3 last characters
+            of your National Insurance number, e.g. 56D
+          </li>
+          <li>
+            Adjusts payments that would fall on a UK bank holiday
+            so that they are paid earlier.
+          </li>
+        </ul>
+
+        <h3>National Insurance Code</h3>
+        <p>
+          You must enter:
+        </p>
+        <ul>
+          <li>Just the <strong>last three characters</strong> of your UK National Insurance number
+            (for example 56D).</li>
+        </ul>
+        <p>
+          The last three characters are sufficient to determine your normal payment
+          weekday.
+        </p>
+
+        <h3>Payment cycle</h3>
+        <p>
+          By default, UK State Pension is paid every 28 days (4 weeks).
+          Some people report that alternative payment frequencies
+          (such as every 14 days or every 7 days)
+          can be arranged by contacting the Pension Service directly.
+        </p>
+        <p>
+          By default the tool uses a payment cycle of 28 days as this is by far the most common.
+          If however you have arranged to be paid every 7 or 14 days then you should select the 
+          appropiate payment cycle in the tool.
+        </p>
+        
+        <p class="muted">
+          Note: only the 28-day cycle is documented in official GOV.UK guidance.
+          Other cycles may depend on individual arrangements with the DWP.
+        </p>
+
+        <h3>Date range</h3>
+        <p>
+          Choose the first and last year you want to include payment dates for.
+          Only payment dates that fall within this range are shown.
+        </p>
+
+        <h3>Date format</h3>
+        <p>
+          The date format controls how dates are displayed in:
+        </p>
+        <ul>
+          <li>The List view</li>
+          <li>List and CSV file exports</li>
+        </ul>
+    
+
+        <h3>Views</h3>
+
+        <h4>Calendar</h4>
+        <ul>
+          <li>Shows payment dates in a month-by-month calendar</li>
+          <li>Payment dates are highlighted</li>
+          <li>Weekends and UK bank holidays can be shown or hidden</li>
+          <li>
+            Early payments are marked with footnotes explaining the reason
+          </li>
+        </ul>
+
+        <h4>List</h4>
+        <ul>
+          <li>A simple chronological list of payment dates</li>
+          <li>Early payments include a short explanation</li>
+          <li>Designed for easy reading and printing</li>
+        </ul>
+
+        <h4>CSV</h4>
+        <ul>
+          <li>Suitable for importing into spreadsheets</li>
+          <li>Uses your selected date format</li>
+          <li>Includes an extra column for early-payment notes when applicable</li>
+        </ul>
+
+        <h4>ICS</h4>
+        <ul>
+          <li>Calendar file format you can import into calendar apps like Apple/Google calendars</li>
+          <li>Each payment appears as an all-day event</li>
+          <li>Early-payment reasons are included where available</li>
+        </ul>
+
+        <h3>Early payments</h3>
+        <p>
+          Payments are never made on weekends or UK bank holidays.
+          If a payment date would fall on one, it is paid earlier.
+        </p>
+        <p>
+          When this happens, the reason is shown:
+        </p>
+        <ul>
+          <li>In the Calendar view as a footnote</li>
+          <li>In the List view as part of the date line</li>
+          <li>In CSV and ICS exports as a note</li>
+        </ul>
+
+        <h3>Automatic updates</h3>
+        <p>
+          Changing any of the inputs (NI number, date range, payment cycle,
+          or display options) automatically recalculates the payment dates.
+          The current view is updated without switching views.
+        </p>
+
+        <h3>Important note</h3>
+        <p>
+          This tool is provided for information and planning purposes only.
+          While the calculation logic follows published UK State Pension rules,
+          you should always rely on official correspondence from the
+          Department for Work and Pensions for confirmation of your payments.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,54 @@
+{
+    "sourceFile": "frontend/src/routes/+page.svelte",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 9,
+            "patches": [
+                {
+                    "date": 1768745526767,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1768745753581,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n <script lang=\"ts\">\n-  let count = 0;\n+  import { generatePayments } from '$lib/pensionEngine';\n+\n+  const result = generatePayments('29B', 2026, 2027, 28);\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n\\ No newline at end of file\n-<button on:click={() => count++}>\n-  Clicked {count} times\n-</button>\n+<pre>{JSON.stringify(result, null, 2)}</pre>\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768746252747,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n <script lang=\"ts\">\n   import { generatePayments } from '$lib/pensionEngine';\n \n-  const result = generatePayments('29B', 2026, 2027, 28);\n+  const result = generatePayments('10C', 2026, 2027, 28);\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n"
+                },
+                {
+                    "date": 1768746289108,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n <script lang=\"ts\">\n   import { generatePayments } from '$lib/pensionEngine';\n \n-  const result = generatePayments('10C', 2026, 2027, 28);\n+  const result = generatePayments('10A', 2026, 2027, 28);\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n"
+                },
+                {
+                    "date": 1768746299750,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n <script lang=\"ts\">\n   import { generatePayments } from '$lib/pensionEngine';\n \n-  const result = generatePayments('10A', 2026, 2027, 28);\n+  const result = generatePayments('51D', 2026, 2027, 28);\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n"
+                },
+                {
+                    "date": 1768746356515,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n <script lang=\"ts\">\n   import { generatePayments } from '$lib/pensionEngine';\n \n-  const result = generatePayments('51D', 2026, 2027, 28);\n+  const result = generatePayments('84Z', 2026, 2027, 28);\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n"
+                },
+                {
+                    "date": 1768749448239,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n <script lang=\"ts\">\n   import { generatePayments } from '$lib/pensionEngine';\n \n-  const result = generatePayments('84Z', 2026, 2027, 28);\n+  const result = generatePayments('84D', 2026, 2027, 28);\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n"
+                },
+                {
+                    "date": 1768750088259,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,21 @@\n+<script lang=\"ts\">\n+    import { generatePayments } from \"$lib/pensionEngine\";\n+\n+    //   const result = generatePayments('84D', 2026, 2027, 28);\n+\n+    let ni = \"\";\n+    let startYear = new Date().getFullYear();\n+    let endYear = startYear + 1;\n+    let cycleDays = 28;\n+\n+    let result: PensionResult | null = null;\n+    let activeTab: \"calendar\" | \"list\" | \"ics\" = \"calendar\";\n+\n+    function generate() {\n+        result = generatePayments(ni, startYear, endYear, cycleDays);\n+    }\n+</script>\n+\n+<h1>UK State Pension Calendar</h1>\n+\n+<pre>{JSON.stringify(result, null, 2)}</pre>\n"
+                },
+                {
+                    "date": 1768750189615,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,5 +17,5 @@\n </script>\n \n <h1>UK State Pension Calendar</h1>\n \n-<pre>{JSON.stringify(generate(), null, 2)}</p\n\\ No newline at end of file\n+<pre>{JSON.stringify(generate(), null, 2)}</pre>\n"
+                },
+                {
+                    "date": 1768750238204,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,21 @@\n+<script lang=\"ts\">\n+    import { generatePayments } from \"$lib/pensionEngine\";\n+\n+    //   const result = generatePayments('84D', 2026, 2027, 28);\n+\n+    let ni = \"22D\";\n+    let startYear = new Date().getFullYear();\n+    let endYear = startYear + 1;\n+    let cycleDays = 28;\n+\n+    let result: PensionResult | null = null;\n+    let activeTab: \"calendar\" | \"list\" | \"ics\" = \"calendar\";\n+\n+    function generate() {\n+        result = generatePayments(ni, startYear, endYear, cycleDays);\n+    }\n+</script>\n+\n+<h1>UK State Pension Calendar</h1>\n+\n+<pre>{JSON.stringify(generate(), null, 2)}</pre>\n"
+                }
+            ],
+            "date": 1768745526767,
+            "name": "Commit-0",
+            "content": "<script lang=\"ts\">\n  let count = 0;\n</script>\n\n<h1>UK State Pension Calendar</h1>\n\n<button on:click={() => count++}>\n  Clicked {count} times\n</button>"
+        }
+    ]
+}

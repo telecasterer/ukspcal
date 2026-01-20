@@ -1,0 +1,26 @@
+{
+    "sourceFile": "frontend/src/docs/AI-Context.md",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1768898778225,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1768898897855,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,34 +1,42 @@\n # UK State Pension Calendar – AI Context\r\n \r\n ## Project\r\n+\r\n Port of a working Google Apps Script app to SvelteKit + Vercel.\r\n+A copy of the source files from the Google Apps Script app are visble\r\n+in ../gas\r\n \r\n ## Ground Truth\r\n+\r\n - Pension dates are based on the official DWP 28-day grid\r\n - Anchor date:\r\n   - NI 29B → paid Tuesday 6 Jan 2026\r\n - Grid offset logic MUST match the GAS implementation\r\n - Bank holidays must shift payments earlier\r\n \r\n ## Current Status (IMPORTANT)\r\n+\r\n - pensionEngine.ts is working again\r\n - Known regressions already fixed:\r\n   - “everything is Tuesday”\r\n   - December start bug\r\n   - NI grid offset regression\r\n - Tests are being added to lock behaviour\r\n \r\n ## Files of interest\r\n+\r\n - src/lib/pensionEngine.ts (DO NOT change logic casually)\r\n - src/lib/fetchBankHolidays.ts (uses gov.uk JSON)\r\n - +layout.ts (loads bank holidays)\r\n - +page.svelte (UI)\r\n \r\n ## Known rules\r\n+\r\n - First payment of a year must never be in December\r\n - Weekday is derived from NI grid, not calendar math\r\n - Bank holidays: shift to previous working day\r\n \r\n ## Next steps\r\n+\r\n - Freeze engine with test harness\r\n - Build Flowbite UI\r\n"
+                },
+                {
+                    "date": 1768899202202,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,14 @@\n ## Project\r\n \r\n Port of a working Google Apps Script app to SvelteKit + Vercel.\r\n A copy of the source files from the Google Apps Script app are visble\r\n-in ../gas\r\n+in ../gas. The goal is to implement the same features in the\r\n+SvelteKit/Vercel app using Flowbyte/Tailwind elements and styles, so that \r\n+the new app works well as a mobile and web app. The existing styling need \r\n+not be recreated, we want a clean modern look using the new tools.\r\n \r\n+\r\n ## Ground Truth\r\n \r\n - Pension dates are based on the official DWP 28-day grid\r\n - Anchor date:\r\n@@ -31,9 +35,9 @@\n - +page.svelte (UI)\r\n \r\n ## Known rules\r\n \r\n-- First payment of a year must never be in December\r\n+- First payment of a year must be january\r\n - Weekday is derived from NI grid, not calendar math\r\n - Bank holidays: shift to previous working day\r\n \r\n ## Next steps\r\n"
+                }
+            ],
+            "date": 1768898778225,
+            "name": "Commit-0",
+            "content": "# UK State Pension Calendar – AI Context\r\n\r\n## Project\r\nPort of a working Google Apps Script app to SvelteKit + Vercel.\r\n\r\n## Ground Truth\r\n- Pension dates are based on the official DWP 28-day grid\r\n- Anchor date:\r\n  - NI 29B → paid Tuesday 6 Jan 2026\r\n- Grid offset logic MUST match the GAS implementation\r\n- Bank holidays must shift payments earlier\r\n\r\n## Current Status (IMPORTANT)\r\n- pensionEngine.ts is working again\r\n- Known regressions already fixed:\r\n  - “everything is Tuesday”\r\n  - December start bug\r\n  - NI grid offset regression\r\n- Tests are being added to lock behaviour\r\n\r\n## Files of interest\r\n- src/lib/pensionEngine.ts (DO NOT change logic casually)\r\n- src/lib/fetchBankHolidays.ts (uses gov.uk JSON)\r\n- +layout.ts (loads bank holidays)\r\n- +page.svelte (UI)\r\n\r\n## Known rules\r\n- First payment of a year must never be in December\r\n- Weekday is derived from NI grid, not calendar math\r\n- Bank holidays: shift to previous working day\r\n\r\n## Next steps\r\n- Freeze engine with test harness\r\n- Build Flowbite UI\r\n"
+        }
+    ]
+}
