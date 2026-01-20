@@ -1,42 +1,41 @@
 <script lang="ts">
     import { generatePayments, type PensionResult, type Payment } from "$lib/pensionEngine";
     import { fetchUKBankHolidays } from "$lib/fetchBankHolidays";
-    import "$lib/pensionEngine.test";
+    // import "../../tests/pensionEngine.test.js";
     import { Button, Label, Input, Select, Card, Table, TableBody, TableHead, TableHeadCell, TableBodyCell, Alert, Tabs, TabItem, Checkbox } from "flowbite-svelte";
 
-    let ni = "";
-    let startYear = new Date().getFullYear();
-    let endYear = startYear + 1;
-    let cycleDays: number = 28;
-    let activeTab = "list";
-    let showWeekends = true;
-    let showBankHolidays = true;
-    let currentCalendarMonth = new Date().getMonth();
-    let currentCalendarYear = new Date().getFullYear();
-    let darkMode = false;
+    let ni = $state("");
+    let startYear = $state(new Date().getFullYear());
+    let endYear = $state(new Date().getFullYear() + 1);
+    let cycleDays = $state<number>(28);
+    let activeTab = $state("list");
+    let showWeekends = $state(true);
+    let showBankHolidays = $state(true);
+    let currentCalendarMonth = $state(new Date().getMonth());
+    let currentCalendarYear = $state(new Date().getFullYear());
+    let darkMode = $state(
+        typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true'
+    );
     
     let { data } = $props();
 
     const { bankHolidays } = data;
 
-    let result: PensionResult | null = null;
-    let error = "";
+    let result: PensionResult | null = $state(null);
+    let error = $state("");
 
     $effect.pre(() => {
-        console.log("Effect.pre running, darkMode=", darkMode);
         if (typeof window !== 'undefined') {
+            localStorage.setItem('darkMode', darkMode.toString());
             if (darkMode) {
-                console.log("Adding dark class");
                 document.documentElement.classList.add('dark');
             } else {
-                console.log("Removing dark class");
                 document.documentElement.classList.remove('dark');
             }
         }
     });
 
     function generate() {
-        console.log("Generate called");
         error = "";
 
         if (!/^\d{2}[A-D]$/i.test(ni)) {
@@ -52,7 +51,6 @@
         }
 
         result = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
-        console.log("Generated result:", result);
         
         // Reset calendar to first payment's month if available
         if (result && result.payments.length > 0) {
@@ -151,7 +149,7 @@
     <div class="max-w-6xl mx-auto flex items-center justify-between">
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">📅 Pension Calendar</div>
         <button 
-            on:click={() => { console.log("Dark mode toggled"); darkMode = !darkMode; }}
+            on:click={() => { darkMode = !darkMode; }}
             class="btn-icon text-2xl"
             title="Toggle dark mode"
         >
@@ -165,8 +163,8 @@
 </nav>
 
 <!-- Main Content -->
-<div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 text-gray-900 dark:text-gray-100">
-    <div class="max-w-6xl mx-auto">
+<div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100">
+    <div class="w-full">
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">UK State Pension Payment Calendar</h1>
@@ -174,62 +172,66 @@
         </div>
 
         <!-- Input Card -->
-        <Card class="mb-8 shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card class="w-full mb-8 shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <div class="p-6">
                 <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Generate Payment Schedule</h2>
                 
-                <form on:submit|preventDefault={generate} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                    <!-- NI Code Input -->
-                    <div>
-                        <Label for="ni-code" class="block mb-2 text-sm font-medium">NI Code</Label>
-                        <Input
-                            id="ni-code"
-                            bind:value={ni}
-                            placeholder="e.g. 22D"
-                            maxlength="3"
-                            autocomplete="off"
-                            class="uppercase"
-                        />
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Last 3 chars (e.g. 22D)</p>
+                <form on:submit|preventDefault={generate} class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- NI Code Input -->
+                        <div>
+                            <Label for="ni-code" class="block mb-2 text-sm font-medium">NI Code</Label>
+                            <Input
+                                id="ni-code"
+                                bind:value={ni}
+                                placeholder="e.g. 22D"
+                                maxlength="3"
+                                autocomplete="off"
+                                class="uppercase"
+                            />
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Last 3 chars (e.g. 22D)</p>
+                        </div>
+
+                        <!-- Start Year -->
+                        <div>
+                            <Label for="start-year" class="block mb-2 text-sm font-medium dark:text-gray-300">From Year</Label>
+                            <Input
+                                id="start-year"
+                                type="number"
+                                bind:value={startYear}
+                                class="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            />
+                        </div>
+
+                        <!-- End Year -->
+                        <div>
+                            <Label for="end-year" class="block mb-2 text-sm font-medium dark:text-gray-300">To Year</Label>
+                            <Input
+                                id="end-year"
+                                type="number"
+                                bind:value={endYear}
+                                class="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            />
+                        </div>
                     </div>
 
-                    <!-- Start Year -->
-                    <div>
-                        <Label for="start-year" class="block mb-2 text-sm font-medium dark:text-gray-300">From Year</Label>
-                        <Input
-                            id="start-year"
-                            type="number"
-                            bind:value={startYear}
-                            class="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        />
-                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Payment Cycle -->
+                        <div>
+                            <Label for="cycle" class="block mb-2 text-sm font-medium dark:text-gray-300">Cycle</Label>
+                            <Select id="cycle" bind:value={cycleDays} class="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value={28}>Every 28 days</option>
+                                <option value={14}>Every 14 days</option>
+                                <option value={7}>Every 7 days</option>
+                            </Select>
+                        </div>
 
-                    <!-- End Year -->
-                    <div>
-                        <Label for="end-year" class="block mb-2 text-sm font-medium dark:text-gray-300">To Year</Label>
-                        <Input
-                            id="end-year"
-                            type="number"
-                            bind:value={endYear}
-                            class="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        />
-                    </div>
-
-                    <!-- Payment Cycle -->
-                    <div>
-                        <Label for="cycle" class="block mb-2 text-sm font-medium dark:text-gray-300">Cycle</Label>
-                        <Select id="cycle" bind:value={cycleDays} class="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <option value={28}>Every 28 days</option>
-                            <option value={14}>Every 14 days</option>
-                            <option value={7}>Every 7 days</option>
-                        </Select>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="flex items-end">
-                        <button type="submit" class="btn-primary w-full py-2.5">
-                            Generate
-                        </button>
+                        <!-- Submit Button -->
+                        <div class="flex items-end">
+                            <button type="submit" class="btn-primary w-full py-2.5">
+                                Generate
+                            </button>
+                        </div>
                     </div>
                 </form>
 
@@ -245,32 +247,32 @@
         {#if result}
             <div class="space-y-6">
                 <!-- Summary Card -->
-                <Card class="shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <div class="p-6">
-                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Payment Schedule Summary</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-                            <div class="card-blue">
-                                <p class="text-summary-label text-blue-600 dark:text-blue-300">NI Code</p>
-                                <p class="text-summary-value-blue">{result.ni}</p>
+                <Card class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    <div class="p-4">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Schedule Summary</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="bg-blue-50 dark:bg-blue-900 p-2 rounded border border-blue-200 dark:border-blue-700">
+                                <p class="text-xs font-semibold text-blue-600 dark:text-blue-300 uppercase mb-1">NI Code</p>
+                                <p class="text-lg font-bold text-blue-700 dark:text-blue-100">{result.ni}</p>
                             </div>
-                            <div class="card-emerald">
-                                <p class="text-summary-label text-emerald-600 dark:text-emerald-300">Payment Day</p>
-                                <p class="text-summary-value-emerald">{result.normalDay}</p>
+                            <div class="bg-emerald-50 dark:bg-emerald-900 p-2 rounded border border-emerald-200 dark:border-emerald-700">
+                                <p class="text-xs font-semibold text-emerald-600 dark:text-emerald-300 uppercase mb-1">Payment Day</p>
+                                <p class="text-lg font-bold text-emerald-700 dark:text-emerald-100">{result.normalDay}</p>
                             </div>
-                            <div class="card-violet">
-                                <p class="text-summary-label text-violet-600 dark:text-violet-300">Cycle</p>
-                                <p class="text-summary-value-violet">{result.cycleDays}d</p>
+                            <div class="bg-violet-50 dark:bg-violet-900 p-2 rounded border border-violet-200 dark:border-violet-700">
+                                <p class="text-xs font-semibold text-violet-600 dark:text-violet-300 uppercase mb-1">Cycle</p>
+                                <p class="text-lg font-bold text-violet-700 dark:text-violet-100">{result.cycleDays}d</p>
                             </div>
-                            <div class="card-orange">
-                                <p class="text-summary-label text-orange-600 dark:text-orange-300">Payments</p>
-                                <p class="text-summary-value-orange">{result.payments.length}</p>
+                            <div class="bg-orange-50 dark:bg-orange-900 p-2 rounded border border-orange-200 dark:border-orange-700">
+                                <p class="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase mb-1">Payments</p>
+                                <p class="text-lg font-bold text-orange-700 dark:text-orange-100">{result.payments.length}</p>
                             </div>
                         </div>
                     </div>
                 </Card>
 
                 <!-- Payments Table -->
-                <Card class="shadow-lg overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <Card class="w-full shadow-lg overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                     <div class="p-6">
                         <Tabs bind:activeTab style="underline" class="dark:text-gray-300">
                             <TabItem open title="📋 List View" name="list">
@@ -340,27 +342,27 @@
                                     </div>
 
                                     <!-- Calendar Grid -->
-                                    <div class="overflow-x-auto mb-8">
+                                    <div class="w-full mb-8">
                                         <!-- Day headers -->
                                         <div class="grid grid-cols-7 gap-1 mb-2">
                                             {#each ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as dayName}
-                                                <div class="text-center font-bold text-gray-600 dark:text-gray-400 text-xs sm:text-sm py-3 bg-gray-100 dark:bg-gray-700 rounded">
+                                                <div class="text-center font-bold text-gray-600 dark:text-gray-400 text-xs py-2 bg-gray-100 dark:bg-gray-700 rounded">
                                                     {dayName}
                                                 </div>
                                             {/each}
                                         </div>
 
                                         <!-- Calendar days -->
-                                        <div class="grid grid-cols-7 gap-1">
+                                        <div class="grid grid-cols-7 gap-1 auto-rows-fr">
                                             {#each generateCalendarDays() as day}
                                                 {#if day === null}
-                                                    <div class="aspect-square"></div>
+                                                    <div></div>
                                                 {:else}
                                                     {@const payment = getPaymentForDate(currentCalendarYear, currentCalendarMonth, day)}
                                                     {@const holiday = getBankHolidayForDate(currentCalendarYear, currentCalendarMonth, day)}
                                                     {@const isWeekendDay = isWeekend(day)}
                                                     <div 
-                                                        class="aspect-square p-1.5 sm:p-2 rounded border text-xs sm:text-sm flex flex-col items-center justify-center transition-all
+                                                        class="aspect-square min-h-12 p-1 rounded border text-xs flex flex-col items-center justify-center transition-all
                                                         {payment ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 border-2 font-bold shadow-md dark:text-green-100' : 
                                                          holiday && showBankHolidays ? 'bg-red-100 dark:bg-red-900 border-red-400 dark:border-red-700 dark:text-red-100' :
                                                          isWeekendDay && showWeekends ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 dark:text-gray-300' :
@@ -380,24 +382,24 @@
                                     </div>
 
                                     <!-- Legend -->
-                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                        <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Legend</p>
-                                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-5 h-5 bg-green-100 border-2 border-green-400 rounded text-center text-xs leading-tight font-bold text-green-700">💳</div>
-                                                <span class="text-xs font-medium text-gray-700">Payment day</span>
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-3">Legend</p>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div class="flex items-center gap-2 text-xs">
+                                                <div class="w-4 h-4 bg-green-100 dark:bg-green-900 border-2 border-green-400 dark:border-green-600 rounded text-center leading-tight font-bold text-green-700 dark:text-green-300 flex items-center justify-center">💳</div>
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Payment</span>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-5 h-5 bg-green-100 border-2 border-green-400 rounded text-center text-xs leading-tight font-bold text-amber-700">⚡</div>
-                                                <span class="text-xs font-medium text-gray-700">Early payment</span>
+                                            <div class="flex items-center gap-2 text-xs">
+                                                <div class="w-4 h-4 bg-green-100 dark:bg-green-900 border-2 border-green-400 dark:border-green-600 rounded text-center leading-tight font-bold text-amber-700 dark:text-amber-300 flex items-center justify-center">⚡</div>
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Early</span>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-5 h-5 bg-red-100 border border-red-400 rounded"></div>
-                                                <span class="text-xs font-medium text-gray-700">Bank holiday</span>
+                                            <div class="flex items-center gap-2 text-xs">
+                                                <div class="w-4 h-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 rounded"></div>
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Holiday</span>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-5 h-5 bg-gray-100 border border-gray-300 rounded"></div>
-                                                <span class="text-xs font-medium text-gray-700">Weekend</span>
+                                            <div class="flex items-center gap-2 text-xs">
+                                                <div class="w-4 h-4 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded"></div>
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Weekend</span>
                                             </div>
                                         </div>
                                     </div>

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/src/routes/+layout.svelte",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1768915166844,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1768915397517,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,17 @@\n+<script>import \"../app.css\";\n+import favicon from '$lib/assets/favicon.svg';\n+\n+let { children } = $props();\n+</script>\n+\n+<svelte:head>\n+\t<script>\n+\t\t// Prevent flash of light mode on reload\n+\t\tif (typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true') {\n+\t\t\tdocument.documentElement.classList.add('dark');\n+\t\t}\n+\t</script>\n+\t<link rel=\"icon\" href=\"{favicon}\" />\n+</svelte:head>\n+\n+{@render children()}\n"
+                }
+            ],
+            "date": 1768915166844,
+            "name": "Commit-0",
+            "content": "<script>import \"../app.css\";\nimport favicon from '$lib/assets/favicon.svg';\n\nlet { children } = $props();\n</script>\n\n<svelte:head>\n\t<script>\n\t\t// Prevent flash of light mode on reload\n\t\tif (typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true') {\n\t\t\tdocument.documentElement.classList.add('dark');\n\t\t}\n\t</script>\n</svelte:head>\n\n<svelte:head>\n\t<link rel=\"icon\" href=\"{favicon}\" />\n</svelte:head>\n\n{@render children()}\n"
+        }
+    ]
+}
