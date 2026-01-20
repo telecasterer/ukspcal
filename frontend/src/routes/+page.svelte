@@ -217,22 +217,22 @@
                 <Card class="shadow-lg">
                     <div class="p-6">
                         <h2 class="text-2xl font-semibold text-gray-900 mb-4">Payment Schedule Summary</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                                <p class="text-sm text-gray-600 font-medium">NI Code</p>
-                                <p class="text-2xl font-bold text-blue-600">{result.ni}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="bg-blue-50 p-6 rounded-lg border border-blue-200 shadow-sm">
+                                <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">NI Code</p>
+                                <p class="text-3xl font-bold text-blue-700">{result.ni}</p>
                             </div>
-                            <div class="bg-green-50 p-4 rounded-lg border border-green-100">
-                                <p class="text-sm text-gray-600 font-medium">Normal Payment Day</p>
-                                <p class="text-2xl font-bold text-green-600">{getDayName(result.normalDay)}</p>
+                            <div class="bg-emerald-50 p-6 rounded-lg border border-emerald-200 shadow-sm">
+                                <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2">Normal Payment Day</p>
+                                <p class="text-3xl font-bold text-emerald-700">{result.normalDay}</p>
                             </div>
-                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
-                                <p class="text-sm text-gray-600 font-medium">Cycle</p>
-                                <p class="text-2xl font-bold text-purple-600">Every {result.cycleDays} days</p>
+                            <div class="bg-violet-50 p-6 rounded-lg border border-violet-200 shadow-sm">
+                                <p class="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-2">Cycle</p>
+                                <p class="text-3xl font-bold text-violet-700">Every<br />{result.cycleDays}d</p>
                             </div>
-                            <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
-                                <p class="text-sm text-gray-600 font-medium">Total Payments</p>
-                                <p class="text-2xl font-bold text-orange-600">{result.payments.length}</p>
+                            <div class="bg-orange-50 p-6 rounded-lg border border-orange-200 shadow-sm">
+                                <p class="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-2">Total Payments</p>
+                                <p class="text-3xl font-bold text-orange-700">{result.payments.length}</p>
                             </div>
                         </div>
                     </div>
@@ -290,86 +290,84 @@
                             <TabItem title="📅 Calendar View" name="calendar">
                                 <div class="p-6">
                                     <!-- Calendar Options -->
-                                    <div class="mb-6 flex flex-wrap gap-6">
-                                        <label class="flex items-center gap-2 cursor-pointer">
+                                    <div class="mb-8 flex flex-wrap gap-6 pb-6 border-b border-gray-200">
+                                        <label class="flex items-center gap-3 cursor-pointer hover:text-blue-600 transition">
                                             <Checkbox bind:checked={showWeekends} />
                                             <span class="text-sm font-medium text-gray-700">Show weekends</span>
                                         </label>
-                                        <label class="flex items-center gap-2 cursor-pointer">
+                                        <label class="flex items-center gap-3 cursor-pointer hover:text-blue-600 transition">
                                             <Checkbox bind:checked={showBankHolidays} />
                                             <span class="text-sm font-medium text-gray-700">Show bank holidays</span>
                                         </label>
                                     </div>
 
                                     <!-- Calendar Navigation -->
-                                    <div class="mb-6 flex items-center justify-between">
-                                        <Button on:click={previousMonth} class="bg-gray-600 hover:bg-gray-700">← Previous</Button>
-                                        <h3 class="text-2xl font-bold text-gray-900">{monthName(currentCalendarMonth)} {currentCalendarYear}</h3>
-                                        <Button on:click={nextMonth} class="bg-gray-600 hover:bg-gray-700">Next →</Button>
+                                    <div class="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                        <Button on:click={previousMonth} class="bg-slate-500 hover:bg-slate-600 text-white w-full sm:w-auto">← Previous</Button>
+                                        <h3 class="text-3xl font-bold text-gray-900 whitespace-nowrap">{monthName(currentCalendarMonth)} {currentCalendarYear}</h3>
+                                        <Button on:click={nextMonth} class="bg-slate-500 hover:bg-slate-600 text-white w-full sm:w-auto">Next →</Button>
                                     </div>
 
                                     <!-- Calendar Grid -->
-                                    <div class="overflow-x-auto">
-                                        <div class="min-w-full">
-                                            <!-- Day headers -->
-                                            <div class="grid grid-cols-7 gap-1 mb-2">
-                                                {#each ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as dayName}
-                                                    <div class="text-center font-bold text-gray-700 text-sm py-2 bg-gray-100 rounded">
-                                                        {dayName}
-                                                    </div>
-                                                {/each}
-                                            </div>
+                                    <div class="overflow-x-auto mb-8">
+                                        <!-- Day headers -->
+                                        <div class="grid grid-cols-7 gap-1 mb-2">
+                                            {#each ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as dayName}
+                                                <div class="text-center font-bold text-gray-600 text-xs sm:text-sm py-3 bg-gray-100 rounded">
+                                                    {dayName}
+                                                </div>
+                                            {/each}
+                                        </div>
 
-                                            <!-- Calendar days -->
-                                            <div class="grid grid-cols-7 gap-1">
-                                                {#each generateCalendarDays() as day}
-                                                    {#if day === null}
-                                                        <div class="aspect-square"></div>
-                                                    {:else}
-                                                        {@const payment = getPaymentForDate(currentCalendarYear, currentCalendarMonth, day)}
-                                                        {@const holiday = getBankHolidayForDate(currentCalendarYear, currentCalendarMonth, day)}
-                                                        {@const isWeekendDay = isWeekend(day)}
-                                                        <div 
-                                                            class="aspect-square p-2 rounded border text-sm
-                                                            {payment ? 'bg-green-100 border-green-400 font-bold' : 
-                                                             holiday && showBankHolidays ? 'bg-red-100 border-red-400' :
-                                                             isWeekendDay && showWeekends ? 'bg-gray-100 border-gray-300' :
-                                                             'bg-white border-gray-200'}"
-                                                            title="{holiday ? 'Bank Holiday: ' + holiday : ''}"
-                                                        >
-                                                            <div class="font-semibold text-gray-900">{day}</div>
-                                                            {#if payment}
-                                                                <div class="text-xs {payment.early ? 'text-amber-700 font-semibold' : 'text-green-700 font-semibold'}">
-                                                                    {payment.early ? "⚡ Early" : "💳 Pay"}
-                                                                </div>
-                                                            {/if}
-                                                            {#if holiday && showBankHolidays}
-                                                                <div class="text-xs text-red-700 font-semibold truncate">🏛️ {holiday}</div>
-                                                            {/if}
-                                                        </div>
-                                                    {/if}
-                                                {/each}
-                                            </div>
+                                        <!-- Calendar days -->
+                                        <div class="grid grid-cols-7 gap-1">
+                                            {#each generateCalendarDays() as day}
+                                                {#if day === null}
+                                                    <div class="aspect-square"></div>
+                                                {:else}
+                                                    {@const payment = getPaymentForDate(currentCalendarYear, currentCalendarMonth, day)}
+                                                    {@const holiday = getBankHolidayForDate(currentCalendarYear, currentCalendarMonth, day)}
+                                                    {@const isWeekendDay = isWeekend(day)}
+                                                    <div 
+                                                        class="aspect-square p-1.5 sm:p-2 rounded border text-xs sm:text-sm flex flex-col items-center justify-center transition-all
+                                                        {payment ? 'bg-green-100 border-green-400 border-2 font-bold shadow-md' : 
+                                                         holiday && showBankHolidays ? 'bg-red-100 border-red-400' :
+                                                         isWeekendDay && showWeekends ? 'bg-gray-100 border-gray-300' :
+                                                         'bg-white border-gray-200 hover:border-gray-300'}"
+                                                        title="{holiday ? 'Bank Holiday: ' + holiday : ''}"
+                                                    >
+                                                        <div class="font-semibold text-gray-900 leading-tight">{day}</div>
+                                                        {#if payment}
+                                                            <div class="text-xs mt-0.5 {payment.early ? 'text-amber-700 font-bold' : 'text-green-700 font-bold'}">
+                                                                {payment.early ? "⚡" : "💳"}
+                                                            </div>
+                                                        {/if}
+                                                    </div>
+                                                {/if}
+                                            {/each}
                                         </div>
                                     </div>
 
                                     <!-- Legend -->
-                                    <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 bg-green-100 border border-green-400 rounded"></div>
-                                            <span class="text-gray-700">Payment day</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 bg-amber-100 border border-amber-400 rounded"></div>
-                                            <span class="text-gray-700">Early payment</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 bg-red-100 border border-red-400 rounded"></div>
-                                            <span class="text-gray-700">Bank holiday</span>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 bg-gray-100 border border-gray-300 rounded"></div>
-                                            <span class="text-gray-700">Weekend</span>
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Legend</p>
+                                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-5 h-5 bg-green-100 border-2 border-green-400 rounded text-center text-xs leading-tight font-bold text-green-700">💳</div>
+                                                <span class="text-xs font-medium text-gray-700">Payment day</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-5 h-5 bg-green-100 border-2 border-green-400 rounded text-center text-xs leading-tight font-bold text-amber-700">⚡</div>
+                                                <span class="text-xs font-medium text-gray-700">Early payment</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-5 h-5 bg-red-100 border border-red-400 rounded"></div>
+                                                <span class="text-xs font-medium text-gray-700">Bank holiday</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-5 h-5 bg-gray-100 border border-gray-300 rounded"></div>
+                                                <span class="text-xs font-medium text-gray-700">Weekend</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
