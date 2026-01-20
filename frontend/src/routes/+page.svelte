@@ -67,7 +67,7 @@
     }
 
     function getFirstDayOfMonth(year: number, month: number): number {
-        return new Date(year, month, 1).getDay();
+        return new Date(Date.UTC(year, month, 1)).getUTCDay();
     }
 
     function getPaymentForDate(year: number, month: number, day: number): Payment | null {
@@ -82,8 +82,8 @@
     }
 
     function isWeekend(day: number): boolean {
-        const date = new Date(currentCalendarYear, currentCalendarMonth, day);
-        const dow = date.getDay();
+        const date = new Date(Date.UTC(currentCalendarYear, currentCalendarMonth, day));
+        const dow = date.getUTCDay();
         return dow === 0 || dow === 6;
     }
 
