@@ -22,16 +22,18 @@
     let result: PensionResult | null = null;
     let error = "";
 
-    $: if (typeof window !== 'undefined') {
-        console.log("Reactive statement running, darkMode=", darkMode);
-        if (darkMode) {
-            console.log("Adding dark class");
-            document.documentElement.classList.add('dark');
-        } else {
-            console.log("Removing dark class");
-            document.documentElement.classList.remove('dark');
+    $effect.pre(() => {
+        console.log("Effect.pre running, darkMode=", darkMode);
+        if (typeof window !== 'undefined') {
+            if (darkMode) {
+                console.log("Adding dark class");
+                document.documentElement.classList.add('dark');
+            } else {
+                console.log("Removing dark class");
+                document.documentElement.classList.remove('dark');
+            }
         }
-    }
+    });
 
     function generate() {
         console.log("Generate called");
