@@ -1,7 +1,6 @@
 <script lang="ts">
     import { generatePayments, type PensionResult, type Payment } from "$lib/pensionEngine";
     import { fetchUKBankHolidays } from "$lib/fetchBankHolidays";
-    // import "../../tests/pensionEngine.test.js";
     import { Button, Label, Input, Select, Card, Table, TableBody, TableHead, TableHeadCell, TableBodyCell, Alert, Tabs, TabItem, Checkbox } from "flowbite-svelte";
 
     let ni = $state("");
@@ -11,18 +10,19 @@
     let activeTab = $state("list");
     let showWeekends = $state(true);
     let showBankHolidays = $state(true);
-    let currentCalendarMonth = $state(new Date().getMonth());
-    let currentCalendarYear = $state(new Date().getFullYear());
     let darkMode = $state(
         typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true'
     );
     
     let { data } = $props();
 
-    const { bankHolidays } = data;
+    const { bankHolidays } = $derived(data);
 
     let result: PensionResult | null = $state(null);
     let error = $state("");
+
+    let currentCalendarMonth = $state(new Date().getMonth());
+    let currentCalendarYear = $state(new Date().getFullYear());
 
     $effect.pre(() => {
         if (typeof window !== 'undefined') {
@@ -149,7 +149,7 @@
     <div class="max-w-6xl mx-auto flex items-center justify-between">
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">📅 Pension Calendar</div>
         <button 
-            on:click={() => { darkMode = !darkMode; }}
+            onclick={() => { darkMode = !darkMode; }}
             class="btn-icon text-2xl"
             title="Toggle dark mode"
         >
@@ -176,7 +176,7 @@
             <div class="p-6">
                 <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Generate Payment Schedule</h2>
                 
-                <form on:submit|preventDefault={generate} class="space-y-4">
+                <form onsubmit={(e) => { e.preventDefault(); generate(); }} class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- NI Code Input -->
                         <div>
@@ -322,85 +322,97 @@
 
                             <TabItem title="📅 Calendar View" name="calendar">
                                 <div class="p-6">
-                                    <!-- Calendar Options -->
-                                    <div class="mb-8 flex flex-wrap gap-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                                        <label class="flex items-center gap-3 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition">
-                                            <Checkbox bind:checked={showWeekends} class="dark:bg-gray-700 dark:border-gray-600" />
-                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show weekends</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition">
-                                            <Checkbox bind:checked={showBankHolidays} class="dark:bg-gray-700 dark:border-gray-600" />
-                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show bank holidays</span>
-                                        </label>
-                                    </div>
-
-                                    <!-- Calendar Navigation -->
-                                    <div class="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                        <button on:click={previousMonth} class="btn-secondary w-full sm:w-auto">← Previous</button>
-                                        <h3 class="text-3xl font-bold text-gray-900 dark:text-white whitespace-nowrap">{monthName(currentCalendarMonth)} {currentCalendarYear}</h3>
-                                        <button on:click={nextMonth} class="btn-secondary w-full sm:w-auto">Next →</button>
+                                    <!-- Calendar Controls -->
+                                    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+                                        <div class="flex items-center gap-3">
+                                            <button onclick={previousMonth} class="btn-icon text-lg">←</button>
+                                            <h3 class="text-xl font-bold min-w-[200px] text-center">
+                                                {monthName(currentCalendarMonth)} {currentCalendarYear}
+                                            </h3>
+                                            <button onclick={nextMonth} class="btn-icon text-lg">→</button>
+                                        </div>
+                                        <div class="flex flex-wrap gap-3">
+                                            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                                <Checkbox bind:checked={showWeekends} />
+                                                <span>Weekends</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                                <Checkbox bind:checked={showBankHolidays} />
+                                                <span>Holidays</span>
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <!-- Calendar Grid -->
-                                    <div class="w-full mb-8">
-                                        <!-- Day headers -->
-                                        <div class="grid grid-cols-7 gap-1 mb-2">
-                                            {#each ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as dayName}
-                                                <div class="text-center font-bold text-gray-600 dark:text-gray-400 text-xs py-2 bg-gray-100 dark:bg-gray-700 rounded">
-                                                    {dayName}
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+                                        <!-- Day Headers -->
+                                        <div class="grid grid-cols-7 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                                            {#each ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as day}
+                                                <div class="p-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    {day}
                                                 </div>
                                             {/each}
                                         </div>
 
-                                        <!-- Calendar days -->
-                                        <div class="grid grid-cols-7 gap-1 auto-rows-fr">
+                                        <!-- Calendar Days -->
+                                        <div class="grid grid-cols-7">
                                             {#each generateCalendarDays() as day}
-                                                {#if day === null}
-                                                    <div></div>
-                                                {:else}
-                                                    {@const payment = getPaymentForDate(currentCalendarYear, currentCalendarMonth, day)}
-                                                    {@const holiday = getBankHolidayForDate(currentCalendarYear, currentCalendarMonth, day)}
-                                                    {@const isWeekendDay = isWeekend(day)}
-                                                    <div 
-                                                        class="aspect-square min-h-12 p-1 rounded border text-xs flex flex-col items-center justify-center transition-all
-                                                        {payment ? 'bg-green-100 dark:bg-green-900 border-green-400 dark:border-green-700 border-2 font-bold shadow-md dark:text-green-100' : 
-                                                         holiday && showBankHolidays ? 'bg-red-100 dark:bg-red-900 border-red-400 dark:border-red-700 dark:text-red-100' :
-                                                         isWeekendDay && showWeekends ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 dark:text-gray-300' :
-                                                         'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'}"
-                                                        title="{holiday ? 'Bank Holiday: ' + holiday : ''}"
-                                                    >
-                                                        <div class="font-semibold text-gray-900 dark:text-gray-100 leading-tight">{day}</div>
+                                                {@const payment = day ? getPaymentForDate(currentCalendarYear, currentCalendarMonth, day) : null}
+                                                {@const holiday = day && showBankHolidays ? getBankHolidayForDate(currentCalendarYear, currentCalendarMonth, day) : null}
+                                                {@const weekend = day ? isWeekend(day) : false}
+                                                
+                                                <div class="relative min-h-[100px] border border-gray-100 dark:border-gray-700 p-2
+                                                    {!day ? 'bg-gray-50 dark:bg-gray-900' : ''}
+                                                    {weekend && !showWeekends && day ? 'bg-gray-50 dark:bg-gray-900 opacity-40' : ''}
+                                                    {payment ? 'bg-green-50 dark:bg-green-900/20' : ''}
+                                                    {payment?.early ? 'bg-amber-50 dark:bg-amber-900/20' : ''}
+                                                    hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                                    
+                                                    {#if day}
+                                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                                            {day}
+                                                        </div>
+                                                        
                                                         {#if payment}
-                                                            <div class="text-xs mt-0.5 {payment.early ? 'text-amber-700 dark:text-amber-300 font-bold' : 'text-green-700 dark:text-green-300 font-bold'}">">
-                                                                {payment.early ? "⚡" : "💳"}
+                                                            <div class="absolute inset-0 flex items-center justify-center">
+                                                                <div class="text-center px-2">
+                                                                    <div class="text-2xl mb-1">
+                                                                        {payment.early ? '⚡' : '💳'}
+                                                                    </div>
+                                                                    <div class="text-xs font-bold
+                                                                        {payment.early ? 'text-amber-700 dark:text-amber-300' : 'text-green-700 dark:text-green-300'}">
+                                                                        {payment.early ? 'Early' : 'Payment'}
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         {/if}
-                                                    </div>
-                                                {/if}
+                                                        
+                                                        {#if holiday}
+                                                            <div class="absolute bottom-1 left-1 right-1">
+                                                                <div class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded px-1 py-0.5 truncate" title={holiday}>
+                                                                    🎉 {holiday}
+                                                                </div>
+                                                            </div>
+                                                        {/if}
+                                                    {/if}
+                                                </div>
                                             {/each}
                                         </div>
                                     </div>
 
                                     <!-- Legend -->
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
-                                        <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-3">Legend</p>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <div class="w-4 h-4 bg-green-100 dark:bg-green-900 border-2 border-green-400 dark:border-green-600 rounded text-center leading-tight font-bold text-green-700 dark:text-green-300 flex items-center justify-center">💳</div>
-                                                <span class="font-medium text-gray-700 dark:text-gray-300">Payment</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <div class="w-4 h-4 bg-green-100 dark:bg-green-900 border-2 border-green-400 dark:border-green-600 rounded text-center leading-tight font-bold text-amber-700 dark:text-amber-300 flex items-center justify-center">⚡</div>
-                                                <span class="font-medium text-gray-700 dark:text-gray-300">Early</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <div class="w-4 h-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 rounded"></div>
-                                                <span class="font-medium text-gray-700 dark:text-gray-300">Holiday</span>
-                                            </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <div class="w-4 h-4 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded"></div>
-                                                <span class="font-medium text-gray-700 dark:text-gray-300">Weekend</span>
-                                            </div>
+                                    <div class="mt-4 flex flex-wrap gap-4 text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 rounded bg-green-100 dark:bg-green-900/20 border border-green-300"></div>
+                                            <span>💳 Regular Payment</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 rounded bg-amber-100 dark:bg-amber-900/20 border border-amber-300"></div>
+                                            <span>⚡ Early Payment</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900 border border-blue-300"></div>
+                                            <span>🎉 Bank Holiday</span>
                                         </div>
                                     </div>
                                 </div>
