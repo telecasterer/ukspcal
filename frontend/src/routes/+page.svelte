@@ -23,10 +23,13 @@
     let error = "";
 
     $effect(() => {
+        console.log("Effect running, darkMode=", darkMode);
         if (typeof window !== 'undefined') {
             if (darkMode) {
+                console.log("Adding dark class");
                 document.documentElement.classList.add('dark');
             } else {
+                console.log("Removing dark class");
                 document.documentElement.classList.remove('dark');
             }
         }
@@ -49,6 +52,7 @@
         }
 
         result = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
+        console.log("Generated result:", result);
         
         // Reset calendar to first payment's month if available
         if (result && result.payments.length > 0) {
