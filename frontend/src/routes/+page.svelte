@@ -15,7 +15,7 @@
     let currentCalendarYear = new Date().getFullYear();
     let darkMode = false;
     
-    export let data;
+    let { data } = $props();
 
     const { bankHolidays } = data;
 
