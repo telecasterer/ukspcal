@@ -24,7 +24,7 @@
     function generate() {
         error = "";
 
-        if (!/^\d{2}[A-D]$/.test(ni)) {
+        if (!/^\d{2}[A-D]$/i.test(ni)) {
             error = "NI code must be 2 digits followed by A–D (e.g. 22D)";
             result = null;
             return;
