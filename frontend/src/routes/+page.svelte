@@ -67,7 +67,9 @@
     }
 
     function getFirstDayOfMonth(year: number, month: number): number {
-        return new Date(Date.UTC(year, month, 1)).getUTCDay();
+        const dow = new Date(Date.UTC(year, month, 1)).getUTCDay();
+        // Convert Sunday=0 to Monday=0 format
+        return dow === 0 ? 6 : dow - 1;
     }
 
     function getPaymentForDate(year: number, month: number, day: number): Payment | null {
@@ -312,7 +314,7 @@
                                     <div class="overflow-x-auto mb-8">
                                         <!-- Day headers -->
                                         <div class="grid grid-cols-7 gap-1 mb-2">
-                                            {#each ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as dayName}
+                                            {#each ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as dayName}
                                                 <div class="text-center font-bold text-gray-600 text-xs sm:text-sm py-3 bg-gray-100 rounded">
                                                     {dayName}
                                                 </div>
