@@ -2,7 +2,7 @@
     import { generatePayments, type PensionResult, type Payment } from "$lib/pensionEngine";
     import { fetchUKBankHolidays } from "$lib/fetchBankHolidays";
     import "$lib/pensionEngine.test";
-    import { Button, Label, Input, Select, Card, Table, TableBody, TableHead, TableHeadCell, TableBodyCell, Alert, Navbar, NavBrand, Tabs, TabItem, Checkbox } from "flowbite-svelte";
+    import { Label, Input, Select, Card, Table, TableBody, TableHead, TableHeadCell, TableBodyCell, Alert, Tabs, TabItem, Checkbox } from "flowbite-svelte";
 
     let ni = "";
     let startYear = new Date().getFullYear();
@@ -142,24 +142,22 @@
 </script>
 
 <!-- Navigation -->
-<Navbar class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2.5">
-    <NavBrand href="/" class="flex items-center">
+<nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2.5">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">📅 Pension Calendar</div>
-    </NavBrand>
-    <div class="ml-auto">
-        <Button 
+        <button 
             on:click={() => darkMode = !darkMode}
-            color="alternative"
-            class="text-gray-700 dark:text-gray-300"
+            class="btn-icon text-2xl"
+            title="Toggle dark mode"
         >
             {#if darkMode}
                 ☀️
             {:else}
                 🌙
             {/if}
-        </Button>
+        </button>
     </div>
-</Navbar>
+</nav>
 
 <!-- Main Content -->
 <div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 text-gray-900 dark:text-gray-100">
@@ -224,9 +222,9 @@
 
                     <!-- Submit Button -->
                     <div class="flex items-end">
-                        <Button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-semibold py-2.5">
+                        <button type="submit" class="btn-primary w-full py-2.5">
                             Generate
-                        </Button>
+                        </button>
                     </div>
                 </form>
 
@@ -246,21 +244,21 @@
                     <div class="p-6">
                         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Payment Schedule Summary</h2>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-                            <div class="bg-blue-50 dark:bg-blue-900 p-3 sm:p-4 rounded-lg border border-blue-200 dark:border-blue-700 shadow-sm">
-                                <p class="text-xs font-semibold text-blue-600 dark:text-blue-300 uppercase tracking-wide mb-1">NI Code</p>
-                                <p class="text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-100">{result.ni}</p>
+                            <div class="card-blue">
+                                <p class="text-summary-label text-blue-600 dark:text-blue-300">NI Code</p>
+                                <p class="text-summary-value-blue">{result.ni}</p>
                             </div>
-                            <div class="bg-emerald-50 dark:bg-emerald-900 p-3 sm:p-4 rounded-lg border border-emerald-200 dark:border-emerald-700 shadow-sm">
-                                <p class="text-xs font-semibold text-emerald-600 dark:text-emerald-300 uppercase tracking-wide mb-1">Payment Day</p>
-                                <p class="text-xl sm:text-2xl font-bold text-emerald-700 dark:text-emerald-100">{result.normalDay}</p>
+                            <div class="card-emerald">
+                                <p class="text-summary-label text-emerald-600 dark:text-emerald-300">Payment Day</p>
+                                <p class="text-summary-value-emerald">{result.normalDay}</p>
                             </div>
-                            <div class="bg-violet-50 dark:bg-violet-900 p-3 sm:p-4 rounded-lg border border-violet-200 dark:border-violet-700 shadow-sm">
-                                <p class="text-xs font-semibold text-violet-600 dark:text-violet-300 uppercase tracking-wide mb-1">Cycle</p>
-                                <p class="text-xl sm:text-2xl font-bold text-violet-700 dark:text-violet-100">{result.cycleDays}d</p>
+                            <div class="card-violet">
+                                <p class="text-summary-label text-violet-600 dark:text-violet-300">Cycle</p>
+                                <p class="text-summary-value-violet">{result.cycleDays}d</p>
                             </div>
-                            <div class="bg-orange-50 dark:bg-orange-900 p-3 sm:p-4 rounded-lg border border-orange-200 dark:border-orange-700 shadow-sm">
-                                <p class="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase tracking-wide mb-1">Payments</p>
-                                <p class="text-xl sm:text-2xl font-bold text-orange-700 dark:text-orange-100">{result.payments.length}</p>
+                            <div class="card-orange">
+                                <p class="text-summary-label text-orange-600 dark:text-orange-300">Payments</p>
+                                <p class="text-summary-value-orange">{result.payments.length}</p>
                             </div>
                         </div>
                     </div>
@@ -331,9 +329,9 @@
 
                                     <!-- Calendar Navigation -->
                                     <div class="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                        <Button on:click={previousMonth} class="bg-slate-500 hover:bg-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white w-full sm:w-auto">← Previous</Button>
+                                        <button on:click={previousMonth} class="btn-secondary w-full sm:w-auto">← Previous</button>
                                         <h3 class="text-3xl font-bold text-gray-900 dark:text-white whitespace-nowrap">{monthName(currentCalendarMonth)} {currentCalendarYear}</h3>
-                                        <Button on:click={nextMonth} class="bg-slate-500 hover:bg-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white w-full sm:w-auto">Next →</Button>
+                                        <button on:click={nextMonth} class="btn-secondary w-full sm:w-auto">Next →</button>
                                     </div>
 
                                     <!-- Calendar Grid -->
