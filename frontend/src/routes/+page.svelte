@@ -2,7 +2,7 @@
     import { generatePayments, type PensionResult, type Payment } from "$lib/pensionEngine";
     import { fetchUKBankHolidays } from "$lib/fetchBankHolidays";
     import "$lib/pensionEngine.test";
-    import { Label, Input, Select, Card, Table, TableBody, TableHead, TableHeadCell, TableBodyCell, Alert, Tabs, TabItem, Checkbox } from "flowbite-svelte";
+    import { Button, Label, Input, Select, Card, Table, TableBody, TableHead, TableHeadCell, TableBodyCell, Alert, Tabs, TabItem, Checkbox } from "flowbite-svelte";
 
     let ni = "";
     let startYear = new Date().getFullYear();
@@ -33,6 +33,7 @@
     });
 
     function generate() {
+        console.log("Generate called");
         error = "";
 
         if (!/^\d{2}[A-D]$/i.test(ni)) {
@@ -146,7 +147,7 @@
     <div class="max-w-6xl mx-auto flex items-center justify-between">
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">📅 Pension Calendar</div>
         <button 
-            on:click={() => darkMode = !darkMode}
+            on:click={() => { console.log("Dark mode toggled"); darkMode = !darkMode; }}
             class="btn-icon text-2xl"
             title="Toggle dark mode"
         >
