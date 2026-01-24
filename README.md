@@ -21,7 +21,7 @@ When the app asks for an **NI code**, it means the **last 3 characters of your N
 Prerequisites: Node.js 18+.
 
 ```sh
-cd frontend
+cd web
 npm install
 npm run dev
 ```
@@ -31,7 +31,7 @@ Then open the URL shown in the terminal.
 ## Building
 
 ```sh
-cd frontend
+cd web
 npm run build
 npm run preview
 ```

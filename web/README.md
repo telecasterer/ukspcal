@@ -1,7 +1,7 @@
 
-# UK State Pension Calendar (frontend)
+# UK State Pension Calendar (web app)
 
-This folder contains the SvelteKit frontend.
+This folder contains the SvelteKit app.
 
 For the main project overview, privacy notes, and disclaimer, see the repo root README: ../README.md
 
