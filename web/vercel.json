@@ -1,4 +1,4 @@
 {
-  "installCommand": "npm install",
+  "installCommand": "npm ci --include=dev",
   "buildCommand": "npm run build"
 }

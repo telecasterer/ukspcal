@@ -2,7 +2,7 @@
   "name": "ukspcal",
   "private": true,
   "scripts": {
-    "postinstall": "npm --prefix web ci",
+    "postinstall": "npm --prefix web ci --include=dev",
     "dev": "npm --prefix web run dev",
     "build": "npm --prefix web run build",
     "preview": "npm --prefix web run preview",
