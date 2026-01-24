@@ -1,0 +1,119 @@
+/* Calendar CSS intentionally kept print-focused.
+   Screen styling is handled by Tailwind layers in src/app.css. */
+
+/* Print styles - hide UI elements, show calendar only */
+@media print {
+    :root {
+        color-scheme: light;
+    }
+
+    * {
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    html, body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    /* Wipe dark backgrounds from wrappers */
+    html.dark,
+    body.dark,
+    .dark,
+    .dark *,
+    .bg-gradient-to-b,
+    .dark\:bg-gray-900,
+    .dark\:bg-gray-800,
+    .dark\:bg-gray-700,
+    .dark\:bg-gray-600 {
+        background: #fff !important;
+        color: #0f172a !important;
+        border-color: #e5e7eb !important;
+    }
+
+    nav,
+    .input-section,
+    .calendar-controls,
+    .summary-section,
+    .mb-8 {
+        display: none !important;
+    }
+
+    body {
+        margin: 10mm;
+    }
+
+    .calendar-month {
+        background: #fff !important;
+        color: #0f172a !important;
+        border-color: #e5e7eb !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .calendar-day {
+        background: #fff !important;
+        border-color: #e5e7eb !important;
+        color: #111827 !important;
+        width: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        min-height: 0 !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hide bank holiday names in print to prevent cell expansion */
+    .calendar-day .text-xs {
+        display: none !important;
+    }
+
+    .calendar-day.weekend {
+        background: #f3f4f6 !important;
+    }
+
+    .calendar-day.payment {
+        background: #22c55e !important;
+        color: #fff !important;
+    }
+    .calendar-day.payment .text-sm {
+        background: transparent !important;
+        color: #fff !important;
+    }
+
+    .calendar-day.early-payment {
+        background: #f59e0b !important;
+        color: #fff !important;
+    }
+    .calendar-day.early-payment .text-sm {
+        background: transparent !important;
+        color: #fff !important;
+    }
+
+    .calendar-day.holiday {
+        background: #60a5fa !important;
+        color: #0f172a !important;
+    }
+    .calendar-day.holiday .text-sm {
+        background: transparent !important;
+        color: #0f172a !important;
+    }
+
+    .calendar-grid {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        page-break-inside: avoid;
+    }
+
+    /* Remove duplicate @media print block for .calendar-grid > * */
+
+    .calendar-grid > * {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+}

@@ -1,6 +1,4 @@
-import type { CustomFlowbiteTheme } from 'flowbite-svelte';
-
-export const customTheme: CustomFlowbiteTheme = {
+export const customTheme = {
     button: {
         color: {
             primary: 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800',
@@ -100,4 +98,4 @@ export const customTheme: CustomFlowbiteTheme = {
         },
         tabpanel: 'py-3',
     },
-};
+} as const;

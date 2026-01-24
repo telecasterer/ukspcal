@@ -1,5 +1,5 @@
-import { generatePayments } from "./pensionEngine";
-import type { BankHolidayMap } from "./fetchBankHolidays";
+import { generatePayments } from "../src/lib/pensionEngine";
+import type { BankHolidayMap } from "../src/lib/bankHolidays";
 
 /* ------------------------------------------------------------
    MOCK BANK HOLIDAYS (known real dates)

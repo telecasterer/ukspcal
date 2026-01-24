@@ -1,0 +1,259 @@
+<script lang="ts">
+    import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
+    import { monthName, previousMonth, nextMonth } from "$lib/utils/calendarHelpers";
+    import CalendarMonth from "./CalendarMonth.svelte";
+    import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
+    import type { Payment } from "$lib/pensionEngine";
+    import type { PensionResult } from "$lib/pensionEngine";
+    import { printCalendar, exportCSV, generateICS } from "$lib/utils/exportHelpers";
+    import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
+
+    const pageSize = 6;
+
+    export let result: PensionResult;
+    export let payments: Payment[];
+    export let bankHolidays: Record<string, string>;
+    export let showWeekends: boolean;
+    export let showBankHolidays: boolean;
+    export let currentMonth: number;
+    export let currentYear: number;
+
+    export let csvDateFormat: DateFormat;
+    export let icsEventName: string;
+    export let icsCategory: string;
+    export let icsColor: string;
+
+    let rangeLabel = "";
+    $: {
+        if (!payments?.length) {
+            rangeLabel = "";
+        } else {
+            const first = new Date(payments[0].paid + "T00:00:00Z");
+            const last = new Date(payments[payments.length - 1].paid + "T00:00:00Z");
+            const fmt = (d: Date) =>
+                d.toLocaleDateString("en-GB", {
+                    month: "short",
+                    year: "numeric"
+                });
+            rangeLabel = `${fmt(first)} - ${fmt(last)}`;
+        }
+    }
+
+    let allMonths: Array<{ month: number; year: number }> = [];
+    let focusedIndex = -1;
+    let visibleMonths: Array<{ month: number; year: number }> = [];
+
+    let exportMenuOpen = false;
+    let csvModalOpen = false;
+    let icsModalOpen = false;
+
+    function openCsvModal() {
+        exportMenuOpen = false;
+        csvModalOpen = true;
+    }
+
+    function openIcsModal() {
+        exportMenuOpen = false;
+        icsModalOpen = true;
+    }
+
+    function handleExportCsv() {
+        exportCSV(payments, result, csvDateFormat);
+        csvModalOpen = false;
+    }
+
+    function handleExportIcs() {
+        generateICS(payments, result, { csvDateFormat, icsEventName, icsCategory, icsColor });
+        icsModalOpen = false;
+    }
+
+    function handlePreviousMonth() {
+        if (focusedIndex > 0) {
+            const prev = allMonths[focusedIndex - 1];
+            currentMonth = prev.month;
+            currentYear = prev.year;
+            return;
+        }
+
+        // Fallback (should rarely be hit)
+        const newMonth = previousMonth(currentMonth, currentYear);
+        currentMonth = newMonth.month;
+        currentYear = newMonth.year;
+    }
+
+    function handleNextMonth() {
+        if (focusedIndex !== -1 && focusedIndex < allMonths.length - 1) {
+            const next = allMonths[focusedIndex + 1];
+            currentMonth = next.month;
+            currentYear = next.year;
+            return;
+        }
+
+        // Fallback (should rarely be hit)
+        const newMonth = nextMonth(currentMonth, currentYear);
+        currentMonth = newMonth.month;
+        currentYear = newMonth.year;
+    }
+
+    /**
+     * Get all months from first to last payment
+     */
+    function getAllMonthsToDisplay(): Array<{ month: number; year: number }> {
+        if (payments.length === 0) return [];
+
+        const first = new Date(payments[0].paid + "T00:00:00Z");
+        const last = new Date(payments[payments.length - 1].paid + "T00:00:00Z");
+
+        const months: Array<{ month: number; year: number }> = [];
+        let current = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1));
+
+        while (current <= last) {
+            months.push({
+                month: current.getUTCMonth(),
+                year: current.getUTCFullYear()
+            });
+            current.setUTCMonth(current.getUTCMonth() + 1);
+        }
+
+        return months;
+    }
+
+    $: allMonths = getAllMonthsToDisplay();
+    $: focusedIndex = allMonths.findIndex((m) => m.year === currentYear && m.month === currentMonth);
+    $: {
+        const idx = focusedIndex === -1 ? 0 : focusedIndex;
+        const maxStart = Math.max(0, allMonths.length - pageSize);
+        const start = Math.min(Math.max(0, idx), maxStart);
+        visibleMonths = allMonths.slice(start, start + pageSize);
+    }
+</script>
+
+<div class="space-y-6">
+    <!-- Month Navigation and Controls -->
+    <div class="max-w-2xl mx-auto w-full calendar-controls">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex items-center justify-between mb-4">
+                <Button onclick={handlePreviousMonth} color="light" class="px-3 py-2" disabled={focusedIndex <= 0}>
+                    ← Previous
+                </Button>
+                    <div class="text-center">
+                        <div class="font-semibold text-gray-900 dark:text-white">Payment calendar</div>
+                        <div class="text-xs text-gray-600 dark:text-gray-300">
+                        Viewing {monthName(currentMonth)} {currentYear} · {payments.length} payments{#if rangeLabel} · {rangeLabel}{/if}
+                        </div>
+                    </div>
+                <div class="flex items-center gap-2">
+                    <Button id="export-menu" color="light" class="px-3 py-2" title="Export">
+                        ⬇️ Export
+                    </Button>
+                    <Dropdown triggeredBy="#export-menu" bind:isOpen={exportMenuOpen} class="z-50">
+                        <DropdownItem onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem>
+                        <DropdownItem onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem>
+                    </Dropdown>
+                    <Button onclick={printCalendar} color="light" class="px-3 py-2" title="Print calendar">
+                        🖨️ Print
+                    </Button>
+                    <Button onclick={handleNextMonth} color="light" class="px-3 py-2" disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}>
+                        Next →
+                    </Button>
+                </div>
+            </div>
+
+            <!-- Checkboxes for filtering -->
+            <div class="flex flex-wrap gap-4">
+                <Label class="flex items-center gap-2 cursor-pointer text-sm">
+                    <FlowbiteCheckbox bind:checked={showWeekends} />
+                    <span>Weekends</span>
+                </Label>
+                <Label class="flex items-center gap-2 cursor-pointer text-sm">
+                    <FlowbiteCheckbox bind:checked={showBankHolidays} />
+                    <span>Holidays</span>
+                </Label>
+            </div>
+        </div>
+    </div>
+
+    <Modal title="Download spreadsheet (CSV)" bind:open={csvModalOpen} size="md">
+        <div class="space-y-4">
+            <div>
+                <Label for="csv-format" class="block mb-2 text-sm">Date format</Label>
+                <Select
+                    id="csv-format"
+                    bind:value={csvDateFormat}
+                    class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                >
+                    {#each DATE_FORMAT_OPTIONS as option}
+                        <option value={option.value}>{option.label}</option>
+                    {/each}
+                </Select>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Best for Excel or Google Sheets.</p>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+                <Button color="light" onclick={() => (csvModalOpen = false)}>Cancel</Button>
+                <Button color="blue" onclick={handleExportCsv}>Download CSV</Button>
+            </div>
+        </div>
+    </Modal>
+
+    <Modal title="Add to calendar (ICS)" bind:open={icsModalOpen} size="md">
+        <div class="space-y-4">
+            <div>
+                <Label for="ics-name" class="block mb-2 text-sm">Event name</Label>
+                <Input
+                    id="ics-name"
+                    bind:value={icsEventName}
+                    class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+            </div>
+            <div>
+                <Label for="ics-category" class="block mb-2 text-sm">Category</Label>
+                <Input
+                    id="ics-category"
+                    bind:value={icsCategory}
+                    class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Some calendar apps ignore categories or don’t display them.</p>
+            </div>
+            <div>
+                <Label class="block mb-2 text-sm">Colour</Label>
+                <div class="flex gap-3 items-center">
+                    <input
+                        id="ics-color"
+                        type="color"
+                        bind:value={icsColor}
+                        class="h-12 w-24 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <Input
+                        type="text"
+                        bind:value={icsColor}
+                        class="flex-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="#22c55e"
+                    />
+                </div>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Best-effort: Apple Calendar may use this; Google Calendar often ignores event colour from ICS imports.
+                </p>
+            </div>
+
+            <div class="flex gap-2 justify-end">
+                <Button color="light" onclick={() => (icsModalOpen = false)}>Cancel</Button>
+                <Button color="blue" onclick={handleExportIcs}>Download ICS</Button>
+            </div>
+        </div>
+    </Modal>
+
+    <!-- Multiple Month Calendar Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid">
+        {#each visibleMonths as monthData (monthData.year * 12 + monthData.month)}
+            <CalendarMonth
+                year={monthData.year}
+                month={monthData.month}
+                {showWeekends}
+                {showBankHolidays}
+                {payments}
+                {bankHolidays}
+            />
+        {/each}
+    </div>
+</div>
