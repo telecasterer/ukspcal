@@ -27,6 +27,7 @@ pnpm-debug.log*
 
 # Generated previews
 README.html
+**/README.html
 
 .vercel
 .env*.local

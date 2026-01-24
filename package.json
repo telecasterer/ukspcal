@@ -2,14 +2,10 @@
   "name": "ukspcal",
   "private": true,
   "scripts": {
-    "postinstall": "npm --prefix web ci --include=dev",
+    "postinstall": "npm --prefix web ci",
     "dev": "npm --prefix web run dev",
     "build": "npm --prefix web run build",
     "preview": "npm --prefix web run preview",
     "check": "npm --prefix web run check"
-  },
-  "dependencies": {
-    "flowbite": "^4.0.1",
-    "flowbite-svelte": "^1.31.0"
   }
 }
