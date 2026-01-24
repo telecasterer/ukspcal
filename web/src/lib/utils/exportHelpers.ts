@@ -154,18 +154,10 @@ export function generateICS(
     const lastPayment = standardPayments[standardPayments.length - 1];
     const endDate = formatDateYYYYMMDD(new Date(lastPayment.paid + "T00:00:00Z"));
 
-    // EXDATE values should be dates that the recurrence would otherwise include.
-    // When a payment is early, we infer the original due date as (next payment - cycleDays).
-    // This matches the previous implementation and avoids depending on locale/timezones.
-    const exdates: string[] = [];
-    for (const earlyPayment of earlyPayments) {
-        const idx = sortedPayments.findIndex((p) => p === earlyPayment);
-        const next = idx >= 0 ? sortedPayments[idx + 1] : undefined;
-        if (!next) continue;
-        const nextDate = new Date(next.paid + "T00:00:00Z");
-        nextDate.setUTCDate(nextDate.getUTCDate() - result.cycleDays);
-        exdates.push(formatDateYYYYMMDD(nextDate));
-    }
+    // Use the actual early payment dates as EXDATEs.
+    // This matches the legacy GAS export and avoids edge-cases where inferring a "due date"
+    // from neighbouring payments can be wrong (e.g. consecutive early payments).
+    const exdates = earlyPayments.map((p) => formatDateYYYYMMDD(new Date(p.paid + "T00:00:00Z")));
 
     const eventName = escapeICSText((options.icsEventName ?? "").trim());
     const category = escapeICSText((options.icsCategory ?? "").trim());
@@ -177,6 +169,7 @@ export function generateICS(
     icsLines.push(`UID:uksp-recurring-${escapeICSText(result.ni)}@ukspcal`);
     icsLines.push(`DTSTAMP:${dtstamp}`);
     icsLines.push(`DTSTART;VALUE=DATE:${formatDateYYYYMMDD(firstPayment)}`);
+    icsLines.push(`DTEND;VALUE=DATE:${formatDateYYYYMMDD(new Date(firstPayment.getTime() + 86400000))}`);
     icsLines.push(`RRULE:FREQ=DAILY;INTERVAL=${result.cycleDays};UNTIL=${endDate}`);
     icsLines.push(`SUMMARY:${eventName || "UK State Pension"}`);
 
@@ -208,6 +201,7 @@ export function generateICS(
         icsLines.push(`UID:uksp-early-${formatDateYYYYMMDD(paidDate)}-${escapeICSText(result.ni)}@ukspcal`);
         icsLines.push(`DTSTAMP:${dtstamp}`);
         icsLines.push(`DTSTART;VALUE=DATE:${formatDateYYYYMMDD(paidDate)}`);
+        icsLines.push(`DTEND;VALUE=DATE:${formatDateYYYYMMDD(new Date(paidDate.getTime() + 86400000))}`);
         icsLines.push(`SUMMARY:${(eventName || "UK State Pension") + " (paid early)"}`);
         icsLines.push(`DESCRIPTION:${escapeICSText(note)}`);
 
