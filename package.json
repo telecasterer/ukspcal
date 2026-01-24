@@ -1,4 +1,13 @@
 {
+  "name": "ukspcal",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm --prefix frontend ci",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "check": "npm --prefix frontend run check"
+  },
   "dependencies": {
     "flowbite": "^4.0.1",
     "flowbite-svelte": "^1.31.0"
