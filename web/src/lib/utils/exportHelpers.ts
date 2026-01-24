@@ -12,6 +12,58 @@ export interface ExportOptions {
     icsColor: string;
 }
 
+function formatDateYYYYMMDD(date: Date): string {
+    return date.toISOString().slice(0, 10).replace(/-/g, "");
+}
+
+function formatUtcTimestampYYYYMMDDTHHMMSSZ(date: Date): string {
+    return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+}
+
+/**
+ * Escape text values for iCalendar (RFC 5545).
+ */
+function escapeICSText(text: string): string {
+    return String(text ?? "")
+        .replace(/\\/g, "\\\\")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,")
+        .replace(/\r\n|\n|\r/g, "\\n");
+}
+
+/**
+ * Fold a single iCalendar content line to 75 octets (RFC 5545).
+ */
+function foldICSLine(line: string, maxOctets = 75): string[] {
+    const encoder = new TextEncoder();
+    const out: string[] = [];
+
+    let remaining = line;
+    let prefix = "";
+
+    while (remaining.length > 0) {
+        let cut = remaining.length;
+        while (cut > 0) {
+            const candidate = prefix + remaining.slice(0, cut);
+            if (encoder.encode(candidate).length <= maxOctets) {
+                break;
+            }
+            cut -= 1;
+        }
+
+        // Fallback: ensure progress even if a single codepoint exceeds the limit.
+        if (cut === 0) {
+            cut = 1;
+        }
+
+        out.push(prefix + remaining.slice(0, cut));
+        remaining = remaining.slice(cut);
+        prefix = " ";
+    }
+
+    return out;
+}
+
 /**
  * Get payment status description
  */
@@ -78,75 +130,101 @@ export function generateICS(
     result: PensionResult,
     options: ExportOptions
 ): void {
-    const standardPayments = payments.filter((p) => !p.early);
-    const earlyPayments = payments.filter((p) => p.early);
+    const sortedPayments = [...payments].sort((a, b) => a.paid.localeCompare(b.paid));
+    const standardPayments = sortedPayments.filter((p) => !p.early);
+    const earlyPayments = sortedPayments.filter((p) => p.early);
 
     if (standardPayments.length === 0) {
         alert("No standard payments found to create calendar event");
         return;
     }
 
-    const icsLines = [
+    const now = new Date();
+    const dtstamp = formatUtcTimestampYYYYMMDDTHHMMSSZ(now);
+
+    const icsLines: string[] = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
         "PRODID:-//UK Pension Calendar//NONSGML v1.0//EN",
-        "CALSCALE:GREGORIAN"
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH"
     ];
 
     const firstPayment = new Date(standardPayments[0].paid + "T00:00:00Z");
     const lastPayment = standardPayments[standardPayments.length - 1];
-    const endDate = new Date(lastPayment.paid + "T00:00:00Z").toISOString().split("T")[0].replace(/-/g, "");
+    const endDate = formatDateYYYYMMDD(new Date(lastPayment.paid + "T00:00:00Z"));
 
-    const exdates = earlyPayments
-        .map((p, pIdx) => {
-            const date = new Date(p.paid + "T00:00:00Z");
-            const nextIdx = payments.indexOf(p) + 1;
-            if (nextIdx < payments.length) {
-                const nextDate = new Date(payments[nextIdx].paid + "T00:00:00Z");
-                const originalDate = new Date(nextDate);
-                originalDate.setUTCDate(originalDate.getUTCDate() - result.cycleDays);
-                return originalDate.toISOString().split("T")[0].replace(/-/g, "");
-            }
-            return null;
-        })
-        .filter((d) => d !== null) as string[];
+    // EXDATE values should be dates that the recurrence would otherwise include.
+    // When a payment is early, we infer the original due date as (next payment - cycleDays).
+    // This matches the previous implementation and avoids depending on locale/timezones.
+    const exdates: string[] = [];
+    for (const earlyPayment of earlyPayments) {
+        const idx = sortedPayments.findIndex((p) => p === earlyPayment);
+        const next = idx >= 0 ? sortedPayments[idx + 1] : undefined;
+        if (!next) continue;
+        const nextDate = new Date(next.paid + "T00:00:00Z");
+        nextDate.setUTCDate(nextDate.getUTCDate() - result.cycleDays);
+        exdates.push(formatDateYYYYMMDD(nextDate));
+    }
 
-    const category = (options.icsCategory ?? "").trim();
+    const eventName = escapeICSText((options.icsEventName ?? "").trim());
+    const category = escapeICSText((options.icsCategory ?? "").trim());
     const color = (options.icsColor ?? "").trim();
     const isHexColor = /^#[0-9a-f]{6}$/i.test(color);
 
-    const eventLines: string[] = [
-        "BEGIN:VEVENT",
-        `SUMMARY:${options.icsEventName}`,
-        `DTSTART;VALUE=DATE:${firstPayment.toISOString().split("T")[0].replace(/-/g, "")}`,
-        `DTEND;VALUE=DATE:${new Date(firstPayment.getTime() + 86400000).toISOString().split("T")[0].replace(/-/g, "")}`,
-        `RRULE:FREQ=DAILY;INTERVAL=${result.cycleDays};UNTIL=${endDate}`,
-        `UID:pension-${result.ni}-${Date.now()}@ukspcal`
-    ];
+    // ---- Recurring event (standard schedule) ----
+    icsLines.push("BEGIN:VEVENT");
+    icsLines.push(`UID:uksp-recurring-${escapeICSText(result.ni)}@ukspcal`);
+    icsLines.push(`DTSTAMP:${dtstamp}`);
+    icsLines.push(`DTSTART;VALUE=DATE:${formatDateYYYYMMDD(firstPayment)}`);
+    icsLines.push(`RRULE:FREQ=DAILY;INTERVAL=${result.cycleDays};UNTIL=${endDate}`);
+    icsLines.push(`SUMMARY:${eventName || "UK State Pension"}`);
 
     if (category) {
-        eventLines.splice(2, 0, `CATEGORIES:${category}`);
+        icsLines.push(`CATEGORIES:${category}`);
     }
 
-    // COLOR is defined in RFC 7986 (typically as a CSS color name). Many clients ignore it.
-    // Apple Calendar often supports X-APPLE-CALENDAR-COLOR with hex values.
     if (color) {
         if (isHexColor) {
-            eventLines.splice(2, 0, `X-APPLE-CALENDAR-COLOR:${color}`);
+            icsLines.push(`X-APPLE-CALENDAR-COLOR:${color}`);
         } else {
-            eventLines.splice(2, 0, `COLOR:${color}`);
+            // COLOR is defined in RFC 7986 (typically as a CSS color name). Many clients ignore it.
+            icsLines.push(`COLOR:${escapeICSText(color)}`);
         }
     }
 
-    icsLines.push(...eventLines);
-
-    if (exdates.length > 0) {
-        icsLines.push(`EXDATE;VALUE=DATE:${exdates.join(",")}`);
+    for (const exdate of exdates) {
+        icsLines.push(`EXDATE;VALUE=DATE:${exdate}`);
     }
 
-    icsLines.push("END:VEVENT", "END:VCALENDAR");
+    icsLines.push("END:VEVENT");
 
-    const icsContent = icsLines.join("\r\n");
+    // ---- Early payment overrides (explicit single events) ----
+    for (const earlyPayment of earlyPayments) {
+        const paidDate = new Date(earlyPayment.paid + "T00:00:00Z");
+        const note = getPaymentStatus(earlyPayment, result);
+
+        icsLines.push("BEGIN:VEVENT");
+        icsLines.push(`UID:uksp-early-${formatDateYYYYMMDD(paidDate)}-${escapeICSText(result.ni)}@ukspcal`);
+        icsLines.push(`DTSTAMP:${dtstamp}`);
+        icsLines.push(`DTSTART;VALUE=DATE:${formatDateYYYYMMDD(paidDate)}`);
+        icsLines.push(`SUMMARY:${(eventName || "UK State Pension") + " (paid early)"}`);
+        icsLines.push(`DESCRIPTION:${escapeICSText(note)}`);
+
+        if (category) {
+            icsLines.push(`CATEGORIES:${category}`);
+        }
+        if (color && isHexColor) {
+            icsLines.push(`X-APPLE-CALENDAR-COLOR:${color}`);
+        }
+
+        icsLines.push("END:VEVENT");
+    }
+
+    icsLines.push("END:VCALENDAR");
+
+    const foldedLines = icsLines.flatMap((line) => foldICSLine(line));
+    const icsContent = foldedLines.join("\r\n");
     const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
