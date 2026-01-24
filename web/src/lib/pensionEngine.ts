@@ -1,6 +1,7 @@
 // src/lib/pensionEngine.ts
 
 export type Payment = {
+    due: string;         // YYYY-MM-DD (UTC scheduled date)
     paid: string;        // YYYY-MM-DD (UTC)
     early: boolean;
     holidays?: string[];
@@ -134,6 +135,7 @@ export function generatePayments(
         const adjusted = adjustForNonWorkingDays(d, bankHolidays);
         //console.log("RAW", formatISO(d), "→ ADJ", formatISO(adjusted.date));
         payments.push({
+            due: formatISO(d),
             paid: formatISO(adjusted.date),
             early: adjusted.early,
             holidays: adjusted.holidays

@@ -1,12 +1,14 @@
 <script lang="ts">
     import { generatePayments, type PensionResult } from "$lib/pensionEngine";
     import { Card } from "flowbite-svelte";
-    import PensionForm from "$lib/components/PensionForm.svelte";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
-    import StatePensionAgeCard from "$lib/components/StatePensionAgeCard.svelte";
+    import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
+    import { onMount } from "svelte";
     import "../styles/calendar.css";
+
+    const PERSIST_KEY = "ukspcal.inputs.v1";
 
     // State
     let ni = $state("");
@@ -24,6 +26,38 @@
         typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true'
     );
 
+    onMount(() => {
+        try {
+            const raw = localStorage.getItem(PERSIST_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw) as Partial<{
+                ni: unknown;
+                dob: unknown;
+                startYear: unknown;
+                endYear: unknown;
+            }>;
+
+            const toYear = (value: unknown): number | null => {
+                if (typeof value === "number" && Number.isFinite(value)) return value;
+                if (typeof value === "string") {
+                    const n = Number.parseInt(value, 10);
+                    if (Number.isFinite(n)) return n;
+                }
+                return null;
+            };
+
+            if (typeof parsed.ni === "string") ni = parsed.ni;
+            if (typeof parsed.dob === "string") dob = parsed.dob;
+
+            const sy = toYear(parsed.startYear);
+            if (sy !== null) startYear = sy;
+            const ey = toYear(parsed.endYear);
+            if (ey !== null) endYear = ey;
+        } catch {
+            // Ignore invalid/corrupt stored values.
+        }
+    });
+
     let { data } = $props();
     const { bankHolidays } = $derived(data);
 
@@ -32,6 +66,8 @@
 
     let currentCalendarMonth = $state(new Date().getMonth());
     let currentCalendarYear = $state(new Date().getFullYear());
+
+    let pendingCalendarFocusIso = $state<string | null>(null);
 
     // Dark mode effect
     $effect.pre(() => {
@@ -42,6 +78,24 @@
             } else {
                 document.documentElement.classList.remove('dark');
             }
+        }
+    });
+
+    // Persist user inputs locally (browser only).
+    $effect.pre(() => {
+        if (typeof window === "undefined") return;
+
+        const payload = {
+            ni,
+            dob,
+            startYear: Number(startYear),
+            endYear: Number(endYear)
+        };
+
+        try {
+            localStorage.setItem(PERSIST_KEY, JSON.stringify(payload));
+        } catch {
+            // Ignore storage quota / private mode errors.
         }
     });
 
@@ -63,12 +117,19 @@
 
         result = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
 
-        // Reset calendar to first payment's month if available
+        // Reset calendar to a requested focus date (if set), otherwise first payment.
         if (result && result.payments.length > 0) {
-            const firstPayment = new Date(result.payments[0].paid + "T00:00:00Z");
-            currentCalendarMonth = firstPayment.getUTCMonth();
-            currentCalendarYear = firstPayment.getUTCFullYear();
+            const focusIso = pendingCalendarFocusIso ?? result.payments[0].paid;
+            const focusDate = new Date(focusIso + "T00:00:00Z");
+            currentCalendarMonth = focusDate.getUTCMonth();
+            currentCalendarYear = focusDate.getUTCFullYear();
         }
+
+        pendingCalendarFocusIso = null;
+    }
+
+    function isoYear(iso: string): number {
+        return Number(iso.slice(0, 4));
     }
 </script>
 
@@ -108,53 +169,74 @@
             <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">UK State Pension Payment Calendar</h1>
             <p class="text-lg text-gray-600 dark:text-gray-300">Calculate your pension payment schedule based on your NI code</p>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Privacy: this app saves no personal data. Everything runs in your browser.
+                Privacy: this app saves no personal data to a server.
             </p>
         </div>
 
-        <!-- Input and Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-start input-section">
-            <div class="space-y-6">
-                <StatePensionAgeCard bind:dob onUseSpaYear={(y) => {
-                    startYear = y;
-                    endYear = y + 1;
-                }} />
-
-                <Card class="shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <PensionForm
+        <!-- Inputs + Summary (single cohesive card) -->
+        <Card size="xl" class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 mb-8 input-section">
+            <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
+                <div class="lg:col-span-8">
+                    <PensionInputsCard
                         bind:ni
+                        bind:dob
                         bind:startYear
                         bind:endYear
                         bind:cycleDays
                         bind:error
+                        {bankHolidays}
                         onGenerate={generate}
-                    />
-                </Card>
-            </div>
+                        onUseSpaYear={(y) => {
+                            startYear = y;
+                            endYear = y + 1;
+                            result = null;
+                        }}
+                        onUseFirstPayment={(payment) => {
+                            // Ensure the range includes the actual paid date (early payments can cross year boundaries).
+                            const start = Math.min(isoYear(payment.due), isoYear(payment.paid));
+                            startYear = start;
+                            endYear = start + 1;
 
-            {#if result}
-                <SummaryCard {result} />
-            {/if}
-        </div>
+                            pendingCalendarFocusIso = payment.paid;
+                            generate();
+                        }}
+                    />
+                </div>
+
+                <div class="lg:col-span-4">
+                    {#if result}
+                        <SummaryCard {result} embedded />
+                    {:else}
+                        <div class="p-6">
+                            <div class="mb-2">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h2>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Generate a schedule to see a summary here.</p>
+                            </div>
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </Card>
 
         <!-- Results Section -->
         {#if result}
             {#key `${result.ni}:${startYear}:${endYear}:${cycleDays}`}
-                <div class="w-full space-y-6 max-w-5xl mx-auto">
-                    <!-- Calendar View -->
-                    <CalendarView
-                        {result}
-                        payments={result.payments}
-                        {bankHolidays}
-                        bind:showWeekends
-                        bind:showBankHolidays
-                        bind:currentMonth={currentCalendarMonth}
-                        bind:currentYear={currentCalendarYear}
-                        bind:csvDateFormat
-                        bind:icsEventName
-                        bind:icsCategory
-                        bind:icsColor
-                    />
+                <div class="w-full space-y-6 max-w-7xl mx-auto">
+                    <Card size="xl" class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 calendar-print-wrapper">
+                        <CalendarView
+                            {result}
+                            payments={result.payments}
+                            {bankHolidays}
+                            bind:showWeekends
+                            bind:showBankHolidays
+                            bind:currentMonth={currentCalendarMonth}
+                            bind:currentYear={currentCalendarYear}
+                            bind:csvDateFormat
+                            bind:icsEventName
+                            bind:icsCategory
+                            bind:icsColor
+                        />
+                    </Card>
                 </div>
             {/key}
         {/if}

@@ -130,32 +130,59 @@
 
 <div class="space-y-6">
     <!-- Month Navigation and Controls -->
-    <div class="max-w-2xl mx-auto w-full calendar-controls">
+    <div class="w-full calendar-controls">
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div class="flex items-center justify-between mb-4">
-                <Button onclick={handlePreviousMonth} color="light" class="px-3 py-2" disabled={focusedIndex <= 0}>
-                    ← Previous
-                </Button>
-                    <div class="text-center">
+            <div class="mb-4">
+                <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+                    <div class="text-center sm:text-left">
                         <div class="font-semibold text-gray-900 dark:text-white">Payment calendar</div>
                         <div class="text-xs text-gray-600 dark:text-gray-300">
-                        Viewing {monthName(currentMonth)} {currentYear} · {payments.length} payments{#if rangeLabel} · {rangeLabel}{/if}
+                            Viewing {monthName(currentMonth)} {currentYear} · {payments.length} payments{#if rangeLabel} · {rangeLabel}{/if}
                         </div>
                     </div>
-                <div class="flex items-center gap-2">
-                    <Button id="export-menu" color="light" class="px-3 py-2" title="Export">
-                        ⬇️ Export
-                    </Button>
-                    <Dropdown triggeredBy="#export-menu" bind:isOpen={exportMenuOpen} class="z-50">
-                        <DropdownItem onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem>
-                        <DropdownItem onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem>
-                    </Dropdown>
-                    <Button onclick={printCalendar} color="light" class="px-3 py-2" title="Print calendar">
-                        🖨️ Print
-                    </Button>
-                    <Button onclick={handleNextMonth} color="light" class="px-3 py-2" disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}>
-                        Next →
-                    </Button>
+
+                    <!-- Mobile: 2x2 grid, Desktop: single row with ordering -->
+                    <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2">
+                        <Button
+                            onclick={handlePreviousMonth}
+                            color="light"
+                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-1"
+                            disabled={focusedIndex <= 0}
+                        >
+                            ← Previous
+                        </Button>
+
+                        <Button
+                            onclick={handleNextMonth}
+                            color="light"
+                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-4"
+                            disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
+                        >
+                            Next →
+                        </Button>
+
+                        <Button
+                            id="export-menu"
+                            color="light"
+                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-2"
+                            title="Export"
+                        >
+                            ⬇️ Export
+                        </Button>
+                        <Dropdown triggeredBy="#export-menu" bind:isOpen={exportMenuOpen} class="z-50">
+                            <DropdownItem onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem>
+                            <DropdownItem onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem>
+                        </Dropdown>
+
+                        <Button
+                            onclick={printCalendar}
+                            color="light"
+                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-3"
+                            title="Print calendar"
+                        >
+                            🖨️ Print
+                        </Button>
+                    </div>
                 </div>
             </div>
 

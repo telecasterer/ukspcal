@@ -55,6 +55,16 @@
         page-break-inside: avoid;
     }
 
+    /* The on-screen calendar is wrapped in a Card; printing should include only month content. */
+    .calendar-print-wrapper {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
     .calendar-day {
         background: #fff !important;
         border-color: #e5e7eb !important;
