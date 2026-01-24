@@ -3,6 +3,12 @@
     import { onMount } from "svelte";
     import { buildInfo } from "$lib/buildInfo";
 
+    function formatIsoForDisplay(iso: string): string {
+        if (!iso || iso === "unknown") return "unknown";
+        const d = new Date(iso);
+        return Number.isNaN(d.getTime()) ? iso : d.toLocaleString("en-GB", { hour12: false });
+    }
+
     let spaOpen = false;
     let generatorOpen = false;
     let exportsOpen = false;
@@ -158,6 +164,12 @@
                         <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">Version</div>
                         <div class="mt-1 font-mono text-xs text-gray-800 dark:text-gray-200">
                             {buildInfo.version} (commit {buildInfo.commit})
+                        </div>
+                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-300">
+                            Commit date: {formatIsoForDisplay(buildInfo.commitDate)}
+                        </div>
+                        <div class="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                            Build time: {formatIsoForDisplay(buildInfo.buildTime)}
                         </div>
                     </div>
                     <p>

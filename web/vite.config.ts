@@ -10,6 +10,18 @@ function safeExec(command: string): string | undefined {
 	}
 }
 
+function parseEpochToIso(value: string | undefined): string | undefined {
+	if (!value) return undefined;
+	const trimmed = value.trim();
+	if (!trimmed) return undefined;
+	const n = Number(trimmed);
+	if (!Number.isFinite(n)) return undefined;
+	// Heuristic: Vercel/Git providers typically use seconds; tolerate ms.
+	const ms = n < 10_000_000_000 ? n * 1000 : n;
+	const d = new Date(ms);
+	return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+}
+
 function getBuildInfo() {
 	const buildTime = new Date().toISOString();
 
@@ -26,8 +38,14 @@ function getBuildInfo() {
 	const commitCountRaw = safeExec('git rev-list --count HEAD');
 	const commitCount = commitCountRaw ? Number(commitCountRaw) : 0;
 
+	// Vercel sometimes provides a commit timestamp even when .git history isn't present.
+	const vercelCommitTimestamp = process.env.VERCEL_GIT_COMMIT_TIMESTAMP;
+	const githubCommitTimestamp = process.env.GITHUB_COMMIT_TIMESTAMP;
+	const envCommitDate =
+		parseEpochToIso(vercelCommitTimestamp) ?? parseEpochToIso(githubCommitTimestamp);
+
 	const commitDate =
-		safeExec('git show -s --format=%cI HEAD') ?? 'unknown';
+		envCommitDate ?? safeExec('git show -s --format=%cI HEAD') ?? 'unknown';
 
 	const isCI = Boolean(process.env.VERCEL) || Boolean(process.env.CI);
 	const dirty = !isCI && (safeExec('git status --porcelain') ?? '').length > 0;
