@@ -29,7 +29,8 @@ function getBuildInfo() {
 	const commitDate =
 		safeExec('git show -s --format=%cI HEAD') ?? 'unknown';
 
-	const dirty = (safeExec('git status --porcelain') ?? '').length > 0;
+	const isCI = Boolean(process.env.VERCEL) || Boolean(process.env.CI);
+	const dirty = !isCI && (safeExec('git status --porcelain') ?? '').length > 0;
 
 	const baseVersion =
 		commitCount > 0 && commit !== 'unknown' ? `${commitCount}-${commit}` : commit;
