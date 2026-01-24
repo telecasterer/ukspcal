@@ -56,7 +56,7 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Help</h1>
                 <p class="mt-2 text-gray-600 dark:text-gray-300">
-                    Use either tool independently: State Pension age (optional) and the payment calendar generator.
+                    This app calculates your UK State Pension payment calendar and export files.
                 </p>
             </div>
             <Button color="light" href="/" class="shrink-0">← Back</Button>
@@ -75,11 +75,15 @@
         <Accordion class="w-full">
             <AccordionItem bind:open={spaOpen}>
                 {#snippet header()}
-                    <span id="state-pension-age">State Pension age (optional)</span>
+                    <span id="state-pension-age">Date of birth & State Pension age</span>
                 {/snippet}
                 <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                    <p>Enter your date of birth to estimate the date you reach UK State Pension age.</p>
-                    <p>You can use this tool on its own, or use the resulting year to prefill the payment calendar range.</p>
+                    <p>
+                        Your <strong>date of birth is required</strong>. It is used to estimate the date you reach UK State Pension age (SPA) and to set the calendar start.
+                    </p>
+                    <p>
+                        The calendar is automatically clamped so it won’t show months before your <strong>first payment after reaching SPA</strong>.
+                    </p>
                     <p>
                         State Pension age can change based on government policy. For the most up-to-date result, validate using GOV.UK’s official checker.
                     </p>
@@ -94,6 +98,12 @@
                     <p>
                         This tool calculates your UK State Pension payment dates based on a repeating payment cycle and UK bank holidays.
                     </p>
+
+                    <ul class="list-disc pl-6 space-y-1">
+                        <li>The calendar updates automatically once the inputs are valid (there is no “Generate” button).</li>
+                        <li>Navigation jumps by 3 months at a time.</li>
+                        <li>The earliest month shown is the first payment after you reach SPA.</li>
+                    </ul>
 
                     <ul class="list-disc pl-6 space-y-1">
                         <li>Calculates payment dates using a repeating payment cycle (normally every 28 days).</li>
@@ -123,6 +133,7 @@
                         <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Date range</h3>
                         <p>
                             Choose the start and end year you want to include. Only payment dates within that range are shown.
+                            If your calculated first payment after SPA falls outside the selected years, the app will expand the range to include it.
                         </p>
                     </div>
 

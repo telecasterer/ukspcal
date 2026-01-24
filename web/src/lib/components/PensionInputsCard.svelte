@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Button, Input, Label, Select } from "flowbite-svelte";
+    import { Alert, Input, Label, Select } from "flowbite-svelte";
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
@@ -11,9 +11,7 @@
         cycleDays: number;
         error: string;
         bankHolidays: Record<string, string>;
-        onGenerate: () => void;
-        onUseSpaYear?: (spaYear: number) => void;
-        onUseFirstPayment?: (payment: Payment) => void;
+        onFirstPaymentAfterSpa?: (payment: Payment | null) => void;
     };
 
     let {
@@ -24,9 +22,7 @@
         cycleDays = $bindable(),
         error = $bindable(),
         bankHolidays,
-        onGenerate,
-        onUseSpaYear,
-        onUseFirstPayment
+        onFirstPaymentAfterSpa
     }: Props = $props();
 
     const currentYear = new Date().getFullYear();
@@ -154,34 +150,28 @@
         return formatIsoLong(p.paid);
     });
 
-    function handleUseSpaYear() {
-        if (!spa) return;
-        const year = Number(spa.spaDate.slice(0, 4));
-        onUseSpaYear?.(year);
-    }
 
-    function handleUseFirstPayment() {
-        if (!firstPaymentAfterSpa) return;
-        onUseFirstPayment?.(firstPaymentAfterSpa);
-    }
+    let lastFirstPaymentAfterSpaKey = $state<string | null>(null);
+
+    $effect.pre(() => {
+        const key = firstPaymentAfterSpa ? `${firstPaymentAfterSpa.due}|${firstPaymentAfterSpa.paid}` : null;
+        if (key === lastFirstPaymentAfterSpaKey) return;
+        lastFirstPaymentAfterSpaKey = key;
+        onFirstPaymentAfterSpa?.(firstPaymentAfterSpa);
+    });
+
 </script>
 
 <div class="p-6 space-y-6">
     <div>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inputs</h2>
         <p class="text-sm text-gray-600 dark:text-gray-300">
-            Enter your NI code to generate the payment schedule. Date of birth is optional and may be used to estimate State Pension age.
+            Enter your NI code and date of birth to generate the payment schedule.
         </p>
     </div>
 
     <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
-        <form
-            onsubmit={(e) => {
-                e.preventDefault();
-                onGenerate();
-            }}
-            class="space-y-5"
-        >
+        <div class="space-y-5">
             <div class="space-y-3">
                 <div>
                     <Label for="ni-code" class="block mb-1 text-sm">NI code (last 3 characters of NI number)</Label>
@@ -194,16 +184,22 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         The last 3 characters of your National Insurance number (2 digits + letter A–D), e.g. 22D.
                     </p>
+                    {#if ni.trim() && !isValidNiCode(ni)}
+                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Format: 2 digits then A–D (e.g. 22D).</p>
+                    {/if}
                 </div>
 
                 <div>
-                    <Label for="dob" class="block mb-1 text-sm">Date of birth (optional)</Label>
+                    <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
                     <Input
                         id="dob"
                         type="date"
                         bind:value={dob}
                         class="w-full sm:max-w-[14rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
+                    {#if !dob}
+                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
+                    {/if}
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                         <a
                             href="/help#state-pension-age"
@@ -258,15 +254,13 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Payment frequency in days</p>
                 </div>
 
-                <Button type="submit" class="w-full" color="blue">Generate Calendar</Button>
-
                 {#if error}
                     <Alert color="red" class="dark:bg-red-900 dark:text-red-200 text-sm">
                         <span class="font-medium">Error:</span> {error}
                     </Alert>
                 {/if}
             </div>
-        </form>
+        </div>
 
         <div class="space-y-3">
             {#if dob && !spa}
@@ -316,12 +310,6 @@
                                     {/if}
                                 </div>
                             {/if}
-
-                            {#if onUseFirstPayment}
-                                <Button onclick={handleUseFirstPayment} color="blue" class="w-full mt-3">
-                                    Start the calendar from this date
-                                </Button>
-                            {/if}
                         </div>
                     {:else if ni}
                         <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
@@ -329,12 +317,6 @@
                         </div>
                     {/if}
 
-                    {#if onUseSpaYear}
-                        <Button onclick={handleUseSpaYear} color="light" class="w-full mt-3">Use SPA year for the calendar</Button>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            This sets the calendar range to the year you reach State Pension age.
-                        </p>
-                    {/if}
                 </div>
             {/if}
         </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { generatePayments, type PensionResult } from "$lib/pensionEngine";
+    import { generatePayments, type Payment, type PensionResult } from "$lib/pensionEngine";
     import { Card } from "flowbite-svelte";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
@@ -69,6 +69,9 @@
 
     let pendingCalendarFocusIso = $state<string | null>(null);
 
+    let minPaymentIso = $state<string | null>(null);
+    let lastFirstPaymentAfterSpaKey = $state<string | null>(null);
+
     // Dark mode effect
     $effect.pre(() => {
         if (typeof window !== 'undefined') {
@@ -115,7 +118,15 @@
             return;
         }
 
-        result = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
+        const generated = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
+
+        const minIso = minPaymentIso;
+
+        const filteredPayments = minIso
+            ? generated.payments.filter((p) => p.paid >= minIso)
+            : generated.payments;
+
+        result = { ...generated, payments: filteredPayments };
 
         // Reset calendar to a requested focus date (if set), otherwise first payment.
         if (result && result.payments.length > 0) {
@@ -126,6 +137,28 @@
         }
 
         pendingCalendarFocusIso = null;
+    }
+
+    function handleFirstPaymentAfterSpa(payment: Payment | null) {
+        if (!payment) {
+            minPaymentIso = null;
+            lastFirstPaymentAfterSpaKey = null;
+            return;
+        }
+
+        const key = `${payment.due}|${payment.paid}`;
+        if (key === lastFirstPaymentAfterSpaKey) return;
+        lastFirstPaymentAfterSpaKey = key;
+
+        // Auto-start calendar from the first payment after SPA (use paid date so early payments still show).
+        minPaymentIso = payment.paid;
+
+        const start = Math.min(isoYear(payment.due), isoYear(payment.paid));
+        startYear = start;
+        if (endYear < startYear + 1) endYear = startYear + 1;
+
+        pendingCalendarFocusIso = payment.paid;
+        generate();
     }
 
     function isoYear(iso: string): number {
@@ -185,21 +218,7 @@
                         bind:cycleDays
                         bind:error
                         {bankHolidays}
-                        onGenerate={generate}
-                        onUseSpaYear={(y) => {
-                            startYear = y;
-                            endYear = y + 1;
-                            result = null;
-                        }}
-                        onUseFirstPayment={(payment) => {
-                            // Ensure the range includes the actual paid date (early payments can cross year boundaries).
-                            const start = Math.min(isoYear(payment.due), isoYear(payment.paid));
-                            startYear = start;
-                            endYear = start + 1;
-
-                            pendingCalendarFocusIso = payment.paid;
-                            generate();
-                        }}
+                        onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                     />
                 </div>
 

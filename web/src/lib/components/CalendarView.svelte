@@ -10,6 +10,8 @@
 
     const pageSize = 6;
 
+    const navStep = 3;
+
     export let result: PensionResult;
     export let payments: Payment[];
     export let bankHolidays: Record<string, string>;
@@ -69,7 +71,8 @@
 
     function handlePreviousMonth() {
         if (focusedIndex > 0) {
-            const prev = allMonths[focusedIndex - 1];
+            const targetIndex = Math.max(0, focusedIndex - navStep);
+            const prev = allMonths[targetIndex];
             currentMonth = prev.month;
             currentYear = prev.year;
             return;
@@ -83,7 +86,8 @@
 
     function handleNextMonth() {
         if (focusedIndex !== -1 && focusedIndex < allMonths.length - 1) {
-            const next = allMonths[focusedIndex + 1];
+            const targetIndex = Math.min(allMonths.length - 1, focusedIndex + navStep);
+            const next = allMonths[targetIndex];
             currentMonth = next.month;
             currentYear = next.year;
             return;
@@ -270,9 +274,23 @@
         </div>
     </Modal>
 
-    <!-- Multiple Month Calendar Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid">
+    <!-- Multiple Month Calendar Grid (screen) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid screen-only">
         {#each visibleMonths as monthData (monthData.year * 12 + monthData.month)}
+            <CalendarMonth
+                year={monthData.year}
+                month={monthData.month}
+                {showWeekends}
+                {showBankHolidays}
+                {payments}
+                {bankHolidays}
+            />
+        {/each}
+    </div>
+
+    <!-- Print: all months from start to end -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid print-only">
+        {#each allMonths as monthData (monthData.year * 12 + monthData.month)}
             <CalendarMonth
                 year={monthData.year}
                 month={monthData.month}

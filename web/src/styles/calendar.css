@@ -2,6 +2,12 @@
    Screen styling is handled by Tailwind layers in src/app.css. */
 
 /* Print styles - hide UI elements, show calendar only */
+
+/* Print-only helpers */
+.print-only {
+    display: none;
+}
+
 @media print {
     :root {
         color-scheme: light;
@@ -110,6 +116,14 @@
     .calendar-day.holiday .text-sm {
         background: transparent !important;
         color: #0f172a !important;
+    }
+
+    .screen-only {
+        display: none !important;
+    }
+
+    .print-only {
+        display: flex !important;
     }
 
     .calendar-grid {
