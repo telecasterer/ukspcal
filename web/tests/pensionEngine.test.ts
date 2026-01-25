@@ -18,6 +18,22 @@ describe("generatePayments", () => {
     expect(result.payments[0]?.paid).toBe("2024-01-09");
   });
 
+  it("uses the confirmed fortnightly (14-day) rule: 29B => Tue 13 Jan 2026", () => {
+    const result = generatePayments("29B", 2026, 2026, 14, {});
+    expect(result.normalDay).toBe("Tuesday");
+    expect(result.payments[0]?.due).toBe("2026-01-13");
+    expect(result.payments[0]?.paid).toBe("2026-01-13");
+    expect(result.payments[1]?.due).toBe("2026-01-27");
+  });
+
+  it("ignores NI suffix letter for fortnightly (14-day) payments", () => {
+    const a = generatePayments("29A", 2026, 2026, 14, {});
+    const d = generatePayments("29D", 2026, 2026, 14, {});
+    expect(a.normalDay).toBe(d.normalDay);
+    expect(a.payments[0]?.due).toBe(d.payments[0]?.due);
+    expect(a.payments[0]?.paid).toBe(d.payments[0]?.paid);
+  });
+
   it("maps NI code 84D to Friday payments", () => {
     const result = generatePayments("84D", 2024, 2026, 28, bankHolidays);
     expect(result.normalDay).toBe("Friday");

@@ -18,6 +18,10 @@ export type PensionResult = {
 const BASE_DATE = new Date(Date.UTC(2025, 11, 29)); // Monday 29 Dec 2025
 const BASE_NI = "00A";
 
+// Fortnightly (14-day) anchors (national cycle reference weeks)
+const FORTNIGHT_WEEK_1_ANCHOR = new Date(Date.UTC(2026, 0, 5)); // Monday 5 Jan 2026
+const FORTNIGHT_WEEK_2_ANCHOR = new Date(Date.UTC(2026, 0, 12)); // Monday 12 Jan 2026
+
 /* ------------------------------------------------------------
    DATE HELPERS (UTC SAFE)
 ------------------------------------------------------------ */
@@ -47,6 +51,20 @@ function rowFromDigits(d: number): number {
     if (d <= 59) return 2;
     if (d <= 79) return 3;
     return 4;
+}
+
+function fortnightlyBaseDueDate(ni: string): Date {
+    // Fortnightly rule summary:
+    // Ignore NI suffix letter; use odd/even of the last digit to pick Week 1/2 (anchored to Jan 2026),
+    // use last two digits to pick weekday (00–19 Mon ... 80–99 Fri), then repeat every 14 days.
+    const { digits } = parseNI(ni);
+    const lastDigit = digits % 10;
+    const isEven = lastDigit % 2 === 0;
+    const anchor = isEven ? FORTNIGHT_WEEK_1_ANCHOR : FORTNIGHT_WEEK_2_ANCHOR;
+
+    // rowFromDigits() gives 0..4 which maps to Mon..Fri
+    const weekdayOffsetDays = rowFromDigits(digits);
+    return addDaysUTC(anchor, weekdayOffsetDays);
 }
 
 
@@ -109,7 +127,10 @@ export function generatePayments(
         throw new Error(`Invalid cycleDays: ${cycleDays}`);
     }
 
-    let d = addDaysUTC(BASE_DATE, niOffsetDays(ni));
+    // Base due date depends on cycle rules.
+    let d = cycleDays === 14
+        ? fortnightlyBaseDueDate(ni)
+        : addDaysUTC(BASE_DATE, niOffsetDays(ni));
 
     const startBoundary = new Date(Date.UTC(startYear, 0, 1));
 
@@ -138,12 +159,15 @@ export function generatePayments(
         d = addDaysUTC(d, cycleDays);
     }
 
-    // 5️⃣ Derive weekday from THIS NI (not base NI)
-    const normalDay = addDaysUTC(BASE_DATE, niOffsetDays(ni))
-        .toLocaleDateString("en-GB", {
-            weekday: "long",
-            timeZone: "UTC"
-        });
+    // Derive the "normal" payment weekday for this NI/cycle.
+    const normalDayBase = cycleDays === 14
+        ? fortnightlyBaseDueDate(ni)
+        : addDaysUTC(BASE_DATE, niOffsetDays(ni));
+
+    const normalDay = normalDayBase.toLocaleDateString("en-GB", {
+        weekday: "long",
+        timeZone: "UTC"
+    });
 
     return {
         ni,

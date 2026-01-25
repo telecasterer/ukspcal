@@ -100,15 +100,13 @@
                 {/snippet}
                 <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                     <p>
-                        Your <strong>date of birth is required</strong>. It is
-                        used to estimate the date you reach UK State Pension age
-                        (SPA) and to set the calendar start month.
+                        Your date of birth is required to calculate the date you
+                        reach UK State Pension age (SPA) and to set the calendar
+                        start month.
                     </p>
                     <p>
                         The calendar is automatically clamped so it won’t show
-                        months before your <strong
-                            >first payment after reaching SPA</strong
-                        >.
+                        months before your first payment after reaching SPA.
                     </p>
                     <p>
                         State Pension age can change based on government policy.
@@ -167,6 +165,12 @@
                             3 characters of your National Insurance number: 2
                             digits + a letter A–D (for example, 22D).
                         </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Important: for the <strong
+                                >14-day (fortnightly)</strong
+                            > cycle, the letter (A–D) is not used. Only the digits
+                            are used.
+                        </p>
                     </div>
 
                     <div class="space-y-2">
@@ -188,6 +192,126 @@
                             cycle; other cycles may depend on individual
                             arrangements.
                         </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3
+                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                        >
+                            28-day (4-week, the default) rule
+                        </h3>
+                        <p>
+                            For the <strong>28-day</strong> cycle, the app uses
+                            the NI suffix letter (A–D) as a
+                            <strong>phase</strong> (which week within the repeating
+                            4-week pattern), and the last two digits to choose your
+                            normal weekday.
+                        </p>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>
+                                <strong>Payment weekday</strong> comes from the last
+                                two digits: 00–19 Mon, 20–39 Tue, 40–59 Wed, 60–79
+                                Thu, 80–99 Fri.
+                            </li>
+                            <li>
+                                <strong>Phase (A–D)</strong> shifts the schedule
+                                in one-week steps (A, B, C, D).
+                            </li>
+                            <li>
+                                Payments then repeat every 28 days.
+                                Weekend/bank-holiday payments are paid early
+                                (previous working day).
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3
+                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                        >
+                            Weekly (7-day) rule
+                        </h3>
+                        <p>
+                            For the <strong>7-day</strong> cycle, the app uses the
+                            same NI-based weekday/phase mapping as the 28-day schedule,
+                            but repeats every 7 days.
+                        </p>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>
+                                Your normal weekday comes from the last two
+                                digits (00–19 Mon … 80–99 Fri).
+                            </li>
+                            <li>The suffix letter (A–D) affects the phase.</li>
+                            <li>
+                                Payments repeat every 7 days, with
+                                weekend/bank-holiday payments paid early.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3
+                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                        >
+                            Fortnightly (14-day) rule
+                        </h3>
+                        <p>
+                            For the <strong>14-day</strong> cycle, payments run on
+                            a national two-week rhythm (Week 1 / Week 2). The app
+                            applies these confirmed rules (anchored to January 2026):
+                        </p>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>
+                                <strong>Week 1 vs Week 2</strong> is based on the
+                                parity (odd/even) of the final digit of the NI number:
+                                even → Week 1, odd → Week 2.
+                            </li>
+                            <li>
+                                <strong>Week anchors</strong>: Week 1 starts
+                                Monday 5 Jan 2026; Week 2 starts Monday 12 Jan
+                                2026.
+                            </li>
+                            <li>
+                                <strong>Payment weekday</strong> comes from the last
+                                two digits: 00–19 Mon, 20–39 Tue, 40–59 Wed, 60–79
+                                Thu, 80–99 Fri.
+                            </li>
+                            <li>
+                                Payments then repeat every 14 days.
+                                Weekend/bank-holiday payments are paid early
+                                (previous working day).
+                            </li>
+                            <li>
+                                The NI suffix letter (A–D) is <strong
+                                    >ignored</strong
+                                > for this cycle.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3
+                            class="text-sm font-semibold text-gray-900 dark:text-white"
+                        >
+                            13-week (91-day) rule
+                        </h3>
+                        <p>
+                            For the <strong>91-day</strong> cycle (often used for
+                            some overseas payments), the app again uses the same
+                            NI-based weekday/phase mapping, but repeats every 91
+                            days.
+                        </p>
+                        <ul class="list-disc pl-6 space-y-1">
+                            <li>
+                                Your normal weekday comes from the last two
+                                digits (00–19 Mon … 80–99 Fri).
+                            </li>
+                            <li>The suffix letter (A–D) affects the phase.</li>
+                            <li>
+                                Payments repeat every 91 days, with
+                                weekend/bank-holiday payments paid early.
+                            </li>
+                        </ul>
                     </div>
 
                     <div class="space-y-2">
