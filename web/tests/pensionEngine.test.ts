@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { generatePayments } from "../src/lib/pensionEngine";
 import type { BankHolidayMap } from "../src/lib/bankHolidays";
 
@@ -10,60 +11,33 @@ const bankHolidays: BankHolidayMap = {
   "2026-04-06": "Easter Monday"
 };
 
-/* ------------------------------------------------------------
-   TEST CASES
------------------------------------------------------------- */
-const tests = [
-  {
-    name: "29B – Tuesday payments",
-    ni: "29B",
-    startYear: 2024,
-    endYear: 2026,
-    expectedWeekday: "Tuesday",
-    firstPayment2024: "2024-01-09"
-  },
-  {
-    name: "84D – Friday payments",
-    ni: "84D",
-    startYear: 2024,
-    endYear: 2026,
-    expectedWeekday: "Friday",
-    firstPayment2024: "2024-01-26"
-  }
-];
+describe("generatePayments", () => {
+  it("maps NI code 29B to Tuesday payments", () => {
+    const result = generatePayments("29B", 2024, 2026, 28, bankHolidays);
+    expect(result.normalDay).toBe("Tuesday");
+    expect(result.payments[0]?.paid).toBe("2024-01-09");
+  });
 
-/* ------------------------------------------------------------
-   RUN TESTS
------------------------------------------------------------- */
-for (const t of tests) {
-  const result = generatePayments(
-    t.ni,
-    t.startYear,
-    t.endYear,
-    28,
-    bankHolidays
-  );
+  it("maps NI code 84D to Friday payments", () => {
+    const result = generatePayments("84D", 2024, 2026, 28, bankHolidays);
+    expect(result.normalDay).toBe("Friday");
+    expect(result.payments[0]?.paid).toBe("2024-01-26");
+  });
 
-  console.group(t.name);
+  it("moves payments earlier when due date is a bank holiday", () => {
+    // Create a synthetic holiday on a due date we *know* is in the schedule,
+    // then confirm it gets pulled earlier.
+    const baseline = generatePayments("29B", 2026, 2026, 28, {});
+    const holidayIso = baseline.payments[0]!.due;
 
-  console.log("Normal day:", result.normalDay);
-  console.log("First payment:", result.payments[0]?.paid);
+    const withHoliday = generatePayments("29B", 2026, 2026, 28, {
+      [holidayIso]: "Synthetic Holiday"
+    });
 
-  if (result.normalDay !== t.expectedWeekday) {
-    console.error(
-      `❌ Weekday mismatch: expected ${t.expectedWeekday}`
-    );
-  } else {
-    console.log("✅ Weekday OK");
-  }
-
-  if (result.payments[0]?.paid !== t.firstPayment2024) {
-    console.error(
-      `❌ First payment wrong: expected ${t.firstPayment2024}`
-    );
-  } else {
-    console.log("✅ First payment OK");
-  }
-
-  console.groupEnd();
-}
+    const affected = withHoliday.payments.find((p) => p.due === holidayIso);
+    expect(affected).toBeDefined();
+    expect(affected!.early).toBe(true);
+    expect(affected!.paid < affected!.due).toBe(true);
+    expect(affected!.holidays).toContain("Synthetic Holiday");
+  });
+});

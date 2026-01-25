@@ -12,7 +12,6 @@ export function formatDateForCSV(dateStr: string, format: DateFormat): string {
     const year = date.getUTCFullYear();
     const monthName = date.toLocaleDateString("en-GB", { month: "short" }).toUpperCase();
     const dayName = date.toLocaleDateString("en-GB", { weekday: "short" });
-    const fullDayName = date.toLocaleDateString("en-GB", { weekday: "long" });
     const fullMonthName = date.toLocaleDateString("en-GB", { month: "long" });
 
     switch (format) {

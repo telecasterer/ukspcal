@@ -31,11 +31,6 @@ function addDaysUTC(date: Date, days: number): Date {
 function formatISO(date: Date): string {
     return date.toISOString().slice(0, 10);
 }
-
-function isWeekendUTC(d: Date): boolean {
-  const day = d.getUTCDay();
-  return day === 0 || day === 6;
-}
 /* ------------------------------------------------------------
    NI GRID LOGIC (OFFSETS IN WEEKS)
 ------------------------------------------------------------ */
@@ -117,7 +112,6 @@ export function generatePayments(
     let d = addDaysUTC(BASE_DATE, niOffsetDays(ni));
 
     const startBoundary = new Date(Date.UTC(startYear, 0, 1));
-    const endBoundary = new Date(Date.UTC(endYear + 1, 0, 1));
 
     // 2️⃣ Rewind until before the start boundary
     while (d >= startBoundary) {

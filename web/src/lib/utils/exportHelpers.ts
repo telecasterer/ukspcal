@@ -67,7 +67,7 @@ function foldICSLine(line: string, maxOctets = 75): string[] {
 /**
  * Get payment status description
  */
-export function getPaymentStatus(payment: Payment, result: PensionResult): string {
+function getPaymentStatus(payment: Payment, result: PensionResult): string {
     if (!payment.early) return "On time";
 
     const paymentDate = new Date(payment.paid + "T00:00:00Z");

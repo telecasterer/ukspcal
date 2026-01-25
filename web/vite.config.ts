@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import { execSync } from 'child_process';
+const isVitest = Boolean(process.env.VITEST);
 
 function safeExec(command: string): string | undefined {
 	try {
@@ -67,5 +68,17 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	define: {
 		__BUILD_INFO__: JSON.stringify(getBuildInfo())
+	},
+	resolve: isVitest
+		? {
+			// In Vitest we need the client runtime so @testing-library/svelte can mount components.
+			// This makes `import 'svelte'` resolve to the browser export (index-client.js).
+			conditions: ['browser']
+		}
+		: undefined,
+	test: {
+			environment: 'jsdom',
+			include: ['tests/**/*.{test,spec}.{js,ts}', 'src/**/*.{test,spec}.{js,ts}'],
+			setupFiles: ['tests/setup.ts']
 	}
 });

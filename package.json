@@ -6,6 +6,10 @@
     "dev": "npm --prefix web run dev",
     "build": "npm --prefix web run build",
     "preview": "npm --prefix web run preview",
-    "check": "npm --prefix web run check"
+    "check": "npm --prefix web run check",
+    "test": "npm --prefix web test",
+    "test:watch": "npm --prefix web run test:watch",
+    "test:ui": "npm --prefix web run test:ui",
+    "test:coverage": "npm --prefix web run test:coverage"
   }
 }
