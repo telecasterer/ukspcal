@@ -317,6 +317,7 @@
                         {bankHolidays}
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
+                        onRecalculate={generate}
                     />
                 </div>
 

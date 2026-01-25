@@ -13,6 +13,7 @@
         bankHolidays: Record<string, string>;
         onFirstPaymentAfterSpa?: (payment: Payment | null) => void;
         onPersist?: () => void;
+        onRecalculate?: () => void;
     };
 
     let {
@@ -24,7 +25,8 @@
         error = $bindable(),
         bankHolidays,
         onFirstPaymentAfterSpa,
-        onPersist
+        onPersist,
+        onRecalculate
     }: Props = $props();
 
     const currentYear = new Date().getFullYear();
@@ -73,6 +75,7 @@
         if (Number.isFinite(n)) {
             startYear = n;
             onPersist?.();
+            onRecalculate?.();
         }
     }
 
@@ -81,6 +84,7 @@
         if (Number.isFinite(n)) {
             endYear = n;
             onPersist?.();
+            onRecalculate?.();
         }
     }
 
@@ -89,6 +93,10 @@
         if (Number.isFinite(n)) {
             cycleDays = n;
             onPersist?.();
+
+            // If we don't have a valid DoB/SPA yet, SPA-based recalculation won't run.
+            // Ensure the main schedule still regenerates.
+            if (!spa) onRecalculate?.();
         }
     }
 
@@ -194,7 +202,7 @@
     let lastFirstPaymentAfterSpaKey = $state<string | null>(null);
 
     $effect.pre(() => {
-        const key = firstPaymentAfterSpa ? `${firstPaymentAfterSpa.due}|${firstPaymentAfterSpa.paid}` : null;
+        const key = firstPaymentAfterSpa ? `${cycleDays}|${firstPaymentAfterSpa.due}|${firstPaymentAfterSpa.paid}` : null;
         if (key === lastFirstPaymentAfterSpaKey) return;
         lastFirstPaymentAfterSpaKey = key;
         onFirstPaymentAfterSpa?.(firstPaymentAfterSpa);
@@ -210,6 +218,10 @@
         niDraft = niDraft.trim().toUpperCase();
         ni = niDraft;
         onPersist?.();
+
+        // If we don't have a valid DoB/SPA yet, SPA-based recalculation won't run.
+        // Ensure the main schedule still regenerates.
+        if (!spa) onRecalculate?.();
     }
 
 </script>
@@ -300,6 +312,7 @@
                         <Select
                             id="start-year"
                             bind:value={startYearSelect}
+                            oninput={applyStartYear}
                             onchange={applyStartYear}
                             class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
@@ -314,6 +327,7 @@
                         <Select
                             id="end-year"
                             bind:value={endYearSelect}
+                            oninput={applyEndYear}
                             onchange={applyEndYear}
                             class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         >
@@ -329,6 +343,7 @@
                     <Select
                         id="cycle-days"
                         bind:value={cycleDaysSelect}
+                        oninput={applyCycleDays}
                         onchange={applyCycleDays}
                         class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
