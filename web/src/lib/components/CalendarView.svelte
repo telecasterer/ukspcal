@@ -30,13 +30,42 @@
     // Rendering the full multi-month grid is expensive; only do it for printing.
     let renderPrintAllMonths = false;
 
+    let printUnsupportedOpen = false;
+    let isFacebookInAppBrowser = false;
+    let copyLinkStatus = "";
+
+    async function copyLinkToClipboard() {
+        copyLinkStatus = "";
+        try {
+            const url = window.location.href;
+            await navigator.clipboard.writeText(url);
+            copyLinkStatus = "Link copied.";
+        } catch {
+            copyLinkStatus = "Couldn't copy automatically — please copy the address bar URL.";
+        }
+    }
+
     async function handlePrint() {
+        // Facebook/Messenger iOS in-app browsers frequently block print dialogs.
+        if (isFacebookInAppBrowser) {
+            printUnsupportedOpen = true;
+            return;
+        }
+
         renderPrintAllMonths = true;
         await tick();
-        window.print();
+        try {
+            window.print();
+        } catch {
+            printUnsupportedOpen = true;
+        }
     }
 
     onMount(() => {
+        const ua = navigator.userAgent ?? "";
+        // FBAN/FBAV are used by Facebook iOS webviews (incl. Messenger in-app browser).
+        isFacebookInAppBrowser = /FBAN|FBAV/i.test(ua);
+
         const onBeforePrint = () => {
             renderPrintAllMonths = true;
         };
@@ -400,4 +429,22 @@
             {/each}
         </div>
     {/if}
+
+    <Modal title="Printing not available" bind:open={printUnsupportedOpen} size="md">
+        <div class="space-y-3">
+            <p class="text-sm text-gray-700 dark:text-gray-200">
+                The Facebook/Messenger in-app browser often blocks the system print dialog.
+            </p>
+            <p class="text-sm text-gray-700 dark:text-gray-200">
+                For printing, open this page in Safari/Chrome ("Open in browser") and try again.
+            </p>
+            <div class="flex items-center gap-2 justify-end">
+                <Button color="light" onclick={() => copyLinkToClipboard()}>Copy link</Button>
+                <Button color="blue" onclick={() => (printUnsupportedOpen = false)}>OK</Button>
+            </div>
+            {#if copyLinkStatus}
+                <p class="text-xs text-gray-500 dark:text-gray-400">{copyLinkStatus}</p>
+            {/if}
+        </div>
+    </Modal>
 </div>

@@ -1,7 +1,14 @@
-<script>import "../app.css";
-import favicon from '$lib/assets/favicon.svg';
+<script lang="ts">
+	import "../app.css";
+	import favicon from "$lib/assets/favicon.svg";
+	import { injectAnalytics } from "@vercel/analytics/sveltekit";
+	import { onMount } from "svelte";
 
-let { children } = $props();
+	let { children } = $props();
+
+	onMount(() => {
+		injectAnalytics();
+	});
 </script>
 
 <svelte:head>
