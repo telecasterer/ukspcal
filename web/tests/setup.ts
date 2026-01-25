@@ -34,3 +34,19 @@ if (typeof globalThis !== "undefined" && typeof (globalThis as any).Intersection
 		disconnect() {}
 	};
 }
+
+// JSDOM doesn't implement Web Animations; Svelte transitions may call element.animate().
+if (typeof Element !== "undefined" && typeof (Element.prototype as any).animate !== "function") {
+	(Element.prototype as any).animate = () => {
+		const animation = {
+			onfinish: null as null | (() => void),
+			finished: Promise.resolve(),
+			cancel: () => undefined,
+			play: () => undefined,
+			pause: () => undefined,
+			addEventListener: () => undefined,
+			removeEventListener: () => undefined
+		};
+		return animation;
+	};
+}

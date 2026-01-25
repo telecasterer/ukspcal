@@ -200,6 +200,18 @@
         onFirstPaymentAfterSpa?.(firstPaymentAfterSpa);
     });
 
+    function focusDobInput() {
+        const el = document.getElementById("dob");
+        if (el instanceof HTMLElement) el.focus();
+    }
+
+    function commitNi() {
+        isEditingNi = false;
+        niDraft = niDraft.trim().toUpperCase();
+        ni = niDraft;
+        onPersist?.();
+    }
+
 </script>
 
 <div class="p-6 space-y-6">
@@ -228,11 +240,15 @@
                         onfocus={() => {
                             isEditingNi = true;
                         }}
+                        onkeydown={(e) => {
+                            if (e.key !== "Enter") return;
+                            e.preventDefault();
+                            commitNi();
+                            // Move focus so users can continue without tapping.
+                            queueMicrotask(focusDobInput);
+                        }}
                         onblur={() => {
-                            isEditingNi = false;
-                            niDraft = niDraft.trim().toUpperCase();
-                            ni = niDraft;
-                            onPersist?.();
+                            commitNi();
                         }}
                     />
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">

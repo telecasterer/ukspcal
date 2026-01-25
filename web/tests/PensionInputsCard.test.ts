@@ -39,6 +39,24 @@ describe("PensionInputsCard", () => {
         expect(input.value).toBe("12D");
     });
 
+    it("commits NI and focuses DoB on Enter", async () => {
+        const { getByLabelText } = renderCard();
+        const niInput = getByLabelText(/NI code/i) as HTMLInputElement;
+        const dobInput = document.getElementById("dob") as HTMLInputElement | null;
+        expect(dobInput).toBeTruthy();
+
+        await fireEvent.focus(niInput);
+        await fireEvent.input(niInput, { target: { value: "12d" } });
+        await fireEvent.keyDown(niInput, { key: "Enter" });
+
+        // Focus is queued via queueMicrotask.
+        await Promise.resolve();
+        await tick();
+
+        expect(niInput.value).toBe("12D");
+        expect(document.activeElement).toBe(dobInput);
+    });
+
     it("shows DOB required hint when dob is empty", () => {
         const { getByText } = renderCard();
         expect(getByText(/Required to calculate your State Pension age/i)).toBeInTheDocument();
