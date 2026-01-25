@@ -110,7 +110,7 @@ export function generatePayments(
     bankHolidays: Record<string, string> = {}
 ): PensionResult {
 
-    if (![7, 14, 28].includes(cycleDays)) {
+    if (![7, 14, 28, 91].includes(cycleDays)) {
         throw new Error(`Invalid cycleDays: ${cycleDays}`);
     }
 

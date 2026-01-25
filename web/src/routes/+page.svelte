@@ -9,6 +9,14 @@
     import "../styles/calendar.css";
 
     const PERSIST_KEY = "ukspcal.inputs.v1";
+    const ALLOWED_CYCLE_DAYS = new Set([7, 14, 28, 91]);
+    const ALLOWED_DATE_FORMATS = new Set<DateFormat>([
+        "dd/mm/yyyy",
+        "dd-mmm-yyyy",
+        "yyyy-mm-dd",
+        "mm/dd/yyyy",
+        "ddd, d mmmm yyyy"
+    ]);
 
     // State
     let ni = $state("");
@@ -25,6 +33,7 @@
     let darkMode = $state(
         typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true'
     );
+    let hasLoadedPersistedInputs = $state(false);
 
     onMount(() => {
         try {
@@ -35,6 +44,13 @@
                 dob: unknown;
                 startYear: unknown;
                 endYear: unknown;
+                cycleDays: unknown;
+                showWeekends: unknown;
+                showBankHolidays: unknown;
+                csvDateFormat: unknown;
+                icsEventName: unknown;
+                icsCategory: unknown;
+                icsColor: unknown;
             }>;
 
             const toYear = (value: unknown): number | null => {
@@ -46,6 +62,38 @@
                 return null;
             };
 
+            const toInt = (value: unknown): number | null => {
+                if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
+                if (typeof value === "string") {
+                    const n = Number.parseInt(value, 10);
+                    if (Number.isFinite(n)) return n;
+                }
+                return null;
+            };
+
+            const toBool = (value: unknown): boolean | null => {
+                if (typeof value === "boolean") return value;
+                if (typeof value === "string") {
+                    if (value.toLowerCase() === "true") return true;
+                    if (value.toLowerCase() === "false") return false;
+                }
+                return null;
+            };
+
+            const toLimitedString = (value: unknown, maxLen: number): string | null => {
+                if (typeof value !== "string") return null;
+                const s = value.trim();
+                if (!s) return "";
+                return s.length > maxLen ? s.slice(0, maxLen) : s;
+            };
+
+            const toHexColor = (value: unknown): string | null => {
+                if (typeof value !== "string") return null;
+                const s = value.trim();
+                if (/^#[0-9a-fA-F]{6}$/.test(s)) return s;
+                return null;
+            };
+
             if (typeof parsed.ni === "string") ni = parsed.ni;
             if (typeof parsed.dob === "string") dob = parsed.dob;
 
@@ -53,8 +101,29 @@
             if (sy !== null) startYear = sy;
             const ey = toYear(parsed.endYear);
             if (ey !== null) endYear = ey;
+
+            const cd = toInt(parsed.cycleDays);
+            if (cd !== null && ALLOWED_CYCLE_DAYS.has(cd)) cycleDays = cd;
+
+            const sw = toBool(parsed.showWeekends);
+            if (sw !== null) showWeekends = sw;
+            const sbh = toBool(parsed.showBankHolidays);
+            if (sbh !== null) showBankHolidays = sbh;
+
+            if (typeof parsed.csvDateFormat === "string" && ALLOWED_DATE_FORMATS.has(parsed.csvDateFormat as DateFormat)) {
+                csvDateFormat = parsed.csvDateFormat as DateFormat;
+            }
+
+            const eventName = toLimitedString(parsed.icsEventName, 120);
+            if (eventName !== null) icsEventName = eventName;
+            const category = toLimitedString(parsed.icsCategory, 60);
+            if (category !== null) icsCategory = category;
+            const color = toHexColor(parsed.icsColor);
+            if (color !== null) icsColor = color;
         } catch {
             // Ignore invalid/corrupt stored values.
+        } finally {
+            hasLoadedPersistedInputs = true;
         }
     });
 
@@ -87,12 +156,20 @@
     // Persist user inputs locally (browser only).
     $effect.pre(() => {
         if (typeof window === "undefined") return;
+        if (!hasLoadedPersistedInputs) return;
 
         const payload = {
             ni,
             dob,
             startYear: Number(startYear),
-            endYear: Number(endYear)
+            endYear: Number(endYear),
+            cycleDays: Number(cycleDays),
+            showWeekends,
+            showBankHolidays,
+            csvDateFormat,
+            icsEventName,
+            icsCategory,
+            icsColor
         };
 
         try {

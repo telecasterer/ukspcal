@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Input, Label, Select } from "flowbite-svelte";
+    import { Alert, Datepicker, Input, Label, Select } from "flowbite-svelte";
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
@@ -30,12 +30,32 @@
 
     let startYearSelect = $state("");
     let endYearSelect = $state("");
-    let cycleDaysInput = $state("");
+    let cycleDaysSelect = $state(String(cycleDays ?? 28));
+
+    let dobDate = $state<Date | undefined>(undefined);
+
+    function isoToDateLocal(iso: string): Date | null {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+        const [y, m, d] = iso.split("-").map((p) => Number.parseInt(p, 10));
+        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
+        return new Date(y, m - 1, d);
+    }
+
+    function dateToIsoLocal(date: Date): string {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }
 
     $effect.pre(() => {
         startYearSelect = String(startYear);
         endYearSelect = String(endYear);
-        cycleDaysInput = String(cycleDays);
+        cycleDaysSelect = String(cycleDays);
+    });
+
+    $effect.pre(() => {
+        dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
     });
 
     function applyStartYear() {
@@ -49,7 +69,7 @@
     }
 
     function applyCycleDays() {
-        const n = Number.parseInt(cycleDaysInput, 10);
+        const n = Number.parseInt(cycleDaysSelect, 10);
         if (Number.isFinite(n)) cycleDays = n;
     }
 
@@ -111,16 +131,17 @@
         return spaSchedule.payments[idx + 1] ?? null;
     });
 
-    function daysBetweenIsoUtc(startIso: string, endIso: string): number {
+    function daysBetweenIsoUtcInclusive(startIso: string, endIso: string): number {
         const start = new Date(startIso + "T00:00:00Z");
         const end = new Date(endIso + "T00:00:00Z");
         const ms = end.getTime() - start.getTime();
-        return Math.max(0, Math.round(ms / 86400000));
+        const days = Math.max(0, Math.floor(ms / 86400000));
+        return days + 1;
     }
 
     const comprisingText = $derived.by(() => {
         if (!spa || !firstPaymentAfterSpa) return "";
-        const days = daysBetweenIsoUtc(spa.spaDate, firstPaymentAfterSpa.due);
+        const days = daysBetweenIsoUtcInclusive(spa.spaDate, firstPaymentAfterSpa.due);
         const weeks = Math.floor(days / 7);
         const rem = days % 7;
         return `Comprising ${weeks} week(s) and ${rem} day(s) pension`;
@@ -191,12 +212,22 @@
 
                 <div>
                     <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
-                    <Input
-                        id="dob"
-                        type="date"
-                        bind:value={dob}
-                        class="w-full sm:max-w-[14rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    />
+                    <div class="w-full sm:max-w-[14rem]">
+                        <Datepicker
+                            bind:value={dobDate}
+                            defaultDate={new Date(1960, 0, 1)}
+                            required
+                            locale="en-GB"
+                            inputClass="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            inputProps={{ id: "dob", name: "dob" }}
+                            onselect={(x) => {
+                                if (x instanceof Date) dob = dateToIsoLocal(x);
+                            }}
+                            onclear={() => {
+                                dob = "";
+                            }}
+                        />
+                    </div>
                     {#if !dob}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
                     {/if}
@@ -241,17 +272,21 @@
                 </div>
 
                 <div>
-                    <Label for="cycle-days" class="block mb-1 text-sm">Cycle Days</Label>
-                    <Input
+                    <Label for="cycle-days" class="block mb-1 text-sm">Payment Frequency</Label>
+                    <Select
                         id="cycle-days"
-                        type="number"
-                        min="1"
-                        max="365"
-                        bind:value={cycleDaysInput}
+                        bind:value={cycleDaysSelect}
                         onchange={applyCycleDays}
                         class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    />
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Payment frequency in days</p>
+                    >
+                        <option value="7">7 days</option>
+                        <option value="14">14 days</option>
+                        <option value="28">28 days (default)</option>
+                        <option value="91">13 weeks</option>
+                    </Select>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Payment frequency is normally every 28 days.
+                    </p>
                 </div>
 
                 {#if error}

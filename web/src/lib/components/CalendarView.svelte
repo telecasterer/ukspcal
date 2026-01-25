@@ -173,9 +173,17 @@
                         >
                             ⬇️ Export
                         </Button>
-                        <Dropdown triggeredBy="#export-menu" bind:isOpen={exportMenuOpen} class="z-50">
-                            <DropdownItem onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem>
-                            <DropdownItem onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem>
+                        <Dropdown
+                            triggeredBy="#export-menu"
+                            bind:isOpen={exportMenuOpen}
+                            class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
+                        >
+                            <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openCsvModal}
+                                >Download spreadsheet (CSV)</DropdownItem
+                            >
+                            <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openIcsModal}
+                                >Add to calendar (ICS)</DropdownItem
+                            >
                         </Dropdown>
 
                         <Button
