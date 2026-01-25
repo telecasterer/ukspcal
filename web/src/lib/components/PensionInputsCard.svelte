@@ -37,6 +37,7 @@
     let cycleDaysSelect = $state(String(cycleDays ?? 28));
 
     let dobDate = $state<Date | undefined>(undefined);
+    let dobElementRef = $state<HTMLInputElement | undefined>(undefined);
 
     function isoToDateLocal(iso: string): Date | null {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
@@ -251,21 +252,54 @@
 
                 <div>
                     <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
-                    <div class="w-full sm:max-w-[14rem]">
-                        <Datepicker
-                            bind:value={dobDate}
-                            defaultDate={new Date(1960, 0, 1)}
-                            required
-                            locale="en-GB"
-                            inputClass="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            inputProps={{ id: "dob", name: "dob" }}
-                            onselect={(x) => {
-                                if (x instanceof Date) dob = dateToIsoLocal(x);
+                    <div class="flex items-center gap-2 w-full sm:max-w-[18rem]">
+                        <div class="flex-1 min-w-0">
+                            <Datepicker
+                                bind:value={dobDate}
+                                bind:elementRef={dobElementRef}
+                                defaultDate={new Date(1960, 0, 1)}
+                                required
+                                locale="en-GB"
+                                btnClass="hidden"
+                                inputClass="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                inputProps={{ id: "dob", name: "dob" }}
+                                onselect={(x) => {
+                                    if (x instanceof Date) dob = dateToIsoLocal(x);
+                                }}
+                                onclear={() => {
+                                    dob = "";
+                                }}
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            class="btn-icon h-10 w-10 flex items-center justify-center"
+                            aria-label="Open date picker"
+                            onpointerdown={(event) => {
+                                // Important for iOS in-app browsers: if this click bubbles to the document,
+                                // the Datepicker's click-outside handler will immediately close the popup.
+                                event.preventDefault();
+                                event.stopPropagation();
+                                dobElementRef?.focus();
                             }}
-                            onclear={() => {
-                                dob = "";
+                            onclick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                dobElementRef?.focus();
                             }}
-                        />
+                        >
+                            <svg
+                                class="h-4 w-4"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                     {#if !dob}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
