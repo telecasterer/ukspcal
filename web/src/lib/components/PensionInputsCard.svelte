@@ -12,6 +12,7 @@
         error: string;
         bankHolidays: Record<string, string>;
         onFirstPaymentAfterSpa?: (payment: Payment | null) => void;
+        onPersist?: () => void;
     };
 
     let {
@@ -22,7 +23,8 @@
         cycleDays = $bindable(),
         error = $bindable(),
         bankHolidays,
-        onFirstPaymentAfterSpa
+        onFirstPaymentAfterSpa,
+        onPersist
     }: Props = $props();
 
     const currentYear = new Date().getFullYear();
@@ -30,14 +32,12 @@
 
     let niDraft = $state("");
     let isEditingNi = $state(false);
-    let niCommitTimer = $state<ReturnType<typeof setTimeout> | null>(null);
 
     let startYearSelect = $state("");
     let endYearSelect = $state("");
     let cycleDaysSelect = $state(String(cycleDays ?? 28));
 
     let dobDate = $state<Date | undefined>(undefined);
-    let dobElementRef = $state<HTMLInputElement | undefined>(undefined);
 
     function isoToDateLocal(iso: string): Date | null {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
@@ -64,31 +64,32 @@
         if (!isEditingNi && niDraft !== ni) niDraft = ni;
     });
 
-    function scheduleNiCommit(next: string, delayMs = 200) {
-        if (niCommitTimer) clearTimeout(niCommitTimer);
-        niCommitTimer = setTimeout(() => {
-            ni = next;
-            niCommitTimer = null;
-        }, delayMs);
-    }
-
     $effect.pre(() => {
         dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
     });
 
     function applyStartYear() {
         const n = Number.parseInt(startYearSelect, 10);
-        if (Number.isFinite(n)) startYear = n;
+        if (Number.isFinite(n)) {
+            startYear = n;
+            onPersist?.();
+        }
     }
 
     function applyEndYear() {
         const n = Number.parseInt(endYearSelect, 10);
-        if (Number.isFinite(n)) endYear = n;
+        if (Number.isFinite(n)) {
+            endYear = n;
+            onPersist?.();
+        }
     }
 
     function applyCycleDays() {
         const n = Number.parseInt(cycleDaysSelect, 10);
-        if (Number.isFinite(n)) cycleDays = n;
+        if (Number.isFinite(n)) {
+            cycleDays = n;
+            onPersist?.();
+        }
     }
 
     function isValidNiCode(value: string): boolean {
@@ -229,17 +230,9 @@
                         }}
                         onblur={() => {
                             isEditingNi = false;
-                            // Commit immediately on blur.
-                            if (niCommitTimer) {
-                                clearTimeout(niCommitTimer);
-                                niCommitTimer = null;
-                            }
+                            niDraft = niDraft.trim().toUpperCase();
                             ni = niDraft;
-                        }}
-                        oninput={(e) => {
-                            const next = (e.currentTarget as HTMLInputElement).value;
-                            // Commit after a short pause to keep the UI responsive on slower devices.
-                            scheduleNiCommit(next);
+                            onPersist?.();
                         }}
                     />
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -252,54 +245,25 @@
 
                 <div>
                     <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
-                    <div class="flex items-center gap-2 w-full sm:max-w-[18rem]">
-                        <div class="flex-1 min-w-0">
-                            <Datepicker
-                                bind:value={dobDate}
-                                bind:elementRef={dobElementRef}
-                                defaultDate={new Date(1960, 0, 1)}
-                                required
-                                locale="en-GB"
-                                btnClass="hidden"
-                                inputClass="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                inputProps={{ id: "dob", name: "dob" }}
-                                onselect={(x) => {
-                                    if (x instanceof Date) dob = dateToIsoLocal(x);
-                                }}
-                                onclear={() => {
-                                    dob = "";
-                                }}
-                            />
-                        </div>
-                        <button
-                            type="button"
-                            class="btn-icon h-10 w-10 flex items-center justify-center"
-                            aria-label="Open date picker"
-                            onpointerdown={(event) => {
-                                // Important for iOS in-app browsers: if this click bubbles to the document,
-                                // the Datepicker's click-outside handler will immediately close the popup.
-                                event.preventDefault();
-                                event.stopPropagation();
-                                dobElementRef?.focus();
+                    <div class="w-full sm:max-w-[18rem]">
+                        <Datepicker
+                            bind:value={dobDate}
+                            defaultDate={new Date(1960, 0, 1)}
+                            required
+                            locale="en-GB"
+                            inputClass="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            inputProps={{ id: "dob", name: "dob" }}
+                            onselect={(x) => {
+                                if (x instanceof Date) {
+                                    dob = dateToIsoLocal(x);
+                                    onPersist?.();
+                                }
                             }}
-                            onclick={(event) => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                dobElementRef?.focus();
+                            onclear={() => {
+                                dob = "";
+                                onPersist?.();
                             }}
-                        >
-                            <svg
-                                class="h-4 w-4"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                                />
-                            </svg>
-                        </button>
+                        />
                     </div>
                     {#if !dob}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>

@@ -41,6 +41,34 @@
 
     let darkMode = $state(readDarkModeFromStorage());
     let hasLoadedPersistedInputs = $state(false);
+    let hasUserCommittedInputs = $state(false);
+
+    function persistInputs() {
+        if (typeof window === "undefined") return;
+        if (!hasLoadedPersistedInputs) return;
+
+        hasUserCommittedInputs = true;
+
+        const payload = {
+            ni,
+            dob,
+            startYear: Number(startYear),
+            endYear: Number(endYear),
+            cycleDays: Number(cycleDays),
+            showWeekends,
+            showBankHolidays,
+            csvDateFormat,
+            icsEventName,
+            icsCategory,
+            icsColor
+        };
+
+        try {
+            localStorage.setItem(PERSIST_KEY, JSON.stringify(payload));
+        } catch {
+            // Ignore storage quota / private mode errors.
+        }
+    }
 
     onMount(() => {
         try {
@@ -164,40 +192,8 @@
         }
     });
 
-    // Persist user inputs locally (browser only).
-    $effect.pre(() => {
-        if (typeof window === "undefined") return;
-        if (!hasLoadedPersistedInputs) return;
-
-        const payload = {
-            ni,
-            dob,
-            startYear: Number(startYear),
-            endYear: Number(endYear),
-            cycleDays: Number(cycleDays),
-            showWeekends,
-            showBankHolidays,
-            csvDateFormat,
-            icsEventName,
-            icsCategory,
-            icsColor
-        };
-
-        // Debounce writes to avoid blocking the UI on slower devices (e.g. iOS Safari)
-        // and to reduce synchronous localStorage churn while the user is typing.
-        const json = JSON.stringify(payload);
-        const id = window.setTimeout(() => {
-            try {
-                localStorage.setItem(PERSIST_KEY, json);
-            } catch {
-                // Ignore storage quota / private mode errors.
-            }
-        }, 200);
-
-        return () => {
-            window.clearTimeout(id);
-        };
-    });
+    // Note: persistence is intentionally triggered only on commit/blur/change
+    // from input components (see `persistInputs()`), to avoid per-keystroke writes.
 
     // Generate pension schedule
     function generate() {
@@ -256,6 +252,10 @@
 
         pendingCalendarFocusIso = payment.paid;
         generate();
+
+        // This handler runs as a consequence of user commits (NI/DOB/cycle changes).
+        // Persist the auto-adjusted year range so the UI comes back the same next time.
+        if (hasUserCommittedInputs) persistInputs();
     }
 
     function isoYear(iso: string): number {
@@ -316,6 +316,7 @@
                         bind:error
                         {bankHolidays}
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
+                        onPersist={persistInputs}
                     />
                 </div>
 
@@ -351,6 +352,7 @@
                             bind:icsEventName
                             bind:icsCategory
                             bind:icsColor
+                            onPersist={persistInputs}
                         />
                     </Card>
                 </div>

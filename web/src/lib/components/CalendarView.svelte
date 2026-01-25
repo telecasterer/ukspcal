@@ -24,6 +24,19 @@
     export let icsEventName: string;
     export let icsCategory: string;
     export let icsColor: string;
+    export let onPersist: (() => void) | undefined;
+
+    // Local drafts so we only commit/persist on blur.
+    let icsEventNameDraft = "";
+    let icsCategoryDraft = "";
+    let icsColorDraft = "";
+    let isEditingIcsEventName = false;
+    let isEditingIcsCategory = false;
+    let isEditingIcsColorText = false;
+
+    $: if (!isEditingIcsEventName) icsEventNameDraft = icsEventName;
+    $: if (!isEditingIcsCategory) icsCategoryDraft = icsCategory;
+    $: if (!isEditingIcsColorText) icsColorDraft = icsColor;
 
     let rangeLabel = "";
     $: {
@@ -201,11 +214,11 @@
             <!-- Checkboxes for filtering -->
             <div class="flex flex-wrap gap-4">
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
-                    <FlowbiteCheckbox bind:checked={showWeekends} />
+                    <FlowbiteCheckbox bind:checked={showWeekends} onchange={() => onPersist?.()} />
                     <span>Weekends</span>
                 </Label>
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
-                    <FlowbiteCheckbox bind:checked={showBankHolidays} />
+                    <FlowbiteCheckbox bind:checked={showBankHolidays} onchange={() => onPersist?.()} />
                     <span>Holidays</span>
                 </Label>
             </div>
@@ -219,6 +232,7 @@
                 <Select
                     id="csv-format"
                     bind:value={csvDateFormat}
+                    onchange={() => onPersist?.()}
                     class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
                     {#each DATE_FORMAT_OPTIONS as option}
@@ -241,7 +255,15 @@
                 <Label for="ics-name" class="block mb-2 text-sm">Event name</Label>
                 <Input
                     id="ics-name"
-                    bind:value={icsEventName}
+                    bind:value={icsEventNameDraft}
+                    onfocus={() => {
+                        isEditingIcsEventName = true;
+                    }}
+                    onblur={() => {
+                        isEditingIcsEventName = false;
+                        icsEventName = icsEventNameDraft;
+                        onPersist?.();
+                    }}
                     class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
             </div>
@@ -249,7 +271,15 @@
                 <Label for="ics-category" class="block mb-2 text-sm">Category</Label>
                 <Input
                     id="ics-category"
-                    bind:value={icsCategory}
+                    bind:value={icsCategoryDraft}
+                    onfocus={() => {
+                        isEditingIcsCategory = true;
+                    }}
+                    onblur={() => {
+                        isEditingIcsCategory = false;
+                        icsCategory = icsCategoryDraft;
+                        onPersist?.();
+                    }}
                     class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Some calendar apps ignore categories or don’t display them.</p>
@@ -261,11 +291,20 @@
                         id="ics-color"
                         type="color"
                         bind:value={icsColor}
+                        on:change={() => onPersist?.()}
                         class="h-12 w-24 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
                     />
                     <Input
                         type="text"
-                        bind:value={icsColor}
+                        bind:value={icsColorDraft}
+                        onfocus={() => {
+                            isEditingIcsColorText = true;
+                        }}
+                        onblur={() => {
+                            isEditingIcsColorText = false;
+                            icsColor = icsColorDraft;
+                            onPersist?.();
+                        }}
                         class="flex-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         placeholder="#22c55e"
                     />

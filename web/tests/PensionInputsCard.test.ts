@@ -2,6 +2,7 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/svelte";
+import { fireEvent } from "@testing-library/dom";
 import { tick } from "svelte";
 import PensionInputsCard from "../src/lib/components/PensionInputsCard.svelte";
 
@@ -24,6 +25,18 @@ describe("PensionInputsCard", () => {
     it("shows NI format hint when NI is invalid", () => {
         const { getByText } = renderCard({ props: { ni: "1" } } as any);
         expect(getByText(/Format: 2 digits then A–D/i)).toBeInTheDocument();
+    });
+
+    it("uppercases NI input on blur", async () => {
+        const { getByLabelText } = renderCard();
+        const input = getByLabelText(/NI code/i) as HTMLInputElement;
+
+        await fireEvent.focus(input);
+        await fireEvent.input(input, { target: { value: "12d" } });
+        await fireEvent.blur(input);
+        await tick();
+
+        expect(input.value).toBe("12D");
     });
 
     it("shows DOB required hint when dob is empty", () => {

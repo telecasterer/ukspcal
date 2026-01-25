@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render } from "@testing-library/svelte";
+import { fireEvent, render } from "@testing-library/svelte";
 import { tick } from "svelte";
 import Page from "../src/routes/+page.svelte";
 
@@ -14,14 +14,13 @@ function getSetItemSpy() {
 
 describe("+page persistence", () => {
     beforeEach(() => {
-        vi.useFakeTimers();
         localStorage.clear();
         vi.restoreAllMocks();
         document.documentElement.className = "";
     });
 
     afterEach(() => {
-        vi.useRealTimers();
+        // no-op
     });
 
     it("loads persisted inputs before writing back (no default overwrite)", async () => {
@@ -53,23 +52,9 @@ describe("+page persistence", () => {
         await tick();
         await tick();
 
-        // Flush debounced persistence write.
-        await vi.advanceTimersByTimeAsync(250);
-        await tick();
-
-        const callsForPersistKey = setItemSpy.mock.calls
-            .filter(([key]) => key === PERSIST_KEY)
-            .map(([, value]) => String(value));
-
-        expect(callsForPersistKey.length).toBeGreaterThan(0);
-
-        // Assert no call wrote empty/default inputs into the persist key.
-        for (const json of callsForPersistKey) {
-            const parsed = JSON.parse(json) as any;
-            expect(parsed.ni).toBe("29B");
-            expect(parsed.dob).toBe("1956-03-15");
-            expect(parsed.cycleDays).toBe(28);
-        }
+        // Persistence should not write on mount; only on blur/change commits.
+        const callsForPersistKey = setItemSpy.mock.calls.filter(([key]) => key === PERSIST_KEY);
+        expect(callsForPersistKey.length).toBe(0);
 
         // And the final value in storage should match persisted inputs.
         const finalRaw = localStorage.getItem(PERSIST_KEY);
@@ -80,7 +65,7 @@ describe("+page persistence", () => {
         expect(finalParsed.showWeekends).toBe(false);
     });
 
-    it("ignores invalid persisted values and still writes a sane payload", async () => {
+    it("ignores invalid persisted values and writes a sane payload on commit", async () => {
         localStorage.setItem(
             PERSIST_KEY,
             JSON.stringify({
@@ -94,7 +79,7 @@ describe("+page persistence", () => {
 
         const setItemSpy = getSetItemSpy();
 
-        render(Page, {
+        const { getByLabelText } = render(Page, {
             props: {
                 data: { bankHolidays: {} }
             }
@@ -103,12 +88,13 @@ describe("+page persistence", () => {
         await tick();
         await tick();
 
-        await vi.advanceTimersByTimeAsync(250);
+        // Trigger a commit (blur) to force a write of the current in-memory state.
+        const niInput = getByLabelText(/NI code/i);
+        await fireEvent.focus(niInput);
+        await fireEvent.blur(niInput);
         await tick();
 
-        const lastPersistWrite = [...setItemSpy.mock.calls]
-            .filter(([key]) => key === PERSIST_KEY)
-            .at(-1);
+        const lastPersistWrite = [...setItemSpy.mock.calls].filter(([key]) => key === PERSIST_KEY).at(-1);
 
         expect(lastPersistWrite).toBeTruthy();
         const payload = JSON.parse(String(lastPersistWrite![1])) as any;

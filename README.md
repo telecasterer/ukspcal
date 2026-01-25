@@ -8,7 +8,11 @@ A small web app that helps you:
 
 ## Privacy
 
-This app is designed to run in your browser and **does not save your NI code or date of birth**.
+This app is designed to run in your browser and **does not send your NI code or date of birth to a server**.
+
+To improve usability, it may store your inputs **locally in your browser** (via `localStorage`) so they can be restored if you reload the page. Inputs are only written on commit events (for example, when you leave a field / blur, or change a selection).
+
+To opt out, use a private browsing window or clear site data.
 
 ## NI code (what to enter)
 
