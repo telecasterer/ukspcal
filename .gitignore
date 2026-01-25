@@ -7,10 +7,9 @@ node_modules/
 .lh/
 
 # SvelteKit / Vite
-web/.svelte-kit/
-web/build/
-web/.vite/
-web/.output/
+build/
+.vite/
+.output/
 
 # Env
 .env

@@ -1,9 +1,7 @@
 
-# UK State Pension Calendar (web app)
+# UK State Pension Calendar
 
-This folder contains the SvelteKit app.
-
-For the main project overview, privacy notes, and disclaimer, see the repo root README: ../README.md
+SvelteKit web app for calculating UK State Pension age and payment dates.
 
 ## Develop
 
@@ -17,4 +15,20 @@ npm run dev
 ```sh
 npm run build
 npm run preview
+```
+
+## Test
+
+```sh
+npm run test          # Run tests
+npm run test:watch    # Run tests in watch mode
+npm run test:ui       # Run tests with UI
+npm run test:coverage # Generate coverage report
+```
+
+## Check
+
+```sh
+npm run check       # Run type checks
+npm run check:watch # Run type checks in watch mode
 ```
