@@ -1,6 +1,8 @@
 # Dependencies
 node_modules/
 
+.svelte-kit/
+
 # Local history (VS Code extensions)
 .lh/
 
