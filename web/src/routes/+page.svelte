@@ -30,9 +30,16 @@
     let icsCategory = $state("Finance");
     let icsColor = $state("#22c55e");
     let dob = $state("");
-    let darkMode = $state(
-        typeof localStorage !== 'undefined' && localStorage.getItem('darkMode') === 'true'
-    );
+    function readDarkModeFromStorage(): boolean {
+        if (typeof window === "undefined") return false;
+        try {
+            return localStorage.getItem("darkMode") === "true";
+        } catch {
+            return false;
+        }
+    }
+
+    let darkMode = $state(readDarkModeFromStorage());
     let hasLoadedPersistedInputs = $state(false);
 
     onMount(() => {
@@ -144,7 +151,11 @@
     // Dark mode effect
     $effect.pre(() => {
         if (typeof window !== 'undefined') {
-            localStorage.setItem('darkMode', darkMode.toString());
+            try {
+                localStorage.setItem('darkMode', darkMode.toString());
+            } catch {
+                // Ignore storage quota / private mode errors.
+            }
             if (darkMode) {
                 document.documentElement.classList.add('dark');
             } else {
@@ -172,11 +183,20 @@
             icsColor
         };
 
-        try {
-            localStorage.setItem(PERSIST_KEY, JSON.stringify(payload));
-        } catch {
-            // Ignore storage quota / private mode errors.
-        }
+        // Debounce writes to avoid blocking the UI on slower devices (e.g. iOS Safari)
+        // and to reduce synchronous localStorage churn while the user is typing.
+        const json = JSON.stringify(payload);
+        const id = window.setTimeout(() => {
+            try {
+                localStorage.setItem(PERSIST_KEY, json);
+            } catch {
+                // Ignore storage quota / private mode errors.
+            }
+        }, 200);
+
+        return () => {
+            window.clearTimeout(id);
+        };
     });
 
     // Generate pension schedule

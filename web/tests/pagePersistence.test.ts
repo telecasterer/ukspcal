@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/svelte";
 import { tick } from "svelte";
 import Page from "../src/routes/+page.svelte";
@@ -14,9 +14,14 @@ function getSetItemSpy() {
 
 describe("+page persistence", () => {
     beforeEach(() => {
+        vi.useFakeTimers();
         localStorage.clear();
         vi.restoreAllMocks();
         document.documentElement.className = "";
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     it("loads persisted inputs before writing back (no default overwrite)", async () => {
@@ -46,6 +51,10 @@ describe("+page persistence", () => {
 
         // Let onMount + effects run.
         await tick();
+        await tick();
+
+        // Flush debounced persistence write.
+        await vi.advanceTimersByTimeAsync(250);
         await tick();
 
         const callsForPersistKey = setItemSpy.mock.calls
@@ -92,6 +101,9 @@ describe("+page persistence", () => {
         });
 
         await tick();
+        await tick();
+
+        await vi.advanceTimersByTimeAsync(250);
         await tick();
 
         const lastPersistWrite = [...setItemSpy.mock.calls]

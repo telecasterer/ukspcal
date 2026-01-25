@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Datepicker, Input, Label, Select } from "flowbite-svelte";
+    import { Alert, Datepicker, Label, Select } from "flowbite-svelte";
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
@@ -28,6 +28,10 @@
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 50 }, (_, i) => currentYear - 25 + i);
 
+    let niDraft = $state("");
+    let isEditingNi = $state(false);
+    let niCommitTimer = $state<ReturnType<typeof setTimeout> | null>(null);
+
     let startYearSelect = $state("");
     let endYearSelect = $state("");
     let cycleDaysSelect = $state(String(cycleDays ?? 28));
@@ -53,6 +57,19 @@
         endYearSelect = String(endYear);
         cycleDaysSelect = String(cycleDays);
     });
+
+    $effect.pre(() => {
+        // Keep local draft in sync with bound value, but don't stomp while the user is typing.
+        if (!isEditingNi && niDraft !== ni) niDraft = ni;
+    });
+
+    function scheduleNiCommit(next: string, delayMs = 200) {
+        if (niCommitTimer) clearTimeout(niCommitTimer);
+        niCommitTimer = setTimeout(() => {
+            ni = next;
+            niCommitTimer = null;
+        }, delayMs);
+    }
 
     $effect.pre(() => {
         dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
@@ -196,16 +213,38 @@
             <div class="space-y-3">
                 <div>
                     <Label for="ni-code" class="block mb-1 text-sm">NI code (last 3 characters of NI number)</Label>
-                    <Input
+                    <input
                         id="ni-code"
-                        bind:value={ni}
+                        type="text"
+                        bind:value={niDraft}
+                        maxlength={3}
+                        autocomplete="off"
+                        autocapitalize="characters"
+                        spellcheck={false}
                         placeholder="e.g., 22D"
-                        class="w-full sm:max-w-[12rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        class="w-full sm:max-w-[12rem] text-sm rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        onfocus={() => {
+                            isEditingNi = true;
+                        }}
+                        onblur={() => {
+                            isEditingNi = false;
+                            // Commit immediately on blur.
+                            if (niCommitTimer) {
+                                clearTimeout(niCommitTimer);
+                                niCommitTimer = null;
+                            }
+                            ni = niDraft;
+                        }}
+                        oninput={(e) => {
+                            const next = (e.currentTarget as HTMLInputElement).value;
+                            // Commit after a short pause to keep the UI responsive on slower devices.
+                            scheduleNiCommit(next);
+                        }}
                     />
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         The last 3 characters of your National Insurance number (2 digits + letter A–D), e.g. 22D.
                     </p>
-                    {#if ni.trim() && !isValidNiCode(ni)}
+                    {#if niDraft.trim() && !isValidNiCode(niDraft)}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Format: 2 digits then A–D (e.g. 22D).</p>
                     {/if}
                 </div>
