@@ -5,8 +5,9 @@
     import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
     import type { Payment } from "$lib/pensionEngine";
     import type { PensionResult } from "$lib/pensionEngine";
-    import { printCalendar, exportCSV, generateICS } from "$lib/utils/exportHelpers";
+    import { exportCSV, generateICS } from "$lib/utils/exportHelpers";
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
+    import { onMount, tick } from "svelte";
 
     const pageSize = 6;
 
@@ -25,6 +26,55 @@
     export let icsCategory: string;
     export let icsColor: string;
     export let onPersist: (() => void) | undefined;
+
+    // Rendering the full multi-month grid is expensive; only do it for printing.
+    let renderPrintAllMonths = false;
+
+    async function handlePrint() {
+        renderPrintAllMonths = true;
+        await tick();
+        window.print();
+    }
+
+    onMount(() => {
+        const onBeforePrint = () => {
+            renderPrintAllMonths = true;
+        };
+
+        const onAfterPrint = () => {
+            renderPrintAllMonths = false;
+        };
+
+        window.addEventListener("beforeprint", onBeforePrint);
+        window.addEventListener("afterprint", onAfterPrint);
+
+        // Fallback for browsers that don't reliably fire beforeprint/afterprint.
+        const mql = window.matchMedia?.("print");
+        const onMqlChange = (e: MediaQueryListEvent) => {
+            renderPrintAllMonths = e.matches;
+        };
+        if (mql) {
+            if ("addEventListener" in mql) {
+                mql.addEventListener("change", onMqlChange);
+            } else {
+                // @ts-expect-error Legacy Safari
+                mql.addListener(onMqlChange);
+            }
+        }
+
+        return () => {
+            window.removeEventListener("beforeprint", onBeforePrint);
+            window.removeEventListener("afterprint", onAfterPrint);
+            if (mql) {
+                if ("removeEventListener" in mql) {
+                    mql.removeEventListener("change", onMqlChange);
+                } else {
+                    // @ts-expect-error Legacy Safari
+                    mql.removeListener(onMqlChange);
+                }
+            }
+        };
+    });
 
     // Local drafts so we only commit/persist on blur.
     let icsEventNameDraft = "";
@@ -200,7 +250,7 @@
                         </Dropdown>
 
                         <Button
-                            onclick={printCalendar}
+                            onclick={handlePrint}
                             color="light"
                             class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-3"
                             title="Print calendar"
@@ -336,16 +386,18 @@
     </div>
 
     <!-- Print: all months from start to end -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid print-only">
-        {#each allMonths as monthData (monthData.year * 12 + monthData.month)}
-            <CalendarMonth
-                year={monthData.year}
-                month={monthData.month}
-                {showWeekends}
-                {showBankHolidays}
-                {payments}
-                {bankHolidays}
-            />
-        {/each}
-    </div>
+    {#if renderPrintAllMonths}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid print-only">
+            {#each allMonths as monthData (monthData.year * 12 + monthData.month)}
+                <CalendarMonth
+                    year={monthData.year}
+                    month={monthData.month}
+                    {showWeekends}
+                    {showBankHolidays}
+                    {payments}
+                    {bankHolidays}
+                />
+            {/each}
+        </div>
+    {/if}
 </div>

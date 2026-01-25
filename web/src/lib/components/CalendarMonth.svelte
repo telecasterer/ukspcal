@@ -13,9 +13,15 @@
 
     let { year, month, showWeekends, showBankHolidays, payments, bankHolidays }: Props = $props();
 
+    const paymentsByPaid = $derived.by(() => {
+        const map = new Map<string, Payment>();
+        for (const p of payments) map.set(p.paid, p);
+        return map;
+    });
+
     function getPaymentForDate(day: number): Payment | null {
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        return payments.find((p) => p.paid === dateStr) || null;
+        return paymentsByPaid.get(dateStr) ?? null;
     }
 
     function getBankHolidayForDate(day: number): string | null {
