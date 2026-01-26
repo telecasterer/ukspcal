@@ -15,6 +15,14 @@ describe("calculateStatePensionAge", () => {
         expect(res.spaDate).toBe("2019-05-06");
     });
 
+    it("returns 65th birthday for DOBs before 1953-12-06", () => {
+        const res = calculateStatePensionAge("1950-01-01");
+        expect(res.source).toBe("birthday");
+        expect(res.spaAgeYears).toBe(65);
+        expect(res.spaAgeMonths).toBe(0);
+        expect(res.spaDate).toBe("2015-01-01");
+    });
+
     it("returns 66th birthday for 1954-10-06..1960-04-05", () => {
         const res = calculateStatePensionAge("1956-03-15");
         expect(res.source).toBe("birthday");

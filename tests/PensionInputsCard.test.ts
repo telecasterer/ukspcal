@@ -67,6 +67,17 @@ describe("PensionInputsCard", () => {
         expect(getByText(/Please enter a valid date/i)).toBeInTheDocument();
     });
 
+    it("shows a warning when SPA is before 6 April 2016", () => {
+        const { getByRole } = renderCard({
+            props: {
+                ni: "29B",
+                dob: "1950-01-01"
+            }
+        } as any);
+
+        expect(getByRole("alert")).toHaveTextContent(/on or after\s+6 April 2016/i);
+    });
+
     it("calls onFirstPaymentAfterSpa when it can compute the first payment", async () => {
         const onFirstPaymentAfterSpa = vi.fn();
 

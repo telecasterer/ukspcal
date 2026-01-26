@@ -113,6 +113,12 @@
         }
     });
 
+    const showPre2016SpaWarning = $derived.by(() => {
+        if (!spa) return false;
+        // ISO 8601 date strings (YYYY-MM-DD) are lexicographically sortable.
+        return spa.spaDate < "2016-04-06";
+    });
+
     const spaDateFormatted = $derived.by(() => {
         if (!spa) return "";
         const d = new Date(spa.spaDate + "T00:00:00Z");
@@ -372,6 +378,15 @@
 
             {#if spa}
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4">
+                    {#if showPre2016SpaWarning}
+                        <div
+                            role="alert"
+                            class="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100"
+                        >
+                            This calculator assumes your State Pension age (SPA) is on or after <strong>6 April 2016</strong>.
+                            Your SPA appears to be earlier than that, so results may be inaccurate.
+                        </div>
+                    {/if}
                     <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
                         You reach State Pension age (SPA) on
                     </div>

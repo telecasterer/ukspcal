@@ -124,6 +124,19 @@ export function calculateStatePensionAge(dobIso: string): SpaResult {
 
     const dob = parseIsoDate(dobIso);
 
+    // The published timetable rules in this app start at 1953-12-06.
+    // For earlier dates of birth, assume SPA is the 65th birthday.
+    // (This is a simplification; users with SPA before 6 April 2016 are warned in the UI.)
+    if (dobIso < "1953-12-06") {
+        const spa = addYearsMonthsClampedUTC(dob, 65, 0);
+        return {
+            spaDate: formatIsoDateUTC(spa),
+            spaAgeYears: 65,
+            spaAgeMonths: 0,
+            source: "birthday"
+        };
+    }
+
     for (const rule of RULES) {
         if (!inRange(dobIso, rule.start, rule.end)) continue;
 
