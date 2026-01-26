@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import { execSync } from 'child_process';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 const isVitest = Boolean(process.env.VITEST);
 
 function safeExec(command: string): string | undefined {
@@ -65,7 +66,42 @@ function getBuildInfo() {
 }
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [
+		sveltekit(),
+		SvelteKitPWA({
+			registerType: 'autoUpdate',
+			devOptions: {
+				enabled: true,
+				suppressWarnings: true
+			},
+			manifestFilename: 'manifest.webmanifest',
+			includeAssets: ['robots.txt', 'favicon.svg'],
+			manifest: {
+				name: 'UK State Pension Calendar',
+				short_name: 'UKSPCal',
+				description: 'UK State Pension payment calendar generator',
+				start_url: '/',
+				scope: '/',
+				display: 'standalone',
+				background_color: '#ffffff',
+				theme_color: '#2563eb',
+				icons: [
+					{
+						src: '/favicon.svg',
+						sizes: 'any',
+						type: 'image/svg+xml',
+						purpose: 'any'
+					},
+					{
+						src: '/favicon.svg',
+						sizes: 'any',
+						type: 'image/svg+xml',
+						purpose: 'maskable'
+					}
+				]
+			}
+		})
+	],
 	define: {
 		__BUILD_INFO__: JSON.stringify(getBuildInfo())
 	},

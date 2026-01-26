@@ -42,6 +42,7 @@
     let darkMode = $state(readDarkModeFromStorage());
     let hasLoadedPersistedInputs = $state(false);
     let hasUserCommittedInputs = $state(false);
+    let isFacebookInAppBrowser = $state(false);
 
     function persistInputs() {
         if (typeof window === "undefined") return;
@@ -71,10 +72,15 @@
     }
 
     onMount(() => {
+        const ua = navigator.userAgent ?? "";
+        // FBAN/FBAV are used by Facebook iOS webviews (incl. Messenger in-app browser).
+        const forceFbInApp = new URL(window.location.href).searchParams.get("forceFbInApp") === "1";
+        isFacebookInAppBrowser = forceFbInApp || /FBAN|FBAV/i.test(ua);
+
         try {
             const raw = localStorage.getItem(PERSIST_KEY);
-            if (!raw) return;
-            const parsed = JSON.parse(raw) as Partial<{
+            if (raw) {
+                const parsed = JSON.parse(raw) as Partial<{
                 ni: unknown;
                 dob: unknown;
                 startYear: unknown;
@@ -86,7 +92,7 @@
                 icsEventName: unknown;
                 icsCategory: unknown;
                 icsColor: unknown;
-            }>;
+                }>;
 
             const toYear = (value: unknown): number | null => {
                 if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -129,37 +135,43 @@
                 return null;
             };
 
-            if (typeof parsed.ni === "string") ni = parsed.ni;
-            if (typeof parsed.dob === "string") dob = parsed.dob;
+                if (typeof parsed.ni === "string") ni = parsed.ni;
+                if (typeof parsed.dob === "string") dob = parsed.dob;
 
-            const sy = toYear(parsed.startYear);
-            if (sy !== null) startYear = sy;
-            const ey = toYear(parsed.endYear);
-            if (ey !== null) endYear = ey;
+                const sy = toYear(parsed.startYear);
+                if (sy !== null) startYear = sy;
+                const ey = toYear(parsed.endYear);
+                if (ey !== null) endYear = ey;
 
-            const cd = toInt(parsed.cycleDays);
-            if (cd !== null && ALLOWED_CYCLE_DAYS.has(cd)) cycleDays = cd;
+                const cd = toInt(parsed.cycleDays);
+                if (cd !== null && ALLOWED_CYCLE_DAYS.has(cd)) cycleDays = cd;
 
-            const sw = toBool(parsed.showWeekends);
-            if (sw !== null) showWeekends = sw;
-            const sbh = toBool(parsed.showBankHolidays);
-            if (sbh !== null) showBankHolidays = sbh;
+                const sw = toBool(parsed.showWeekends);
+                if (sw !== null) showWeekends = sw;
+                const sbh = toBool(parsed.showBankHolidays);
+                if (sbh !== null) showBankHolidays = sbh;
 
-            if (typeof parsed.csvDateFormat === "string" && ALLOWED_DATE_FORMATS.has(parsed.csvDateFormat as DateFormat)) {
-                csvDateFormat = parsed.csvDateFormat as DateFormat;
+                if (
+                    typeof parsed.csvDateFormat === "string" &&
+                    ALLOWED_DATE_FORMATS.has(parsed.csvDateFormat as DateFormat)
+                ) {
+                    csvDateFormat = parsed.csvDateFormat as DateFormat;
+                }
+
+                const eventName = toLimitedString(parsed.icsEventName, 120);
+                if (eventName !== null) icsEventName = eventName;
+                const category = toLimitedString(parsed.icsCategory, 60);
+                if (category !== null) icsCategory = category;
+                const color = toHexColor(parsed.icsColor);
+                if (color !== null) icsColor = color;
             }
-
-            const eventName = toLimitedString(parsed.icsEventName, 120);
-            if (eventName !== null) icsEventName = eventName;
-            const category = toLimitedString(parsed.icsCategory, 60);
-            if (category !== null) icsCategory = category;
-            const color = toHexColor(parsed.icsColor);
-            if (color !== null) icsColor = color;
         } catch {
             // Ignore invalid/corrupt stored values.
         } finally {
             hasLoadedPersistedInputs = true;
         }
+
+        return;
     });
 
     let { data } = $props();
@@ -265,6 +277,16 @@
 
 <!-- Navigation -->
 <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+    {#if isFacebookInAppBrowser}
+        <div class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900">
+            <div class="max-w-7xl mx-auto px-4 py-1">
+                <p class="text-xs text-amber-800 dark:text-amber-200 leading-snug">
+                    <span class="sm:hidden">Tip: works best in Safari/Chrome/Edge (use “Open in browser”).</span>
+                    <span class="hidden sm:inline">Tip: this app works best in Safari/Chrome/Edge (use “Open in browser”).</span>
+                </p>
+            </div>
+        </div>
+    {/if}
     <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">📅 Pension Calendar</div>
         <div class="flex items-center gap-2">
