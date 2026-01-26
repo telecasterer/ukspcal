@@ -1,62 +1,34 @@
-# UK State Pension Payment Calendar
 
-A small web app that helps you:
+# UK State Pension Calendar
 
-- Check an estimated **State Pension age date** from your date of birth (optional)
-- Generate a **UK State Pension payment calendar** from an NI code
-- Export results as **CSV** or an **ICS** calendar file, or print the calendar
+SvelteKit web app for calculating UK State Pension age and payment dates.
 
-## Privacy
-
-This app is designed to run in your browser and **does not send your NI code or date of birth to a server**.
-
-To improve usability, it may store your inputs **locally in your browser** (via `localStorage`) so they can be restored if you reload the page. Inputs are only written on commit events (for example, when you leave a field / blur, or change a selection).
-
-To opt out, use a private browsing window or clear site data.
-
-## NI code (what to enter)
-
-When the app asks for an **NI code**, it means the **last 3 characters of your National Insurance number**:
-
-- Format: **2 digits + a letter A–D** (example: `22D`)
-
-## Running locally
-
-Prerequisites: Node.js 18+.
+## Develop
 
 ```sh
-cd web
 npm install
 npm run dev
 ```
 
-Then open the URL shown in the terminal.
-
-## Building
+## Build
 
 ```sh
-cd web
 npm run build
 npm run preview
 ```
 
-## Export notes (ICS)
+## Test
 
-The ICS export includes an event name, category, and (best-effort) colour.
-Calendar apps vary in what they import:
+```sh
+npm run test          # Run tests
+npm run test:watch    # Run tests in watch mode
+npm run test:ui       # Run tests with UI
+npm run test:coverage # Generate coverage report
+```
 
-- **Category/colour may be ignored** by some calendar apps.
-- In particular, **Google Calendar often ignores event colour** from ICS imports.
+## Check
 
-## About / disclaimer
-
-- This is an **unofficial** calculator.
-- It is **not affiliated with, endorsed by, or connected to** the Department for Work and Pensions (DWP), HMRC, or GOV.UK.
-- Calculations and dates are based on **publicly available information** (for example, published pension schedules, the State Pension age timetable, and bank holiday lists) and may change.
-- **No warranty** is provided. Use at your own risk and always check official sources if you need a definitive answer.
-
-## Tech stack
-
-- SvelteKit (Svelte 5)
-- Tailwind CSS
-- Flowbite-Svelte
+```sh
+npm run check       # Run type checks
+npm run check:watch # Run type checks in watch mode
+```
