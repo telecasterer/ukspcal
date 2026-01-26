@@ -107,10 +107,15 @@
                         The calendar is automatically clamped so it won’t show
                         months before your first payment after reaching SPA.
                     </p>
+                    
                     <p>
                         State Pension age can change based on government policy.
                         For the most up-to-date result, validate using GOV.UK’s
                         official checker.
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Note: the payment rules in this app assume your SPA is on or after <strong>6 April 2016</strong>.
+                        If your SPA is earlier than that, results may be inaccurate (the app will show a warning).
                     </p>
                 </div>
             </AccordionItem>
