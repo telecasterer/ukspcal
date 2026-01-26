@@ -5,7 +5,16 @@
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
+    import { detectFacebookInAppBrowser } from "$lib/utils/inAppBrowser";
+    import { loadPersistedInputs, savePersistedInputs } from "$lib/utils/inputPersistence";
     import { onMount } from "svelte";
+    import {
+        computeIsStandalone,
+        getDisplayModeStandalone,
+        getNavigatorStandalone,
+        shouldShowIosInstallHelp,
+        type BeforeInstallPromptEvent
+    } from "$lib/utils/pwaInstall";
     import "../styles/calendar.css";
 
     const PERSIST_KEY = "ukspcal.inputs.v1";
@@ -43,6 +52,11 @@
     let hasLoadedPersistedInputs = $state(false);
     let hasUserCommittedInputs = $state(false);
     let isFacebookInAppBrowser = $state(false);
+    let isStandalone = $state(false);
+    let canInstallPwa = $state(false);
+    let showInstallHelpModal = $state(false);
+    let showIosInstallHelp = $state(false);
+    let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
 
     function persistInputs() {
         if (typeof window === "undefined") return;
@@ -64,114 +78,77 @@
             icsColor
         };
 
-        try {
-            localStorage.setItem(PERSIST_KEY, JSON.stringify(payload));
-        } catch {
-            // Ignore storage quota / private mode errors.
-        }
+        // Ignore storage quota / private mode errors.
+        savePersistedInputs(localStorage, PERSIST_KEY, payload);
     }
 
     onMount(() => {
         const ua = navigator.userAgent ?? "";
-        // FBAN/FBAV are used by Facebook iOS webviews (incl. Messenger in-app browser).
-        const forceFbInApp = new URL(window.location.href).searchParams.get("forceFbInApp") === "1";
-        isFacebookInAppBrowser = forceFbInApp || /FBAN|FBAV/i.test(ua);
+        isFacebookInAppBrowser = detectFacebookInAppBrowser({ userAgent: ua, href: window.location.href });
+
+        const mq = typeof window !== "undefined" && typeof window.matchMedia === "function"
+            ? window.matchMedia("(display-mode: standalone)")
+            : null;
+
+        const computeStandalone = () => {
+            isStandalone = computeIsStandalone({
+                userAgent: ua,
+                displayModeStandalone: getDisplayModeStandalone(mq),
+                navigatorStandalone: getNavigatorStandalone(navigator)
+            });
+        };
+
+        computeStandalone();
+        const onMqChange = () => computeStandalone();
+        mq?.addEventListener?.("change", onMqChange);
+
+        const onBeforeInstallPrompt = (e: Event) => {
+            // Only relevant in browsers that support install prompts.
+            e.preventDefault?.();
+            deferredInstallPrompt = e as BeforeInstallPromptEvent;
+            canInstallPwa = true;
+        };
+
+        const onAppInstalled = () => {
+            deferredInstallPrompt = null;
+            canInstallPwa = false;
+            computeStandalone();
+        };
+
+        window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+        window.addEventListener("appinstalled", onAppInstalled);
+
+        // On iOS there's no `beforeinstallprompt`. Offer help instead.
+        showIosInstallHelp = shouldShowIosInstallHelp({ userAgent: ua, isStandalone });
 
         try {
-            const raw = localStorage.getItem(PERSIST_KEY);
-            if (raw) {
-                const parsed = JSON.parse(raw) as Partial<{
-                ni: unknown;
-                dob: unknown;
-                startYear: unknown;
-                endYear: unknown;
-                cycleDays: unknown;
-                showWeekends: unknown;
-                showBankHolidays: unknown;
-                csvDateFormat: unknown;
-                icsEventName: unknown;
-                icsCategory: unknown;
-                icsColor: unknown;
-                }>;
+            const persisted = loadPersistedInputs(localStorage, PERSIST_KEY, {
+                allowedCycleDays: ALLOWED_CYCLE_DAYS,
+                allowedDateFormats: ALLOWED_DATE_FORMATS
+            });
 
-            const toYear = (value: unknown): number | null => {
-                if (typeof value === "number" && Number.isFinite(value)) return value;
-                if (typeof value === "string") {
-                    const n = Number.parseInt(value, 10);
-                    if (Number.isFinite(n)) return n;
-                }
-                return null;
-            };
-
-            const toInt = (value: unknown): number | null => {
-                if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
-                if (typeof value === "string") {
-                    const n = Number.parseInt(value, 10);
-                    if (Number.isFinite(n)) return n;
-                }
-                return null;
-            };
-
-            const toBool = (value: unknown): boolean | null => {
-                if (typeof value === "boolean") return value;
-                if (typeof value === "string") {
-                    if (value.toLowerCase() === "true") return true;
-                    if (value.toLowerCase() === "false") return false;
-                }
-                return null;
-            };
-
-            const toLimitedString = (value: unknown, maxLen: number): string | null => {
-                if (typeof value !== "string") return null;
-                const s = value.trim();
-                if (!s) return "";
-                return s.length > maxLen ? s.slice(0, maxLen) : s;
-            };
-
-            const toHexColor = (value: unknown): string | null => {
-                if (typeof value !== "string") return null;
-                const s = value.trim();
-                if (/^#[0-9a-fA-F]{6}$/.test(s)) return s;
-                return null;
-            };
-
-                if (typeof parsed.ni === "string") ni = parsed.ni;
-                if (typeof parsed.dob === "string") dob = parsed.dob;
-
-                const sy = toYear(parsed.startYear);
-                if (sy !== null) startYear = sy;
-                const ey = toYear(parsed.endYear);
-                if (ey !== null) endYear = ey;
-
-                const cd = toInt(parsed.cycleDays);
-                if (cd !== null && ALLOWED_CYCLE_DAYS.has(cd)) cycleDays = cd;
-
-                const sw = toBool(parsed.showWeekends);
-                if (sw !== null) showWeekends = sw;
-                const sbh = toBool(parsed.showBankHolidays);
-                if (sbh !== null) showBankHolidays = sbh;
-
-                if (
-                    typeof parsed.csvDateFormat === "string" &&
-                    ALLOWED_DATE_FORMATS.has(parsed.csvDateFormat as DateFormat)
-                ) {
-                    csvDateFormat = parsed.csvDateFormat as DateFormat;
-                }
-
-                const eventName = toLimitedString(parsed.icsEventName, 120);
-                if (eventName !== null) icsEventName = eventName;
-                const category = toLimitedString(parsed.icsCategory, 60);
-                if (category !== null) icsCategory = category;
-                const color = toHexColor(parsed.icsColor);
-                if (color !== null) icsColor = color;
-            }
+            if (persisted.ni !== undefined) ni = persisted.ni;
+            if (persisted.dob !== undefined) dob = persisted.dob;
+            if (persisted.startYear !== undefined) startYear = persisted.startYear;
+            if (persisted.endYear !== undefined) endYear = persisted.endYear;
+            if (persisted.cycleDays !== undefined) cycleDays = persisted.cycleDays;
+            if (persisted.showWeekends !== undefined) showWeekends = persisted.showWeekends;
+            if (persisted.showBankHolidays !== undefined) showBankHolidays = persisted.showBankHolidays;
+            if (persisted.csvDateFormat !== undefined) csvDateFormat = persisted.csvDateFormat;
+            if (persisted.icsEventName !== undefined) icsEventName = persisted.icsEventName;
+            if (persisted.icsCategory !== undefined) icsCategory = persisted.icsCategory;
+            if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
         } catch {
             // Ignore invalid/corrupt stored values.
         } finally {
             hasLoadedPersistedInputs = true;
         }
 
-        return;
+        return () => {
+            mq?.removeEventListener?.("change", onMqChange);
+            window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+            window.removeEventListener("appinstalled", onAppInstalled);
+        };
     });
 
     let { data } = $props();
@@ -273,6 +250,28 @@
     function isoYear(iso: string): number {
         return Number(iso.slice(0, 4));
     }
+
+    async function handleInstallClick() {
+        if (isFacebookInAppBrowser) return;
+        if (isStandalone) return;
+
+        if (canInstallPwa && deferredInstallPrompt) {
+            await deferredInstallPrompt.prompt();
+            // Clear prompt either way; browser usually only allows it once.
+            try {
+                await deferredInstallPrompt.userChoice;
+            } catch {
+                // Ignore
+            }
+            deferredInstallPrompt = null;
+            canInstallPwa = false;
+            return;
+        }
+
+        if (showIosInstallHelp) {
+            showInstallHelpModal = true;
+        }
+    }
 </script>
 
 <!-- Navigation -->
@@ -296,6 +295,16 @@
             >
                 Help
             </a>
+			{#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
+				<button
+					onclick={handleInstallClick}
+					class="px-3 py-2 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+					title="Install app"
+					aria-label="Install app"
+				>
+					Install
+				</button>
+			{/if}
             <button
                 onclick={() => {
                     darkMode = !darkMode;
@@ -312,6 +321,37 @@
         </div>
     </div>
 </nav>
+
+{#if showInstallHelpModal}
+    <div class="fixed inset-0 z-[60]">
+        <button
+            type="button"
+            class="absolute inset-0 bg-black/40"
+            onclick={() => (showInstallHelpModal = false)}
+            aria-label="Close install help"
+        ></button>
+        <div class="relative mx-auto mt-24 w-[92%] max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
+            <div class="p-4">
+                <div class="flex items-start justify-between gap-3">
+                    <h2 class="text-base font-semibold text-gray-900 dark:text-white">Install on iPhone/iPad</h2>
+                    <button
+                        onclick={() => (showInstallHelpModal = false)}
+                        class="px-2 py-1 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        aria-label="Close"
+                    >
+                        ✕
+                    </button>
+                </div>
+                <p class="mt-2 text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+                    In Safari, tap the Share button, then choose <span class="font-semibold">Add to Home Screen</span>.
+                </p>
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    If you’re viewing inside an in-app browser, use “Open in browser” first.
+                </p>
+            </div>
+        </div>
+    </div>
+{/if}
 
 <!-- Main Content -->
 <div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100">
