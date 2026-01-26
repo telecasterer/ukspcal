@@ -3,6 +3,8 @@
 
 SvelteKit web app for calculating UK State Pension age and payment dates.
 
+[![unit test status](https://github.com/telecasterer/ukspcal/actions/workflows/test.yml/badge.svg)](https://github.com/telecasterer/ukspcal/actions/workflows/test.yml)
+
 ## Develop
 
 ```sh
