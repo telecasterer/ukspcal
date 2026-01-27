@@ -1,19 +1,26 @@
 <script lang="ts">
-    import { generatePayments, type Payment, type PensionResult } from "$lib/pensionEngine";
+    import {
+        generatePayments,
+        type Payment,
+        type PensionResult,
+    } from "$lib/pensionEngine";
     import { Card } from "flowbite-svelte";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
     import { detectFacebookInAppBrowser } from "$lib/utils/inAppBrowser";
-    import { loadPersistedInputs, savePersistedInputs } from "$lib/utils/inputPersistence";
+    import {
+        loadPersistedInputs,
+        savePersistedInputs,
+    } from "$lib/utils/inputPersistence";
     import { onMount } from "svelte";
     import {
         computeIsStandalone,
         getDisplayModeStandalone,
         getNavigatorStandalone,
         shouldShowIosInstallHelp,
-        type BeforeInstallPromptEvent
+        type BeforeInstallPromptEvent,
     } from "$lib/utils/pwaInstall";
     import "../styles/calendar.css";
 
@@ -24,7 +31,7 @@
         "dd-mmm-yyyy",
         "yyyy-mm-dd",
         "mm/dd/yyyy",
-        "ddd, d mmmm yyyy"
+        "ddd, d mmmm yyyy",
     ]);
 
     // State
@@ -75,7 +82,7 @@
             csvDateFormat,
             icsEventName,
             icsCategory,
-            icsColor
+            icsColor,
         };
 
         // Ignore storage quota / private mode errors.
@@ -84,17 +91,22 @@
 
     onMount(() => {
         const ua = navigator.userAgent ?? "";
-        isFacebookInAppBrowser = detectFacebookInAppBrowser({ userAgent: ua, href: window.location.href });
+        isFacebookInAppBrowser = detectFacebookInAppBrowser({
+            userAgent: ua,
+            href: window.location.href,
+        });
 
-        const mq = typeof window !== "undefined" && typeof window.matchMedia === "function"
-            ? window.matchMedia("(display-mode: standalone)")
-            : null;
+        const mq =
+            typeof window !== "undefined" &&
+            typeof window.matchMedia === "function"
+                ? window.matchMedia("(display-mode: standalone)")
+                : null;
 
         const computeStandalone = () => {
             isStandalone = computeIsStandalone({
                 userAgent: ua,
                 displayModeStandalone: getDisplayModeStandalone(mq),
-                navigatorStandalone: getNavigatorStandalone(navigator)
+                navigatorStandalone: getNavigatorStandalone(navigator),
             });
         };
 
@@ -119,24 +131,34 @@
         window.addEventListener("appinstalled", onAppInstalled);
 
         // On iOS there's no `beforeinstallprompt`. Offer help instead.
-        showIosInstallHelp = shouldShowIosInstallHelp({ userAgent: ua, isStandalone });
+        showIosInstallHelp = shouldShowIosInstallHelp({
+            userAgent: ua,
+            isStandalone,
+        });
 
         try {
             const persisted = loadPersistedInputs(localStorage, PERSIST_KEY, {
                 allowedCycleDays: ALLOWED_CYCLE_DAYS,
-                allowedDateFormats: ALLOWED_DATE_FORMATS
+                allowedDateFormats: ALLOWED_DATE_FORMATS,
             });
 
             if (persisted.ni !== undefined) ni = persisted.ni;
             if (persisted.dob !== undefined) dob = persisted.dob;
-            if (persisted.startYear !== undefined) startYear = persisted.startYear;
+            if (persisted.startYear !== undefined)
+                startYear = persisted.startYear;
             if (persisted.endYear !== undefined) endYear = persisted.endYear;
-            if (persisted.cycleDays !== undefined) cycleDays = persisted.cycleDays;
-            if (persisted.showWeekends !== undefined) showWeekends = persisted.showWeekends;
-            if (persisted.showBankHolidays !== undefined) showBankHolidays = persisted.showBankHolidays;
-            if (persisted.csvDateFormat !== undefined) csvDateFormat = persisted.csvDateFormat;
-            if (persisted.icsEventName !== undefined) icsEventName = persisted.icsEventName;
-            if (persisted.icsCategory !== undefined) icsCategory = persisted.icsCategory;
+            if (persisted.cycleDays !== undefined)
+                cycleDays = persisted.cycleDays;
+            if (persisted.showWeekends !== undefined)
+                showWeekends = persisted.showWeekends;
+            if (persisted.showBankHolidays !== undefined)
+                showBankHolidays = persisted.showBankHolidays;
+            if (persisted.csvDateFormat !== undefined)
+                csvDateFormat = persisted.csvDateFormat;
+            if (persisted.icsEventName !== undefined)
+                icsEventName = persisted.icsEventName;
+            if (persisted.icsCategory !== undefined)
+                icsCategory = persisted.icsCategory;
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
         } catch {
             // Ignore invalid/corrupt stored values.
@@ -146,7 +168,10 @@
 
         return () => {
             mq?.removeEventListener?.("change", onMqChange);
-            window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+            window.removeEventListener(
+                "beforeinstallprompt",
+                onBeforeInstallPrompt,
+            );
             window.removeEventListener("appinstalled", onAppInstalled);
         };
     });
@@ -167,16 +192,16 @@
 
     // Dark mode effect
     $effect.pre(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
             try {
-                localStorage.setItem('darkMode', darkMode.toString());
+                localStorage.setItem("darkMode", darkMode.toString());
             } catch {
                 // Ignore storage quota / private mode errors.
             }
             if (darkMode) {
-                document.documentElement.classList.add('dark');
+                document.documentElement.classList.add("dark");
             } else {
-                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.remove("dark");
             }
         }
     });
@@ -189,7 +214,8 @@
         error = "";
 
         if (!/^\d{2}[A-D]$/i.test(ni)) {
-            error = "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
+            error =
+                "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
             result = null;
             return;
         }
@@ -200,7 +226,13 @@
             return;
         }
 
-        const generated = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
+        const generated = generatePayments(
+            ni,
+            startYear,
+            endYear,
+            cycleDays,
+            bankHolidays,
+        );
 
         const minIso = minPaymentIso;
 
@@ -275,19 +307,33 @@
 </script>
 
 <!-- Navigation -->
-<nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+<nav
+    class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
+>
     {#if isFacebookInAppBrowser}
-        <div class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900">
+        <div
+            class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900"
+        >
             <div class="max-w-7xl mx-auto px-4 py-1">
-                <p class="text-xs text-amber-800 dark:text-amber-200 leading-snug">
-                    <span class="sm:hidden">Tip: works best in Safari/Chrome/Edge (use “Open in browser”).</span>
-                    <span class="hidden sm:inline">Tip: this app works best in Safari/Chrome/Edge (use “Open in browser”).</span>
+                <p
+                    class="text-xs text-amber-800 dark:text-amber-200 leading-snug"
+                >
+                    <span class="sm:hidden"
+                        >Tip: works best in Safari/Chrome/Edge (use “Open in
+                        browser”).</span
+                    >
+                    <span class="hidden sm:inline"
+                        >Tip: this app works best in Safari/Chrome/Edge (use
+                        “Open in browser”).</span
+                    >
                 </p>
             </div>
         </div>
     {/if}
     <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">📅 Pension Calendar</div>
+        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            📅 Pension Calendar
+        </div>
         <div class="flex items-center gap-2">
             <a
                 href="/help"
@@ -295,16 +341,16 @@
             >
                 Help
             </a>
-			{#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
-				<button
-					onclick={handleInstallClick}
-					class="px-3 py-2 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
-					title="Install app"
-					aria-label="Install app"
-				>
-					Install
-				</button>
-			{/if}
+            {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
+                <button
+                    onclick={handleInstallClick}
+                    class="px-3 py-2 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+                    title="Install app"
+                    aria-label="Install app"
+                >
+                    Install
+                </button>
+            {/if}
             <button
                 onclick={() => {
                     darkMode = !darkMode;
@@ -330,10 +376,16 @@
             onclick={() => (showInstallHelpModal = false)}
             aria-label="Close install help"
         ></button>
-        <div class="relative mx-auto mt-24 w-[92%] max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl">
+        <div
+            class="relative mx-auto mt-24 w-[92%] max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl"
+        >
             <div class="p-4">
                 <div class="flex items-start justify-between gap-3">
-                    <h2 class="text-base font-semibold text-gray-900 dark:text-white">Install on iPhone/iPad</h2>
+                    <h2
+                        class="text-base font-semibold text-gray-900 dark:text-white"
+                    >
+                        Install on iPhone/iPad
+                    </h2>
                     <button
                         onclick={() => (showInstallHelpModal = false)}
                         class="px-2 py-1 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -342,11 +394,16 @@
                         ✕
                     </button>
                 </div>
-                <p class="mt-2 text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
-                    In Safari, tap the Share button, then choose <span class="font-semibold">Add to Home Screen</span>.
+                <p
+                    class="mt-2 text-sm text-gray-700 dark:text-gray-200 leading-relaxed"
+                >
+                    In Safari, tap the Share button, then choose <span
+                        class="font-semibold">Add to Home Screen</span
+                    >.
                 </p>
                 <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                    If you’re viewing inside an in-app browser, use “Open in browser” first.
+                    If you’re viewing inside an in-app browser, use “Open in
+                    browser” first.
                 </p>
             </div>
         </div>
@@ -354,20 +411,31 @@
 {/if}
 
 <!-- Main Content -->
-<div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100">
+<div
+    class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
+>
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">UK State Pension Payment Calendar</h1>
-            <p class="text-lg text-gray-600 dark:text-gray-300">Calculate your pension payment schedule based on your NI code</p>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                UK State Pension Payment Calendar
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+                Calculate your pension payment schedule based on your NI code
+            </p>
             <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Privacy: this app saves no personal data to a server.
+                Privacy: this app does not save or share any personal data to a server.
             </p>
         </div>
 
         <!-- Inputs + Summary (single cohesive card) -->
-        <Card size="xl" class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 mb-8 input-section">
-            <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
+        <Card
+            size="xl"
+            class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 mb-8 input-section"
+        >
+            <div
+                class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700"
+            >
                 <div class="lg:col-span-8">
                     <PensionInputsCard
                         bind:ni
@@ -389,8 +457,16 @@
                     {:else}
                         <div class="p-6">
                             <div class="mb-2">
-                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h2>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Generate a schedule to see a summary here.</p>
+                                <h2
+                                    class="text-lg font-semibold text-gray-900 dark:text-white"
+                                >
+                                    Schedule summary
+                                </h2>
+                                <p
+                                    class="text-xs text-gray-500 dark:text-gray-400"
+                                >
+                                    Generate a schedule to see a summary here.
+                                </p>
                             </div>
                         </div>
                     {/if}
@@ -402,7 +478,10 @@
         {#if result}
             {#key `${result.ni}:${startYear}:${endYear}:${cycleDays}`}
                 <div class="w-full space-y-6 max-w-7xl mx-auto">
-                    <Card size="xl" class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 calendar-print-wrapper">
+                    <Card
+                        size="xl"
+                        class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 calendar-print-wrapper"
+                    >
                         <CalendarView
                             {result}
                             payments={result.payments}

@@ -33,3 +33,5 @@ README.html
 
 .vercel
 .env*.local
+
+src/routes/help/help.html

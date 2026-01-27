@@ -18,7 +18,8 @@
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
     "flowbite": "^4.0.1",
-    "flowbite-svelte": "^1.31.0"
+    "flowbite-svelte": "^1.31.0",
+    "markdown-it": "^14.1.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.9.0",
@@ -29,6 +30,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/svelte": "^5.3.1",
     "@testing-library/user-event": "^14.6.1",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.0.10",
     "@vite-pwa/sveltekit": "^1.1.0",
     "@vitest/coverage-v8": "^4.0.18",
