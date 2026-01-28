@@ -115,3 +115,4 @@ This is an unofficial calculator. **It is not affiliated with, endorsed by, or c
 Dates and calculations are based on publicly available information (for example, published pension schedules, the State Pension age timetable, UK and bank holiday lists) and may change.
 
 No warranty is provided. Use at your own risk and always check official sources if you need a definitive answer.
+

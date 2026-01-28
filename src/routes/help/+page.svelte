@@ -109,6 +109,9 @@
             bodyTokens.push(token);
         }
     }
+    // Ensure the last section is included
+    pushSubSection();
+    pushSection();
 </script>
 
 <div class="flex flex-col min-h-screen">
@@ -116,19 +119,6 @@
         class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="max-w-4xl mx-auto space-y-6">
-            <details
-                class="mb-4 bg-gray-100 dark:bg-gray-900/40 p-2 rounded text-xs"
-            >
-                <summary class="cursor-pointer"
-                    >Show help section parse debug</summary
-                >
-                <pre
-                    class="overflow-x-auto whitespace-pre-wrap">{JSON.stringify(
-                        sections,
-                        null,
-                        2,
-                    )}</pre>
-            </details>
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h1
