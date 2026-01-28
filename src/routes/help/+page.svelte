@@ -1,4 +1,6 @@
 <script lang="ts">
+    import MarkdownIt from "markdown-it";
+    import helpMarkdown from "./help.md?raw";
     import {
         Accordion,
         AccordionItem,
@@ -6,66 +8,76 @@
         Footer,
         FooterIcon,
     } from "flowbite-svelte";
-    import MarkdownIt from "markdown-it";
     import { buildInfo } from "$lib/buildInfo";
+    // import { formatIsoForDisplay } from '$lib/utils/dateFormatting'; // Not found, so comment out
 
-    import helpMarkdown from "./help.md?raw";
-
+    // Types for help sections
+    type HelpSubSection = { title: string; html: string };
     type HelpSection = {
         title: string;
-        html: string;
+        html?: string;
+        subSections?: HelpSubSection[];
     };
 
-    function formatIsoForDisplay(iso: string): string {
-        if (!iso || iso === "unknown") return "unknown";
-        const d = new Date(iso);
-        return Number.isNaN(d.getTime())
-            ? iso
-            : d.toLocaleString("en-GB", { hour12: false });
-    }
-
-    const md = new MarkdownIt({
-        html: false,
-        linkify: true,
-        typographer: true,
-    });
-
-    // Ensure safe-ish external links and consistent behaviour.
-    const defaultLinkOpen = md.renderer.rules.link_open;
-    md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
-        const token = tokens[idx];
-        token.attrSet("target", "_blank");
-        token.attrSet("rel", "noopener noreferrer");
-        return defaultLinkOpen
-            ? defaultLinkOpen(tokens, idx, options, env, self)
-            : self.renderToken(tokens, idx, options);
-    };
-
+    const md = new MarkdownIt({ html: true, linkify: true });
     const sections: HelpSection[] = [];
     const allTokens = md.parse(helpMarkdown, {});
 
-    let currentTitle: string | null = null;
-    let currentBodyTokens: typeof allTokens = [];
+    let currentSection: HelpSection | null = null;
+    let currentSubSection: HelpSubSection | null = null;
+    let bodyTokens: typeof allTokens = [];
+    let subBodyTokens: typeof allTokens = [];
 
-    const flush = () => {
-        if (!currentTitle) return;
-        const html = md.renderer.render(currentBodyTokens, md.options, {});
-        sections.push({ title: currentTitle, html });
-        currentBodyTokens = [];
-    };
+    function pushSubSection() {
+        if (currentSubSection) {
+            currentSubSection.html = md.renderer.render(
+                subBodyTokens,
+                md.options,
+                {},
+            );
+            if (!currentSection!.subSections) currentSection!.subSections = [];
+            currentSection!.subSections.push(currentSubSection);
+            currentSubSection = null;
+            subBodyTokens = [];
+        }
+    }
+
+    function pushSection() {
+        if (!currentSection) return;
+        // If there were any H3s, render content before first H3 as html
+        if (currentSection.subSections && bodyTokens.length > 0) {
+            currentSection.html = md.renderer.render(
+                bodyTokens,
+                md.options,
+                {},
+            );
+        } else if (!currentSection.subSections) {
+            // No H3s: render all content as html
+            currentSection.html = md.renderer.render(
+                bodyTokens,
+                md.options,
+                {},
+            );
+        }
+        sections.push(currentSection);
+        currentSection = null;
+        currentSubSection = null;
+        bodyTokens = [];
+        subBodyTokens = [];
+    }
 
     for (let i = 0; i < allTokens.length; i++) {
         const token = allTokens[i];
-
         if (token.type === "heading_open" && token.tag === "h2") {
-            flush();
-
+            pushSubSection();
+            pushSection();
             const inline = allTokens[i + 1];
-            currentTitle =
-                inline && inline.type === "inline"
-                    ? inline.content.trim()
-                    : "Section";
-
+            currentSection = {
+                title:
+                    inline && inline.type === "inline"
+                        ? inline.content.trim()
+                        : "Section",
+            };
             // Skip over the h2 (heading_open, inline, heading_close).
             while (
                 i < allTokens.length &&
@@ -73,15 +85,30 @@
             )
                 i++;
             continue;
+        } else if (token.type === "heading_open" && token.tag === "h3") {
+            pushSubSection();
+            const inline = allTokens[i + 1];
+            currentSubSection = {
+                title:
+                    inline && inline.type === "inline"
+                        ? inline.content.trim()
+                        : "Subsection",
+                html: "",
+            };
+            // Skip over the h3 (heading_open, inline, heading_close).
+            while (
+                i < allTokens.length &&
+                allTokens[i].type !== "heading_close"
+            )
+                i++;
+            continue;
         }
-
-        // Ignore any tokens before the first ## section.
-        if (!currentTitle) continue;
-
-        currentBodyTokens.push(token);
+        if (currentSubSection) {
+            subBodyTokens.push(token);
+        } else if (currentSection) {
+            bodyTokens.push(token);
+        }
     }
-
-    flush();
 </script>
 
 <div class="flex flex-col min-h-screen">
@@ -89,6 +116,19 @@
         class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="max-w-4xl mx-auto space-y-6">
+            <details
+                class="mb-4 bg-gray-100 dark:bg-gray-900/40 p-2 rounded text-xs"
+            >
+                <summary class="cursor-pointer"
+                    >Show help section parse debug</summary
+                >
+                <pre
+                    class="overflow-x-auto whitespace-pre-wrap">{JSON.stringify(
+                        sections,
+                        null,
+                        2,
+                    )}</pre>
+            </details>
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h1
@@ -111,21 +151,54 @@
                 <Accordion class="w-full">
                     {#each sections as section, i}
                         <AccordionItem
-                            contentClass="bg-white dark:bg-gray-900/30"
+                            classes={{
+                                content: "bg-white dark:bg-gray-900/30",
+                            }}
                         >
                             {#snippet header()}
                                 <span>{section.title}</span>
                             {/snippet}
-                            <div
-                                class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
-                            >
-                                {@html section.html}
-                            </div>
+                            {#if section.subSections}
+                                {#if section.html !== undefined}
+                                    <div
+                                        class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none mb-2"
+                                    >
+                                        {@html section.html}
+                                    </div>
+                                {/if}
+                                <Accordion class="w-full ml-2">
+                                    {#each section.subSections as sub, j}
+                                        <AccordionItem
+                                            classes={{
+                                                content:
+                                                    "bg-white dark:bg-gray-900/30",
+                                            }}
+                                        >
+                                            {#snippet header()}
+                                                <span>{sub.title}</span>
+                                            {/snippet}
+                                            <div
+                                                class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
+                                            >
+                                                {@html sub.html}
+                                            </div>
+                                        </AccordionItem>
+                                    {/each}
+                                </Accordion>
+                            {:else if section.html !== undefined}
+                                <div
+                                    class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
+                                >
+                                    {@html section.html}
+                                </div>
+                            {/if}
                         </AccordionItem>
                     {/each}
 
                     <!-- Add app details as last accordion item -->
-                    <AccordionItem contentClass="bg-white dark:bg-gray-900/30">
+                    <AccordionItem
+                        classes={{ content: "bg-white dark:bg-gray-900/30" }}
+                    >
                         {#snippet header()}
                             <span>About this app</span>
                         {/snippet}
@@ -158,9 +231,7 @@
                                         Commit date:
                                     </dt>
                                     <dd class="ml-2">
-                                        {formatIsoForDisplay(
-                                            buildInfo.commitDate,
-                                        )}
+                                        {buildInfo.commitDate}
                                     </dd>
                                 </div>
                                 <div
@@ -170,9 +241,7 @@
                                         Build date:
                                     </dt>
                                     <dd class="ml-2">
-                                        {formatIsoForDisplay(
-                                            buildInfo.buildTime,
-                                        )}
+                                        {buildInfo.buildTime}
                                     </dd>
                                 </div>
                             </dl>
@@ -231,7 +300,6 @@
 <style>
     /* Make hash navigation land nicely below the header area */
     .prose :global(h3) {
-        scroll-margin-top: 5rem;
+        scroll-margin-top: 4rem;
     }
-
 </style>

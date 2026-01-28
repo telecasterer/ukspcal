@@ -20,23 +20,22 @@
   - **On mobile:** In Chrome (Android) or Safari (iOS), you can also use your browser’s menu (three dots or share icon) and select “Add to Home Screen.”
   - **On desktop:** In the browser, look for the install icon in the address bar or open the browser menu and select “Install app.”
 - **Advantages of installing as a app:**
-  - The app launches like a regular app from your home screen or desktop.
+  - The app launches like a native application from your home screen or desktop.
   - You get a cleaner, fullscreen experience without browser address bars or tabs.
   - Updates are automatic.
 - **Offline use:** After installing as an app, most features will work even without an internet connection.
 
 ## Inputs (NI code and date of birth) 
-### NI code
 
-When the app asks for an **NI code**, it means the last 3 characters of your National Insurance number: 2 digits + a letter A–D (for example, **22D**).
+- **NI code**
+    - When the app asks for an **NI code**, it means the last 3 characters of your National Insurance number: 2 digits + a letter A–D (for example, **22D**).
 
-### Date of birth & State Pension age (SPA)
+- **Date of birth**
+    - Your date of birth is required to calculate the date you reach UK State Pension age (SPA) and is also used to set the calendar start month.
 
-- Your date of birth is required to calculate the date you reach UK State Pension age (SPA) and is also used to set the calendar start month.
+The calendar is automatically clamped so it won’t show months before your first payment after reaching SPA.
 
-- The calendar is automatically clamped so it won’t show months before your first payment after reaching SPA.
-
-- State Pension age can change based on government policy. The app uses the current policy, to the best of our knowledge, at the time of writing.
+State Pension age can change based on government policy. The app uses the current policy, to the best of our knowledge, at the time of writing.
 
 **Note**: the payment rules in this app assume your SPA is on or after **6 April 2016**. If your SPA is earlier than that, results may be inaccurate (the app will show a warning).
 
@@ -46,33 +45,32 @@ By default, UK State Pension is paid every 28 days (4 weeks). Alternative paymen
 
 Note: official GOV\.UK guidance documents the 28-day cycle; other cycles may depend on individual arrangements.
 
----
-### *The boring details*:
+### The boring details
 
-- 28-day (4-week, the default) rule
+#### 28-day (4-week, the default) rule
 
-  - For the **28-day** cycle, the app uses the NI suffix letter (A–D) as a **phase** (which week within the repeating 4-week pattern), and the last two digits to choose your normal weekday.
-  - **Payment weekday** comes from the last two digits: 00–19 Mon, 20–39 Tue, 40–59 Wed, 60–79 Thu, 80–99 Fri.
-  - **Phase (A–D)** shifts the schedule in one-week steps (A, B, C, D).
-  - Payments then repeat every 28 days. Bank-holiday payments are paid early (previous working day).
+- For the **28-day** cycle, the app uses the NI suffix letter (A–D) as a **phase** (which week within the repeating 4-week pattern), and the last two digits to choose your normal weekday.
+- **Payment weekday** comes from the last two digits: 00–19 Mon, 20–39 Tue, 40–59 Wed, 60–79 Thu, 80–99 Fri.
+- **Phase (A–D)** shifts the schedule in one-week steps (A, B, C, D).
+- Payments then repeat every 28 days. Bank-holiday payments are paid early (previous working day).
 
-- Weekly (7-day) rule
-  - For the **7-day** cycle, the app uses the same NI-based weekday/phase mapping as the 28-day schedule, but repeats every 7 days.
-  - Your normal weekday comes from the last two digits (00–19 Mon … 80–99 Fri).
-  - Payments repeat every 7 days, with bank-holiday payments paid early.
+#### Weekly (7-day) rule
+- For the **7-day** cycle, the app uses the same NI-based weekday/phase mapping as the 28-day schedule, but repeats every 7 days.
+- Your normal weekday comes from the last two digits (00–19 Mon … 80–99 Fri).
+- Payments repeat every 7 days, with bank-holiday payments paid early.
 
 - Fortnightly (14-day) rule
-  - For the **14-day** cycle, payments run on a two-week rhythm (Week 1 / Week 2). The app applies these confirmed rules (anchored to January 2026)
-  - **Week 1 vs Week 2** is based on the parity (odd/even) of the final digit of the NI number: even → Week 1, odd → Week 2.
-  - **Payment weekday** comes from the last two digits: 00–19 Mon, 20–39 Tue, 40–59 Wed, 60–79 Thu, 80–99 Fri.
-  - Payments then repeat every 14 days. Bank-holiday payments are paid early (previous working day).
-  - The NI suffix letter (A–D) is **ignored** for this cycle.
+- For the **14-day** cycle, payments run on a two-week rhythm (Week 1 / Week 2). The app applies these confirmed rules (anchored to January 2026)
+- **Week 1 vs Week 2** is based on the parity (odd/even) of the final digit of the NI number: even → Week 1, odd → Week 2.
+- **Payment weekday** comes from the last two digits: 00–19 Mon, 20–39 Tue, 40–59 Wed, 60–79 Thu, 80–99 Fri.
+- Payments then repeat every 14 days. Bank-holiday payments are paid early (previous working day).
+- The NI suffix letter (A–D) is **ignored** for this cycle.
 
-- 13-week (91-day) rule
-  - For the **91-day** cycle (used for some overseas payments), the app again uses the same NI-based weekday/phase mapping, but repeats every 91 days.
-  - Your normal weekday comes from the last two digits (00–19 Mon … 80–99 Fri).
-  - The suffix letter (A–D) affects the phase.
-  - Payments repeat every 91 days, with bank-holiday payments paid early.*
+#### 13-week (91-day) rule
+- For the **91-day** cycle (used for some overseas payments), the app again uses the same NI-based weekday/phase mapping, but repeats every 91 days.
+- Your normal weekday comes from the last two digits (00–19 Mon … 80–99 Fri).
+- The suffix letter (A–D) affects the phase.
+- Payments repeat every 91 days, with bank-holiday payments paid early.*
 
 
 ## Date range
@@ -90,6 +88,9 @@ Where available, the reason for an early payment is shown in the calendar and in
 This tool calculates your UK State Pension payment dates based on a repeating payment cycle and UK bank holidays.
 
 - The calendar updates automatically once the inputs are valid.
+- Pension payment days are shown in with a coloured background. 
+- If a payment is paid early due to a bank holiday a different colour is user (see the calender legend for colour details)
+- Weekends and bank holidays are also shown on the calender
 - The earliest month shown is the first payment after you reach state pension age (SPA).
 - Payment dates are calculated based on a repeating payment cycle (normally every 28 days).
 - Your normal payment weekday is determined from your NI code (the last 3 characters of your National Insurance number).

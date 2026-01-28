@@ -35,3 +35,4 @@ README.html
 .env*.local
 
 src/routes/help/help.html
+coverage/

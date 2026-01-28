@@ -401,18 +401,20 @@
     </Modal>
 
     <!-- Multiple Month Calendar Grid (screen) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid screen-only">
-        {#each visibleMonths as monthData (monthData.year * 12 + monthData.month)}
-            <CalendarMonth
-                year={monthData.year}
-                month={monthData.month}
-                {showWeekends}
-                {showBankHolidays}
-                {payments}
-                {bankHolidays}
-            />
-        {/each}
-    </div>
+    {#if !renderPrintAllMonths}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid screen-only">
+            {#each visibleMonths as monthData (monthData.year * 12 + monthData.month)}
+                <CalendarMonth
+                    year={monthData.year}
+                    month={monthData.month}
+                    {showWeekends}
+                    {showBankHolidays}
+                    {payments}
+                    {bankHolidays}
+                />
+            {/each}
+        </div>
+    {/if}
 
     <!-- Print: all months from start to end -->
     {#if renderPrintAllMonths}
