@@ -91,7 +91,7 @@ This app uses the official UK government source for bank holiday dates (https://
 **Latest UK bank holiday in data:** {{LATEST_BANK_HOLIDAY}}
 
 
-## Troubleshooting & FAQ
+## Troubleshooting
 
 ### In-app browser issues
 
@@ -99,7 +99,7 @@ This app uses the official UK government source for bank holiday dates (https://
 
 ### Printing problems
 
-- Use your browser’s print function. For best results, install the app or open in a standard browser.
+- For best results, install the app or open in a standard browser.
 
 ### Export not working
 

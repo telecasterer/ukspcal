@@ -351,9 +351,10 @@
             </div>
         </div>
     {/if}
-    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            📅 Pension Calendar
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-2">
+            <img src="/favicon.svg" alt="App icon" class="w-7 h-7" style="margin-bottom:2px;" />
+            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pension Calendar</span>
         </div>
         <div class="flex items-center gap-2">
             <a
@@ -366,7 +367,7 @@
                 <!-- Install button for PWA or iOS help -->
                 <button
                     onclick={handleInstallClick}
-                    class="px-3 py-2 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+                    class="px-3 py-1 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
                     title="Install app"
                     aria-label="Install app"
                 >
@@ -378,7 +379,7 @@
                 onclick={() => {
                     darkMode = !darkMode;
                 }}
-                class="text-2xl p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                class="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 title="Toggle dark mode"
             >
                 {#if darkMode}
