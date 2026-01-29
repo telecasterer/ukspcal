@@ -315,14 +315,6 @@
                     {#if !dob}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
                     {/if}
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        <a
-                            href="/help#state-pension-age"
-                            class="underline underline-offset-2 text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
-                        >
-                            More help
-                        </a>
-                    </p>
                 </div>
 
                 <!-- Start/End year selects -->
