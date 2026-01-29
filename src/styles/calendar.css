@@ -1,9 +1,12 @@
-/* Calendar CSS intentionally kept print-focused.
-   Screen styling is handled by Tailwind layers in src/app.css. */
+/*
+    Calendar Print Styles (styles/calendar.css)
+    ------------------------------------------
+    - Print-focused CSS for calendar output
+    - All screen styles are handled by Tailwind/app.css
+    - This file hides UI and ensures clean, readable print output
+*/
 
-/* Print styles - hide UI elements, show calendar only */
-
-/* Print-only helpers */
+/* Hide print-only helpers by default */
 .print-only {
     display: none;
 }
@@ -12,20 +15,17 @@
     :root {
         color-scheme: light;
     }
-
     * {
         box-shadow: none !important;
         page-break-inside: avoid !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-
     html, body {
         background: #fff !important;
         color: #000 !important;
     }
-
-    /* Wipe dark backgrounds from wrappers */
+    /* Remove dark backgrounds and enforce light theme for print */
     html.dark,
     body.dark,
     .dark,
@@ -39,7 +39,7 @@
         color: #0f172a !important;
         border-color: #e5e7eb !important;
     }
-
+    /* Hide navigation and UI controls for print */
     nav,
     .input-section,
     .calendar-controls,
@@ -47,11 +47,10 @@
     .mb-8 {
         display: none !important;
     }
-
     body {
         margin: 10mm;
     }
-
+    /* Calendar month print block */
     .calendar-month {
         background: #fff !important;
         color: #0f172a !important;

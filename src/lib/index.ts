@@ -1,1 +1,3 @@
-// place files you want to import through the `$lib` alias in this folder.
+
+// This file exists to support the $lib alias in SvelteKit.
+// You can export shared modules here if needed.

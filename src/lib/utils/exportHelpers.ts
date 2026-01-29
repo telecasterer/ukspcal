@@ -1,10 +1,15 @@
 /**
  * Export utilities for CSV, ICS, and print functionality
+ *
+ * Includes helpers for formatting dates, escaping text, and folding lines for iCalendar export.
  */
 
 import type { PensionResult, Payment } from "$lib/pensionEngine";
 import { formatDateForCSV, type DateFormat } from "./dateFormatting";
 
+/**
+ * Options for export (CSV, ICS, etc.)
+ */
 export interface ExportOptions {
     csvDateFormat: DateFormat;
     icsEventName: string;
@@ -12,10 +17,16 @@ export interface ExportOptions {
     icsColor: string;
 }
 
+/**
+ * Format a Date as YYYYMMDD (for ICS export).
+ */
 function formatDateYYYYMMDD(date: Date): string {
     return date.toISOString().slice(0, 10).replace(/-/g, "");
 }
 
+/**
+ * Format a Date as UTC timestamp (YYYYMMDDTHHMMSSZ) for ICS export.
+ */
 function formatUtcTimestampYYYYMMDDTHHMMSSZ(date: Date): string {
     return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 }
@@ -37,10 +48,8 @@ function escapeICSText(text: string): string {
 function foldICSLine(line: string, maxOctets = 75): string[] {
     const encoder = new TextEncoder();
     const out: string[] = [];
-
     let remaining = line;
     let prefix = "";
-
     while (remaining.length > 0) {
         let cut = remaining.length;
         while (cut > 0) {
@@ -50,12 +59,10 @@ function foldICSLine(line: string, maxOctets = 75): string[] {
             }
             cut -= 1;
         }
-
         // Fallback: ensure progress even if a single codepoint exceeds the limit.
         if (cut === 0) {
             cut = 1;
         }
-
         out.push(prefix + remaining.slice(0, cut));
         remaining = remaining.slice(cut);
         prefix = " ";

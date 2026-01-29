@@ -1,60 +1,78 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
 
-/* Custom component styles restored from previous setup */
+/*
+	Main Application CSS
+	--------------------
+	- Imports Tailwind and config
+	- Defines custom component classes using @apply for maintainability
+	- All screen styles (including dark mode) are here; print styles are in styles/calendar.css
+*/
+
 @layer components {
+	/*
+		Button Styles
+		-------------
+		.btn: Base button
+		.btn-primary: Primary action
+		.btn-secondary: Secondary action
+		.btn-icon: Icon/utility button
+	*/
 	.btn {
 		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
 	}
-
 	.btn-primary {
 		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
 		@apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white;
 	}
-
 	.btn-secondary {
 		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
 		@apply bg-slate-500 hover:bg-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white;
 	}
-
 	.btn-icon {
 		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
 		@apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 p-2;
 	}
 
+	/*
+		Card Styles
+		-----------
+		.card: Generic card
+		.card-blue, .card-emerald, .card-violet, .card-orange: Themed cards
+	*/
 	.card {
 		@apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-6;
 	}
-
 	.card-blue {
 		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
 		@apply bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700;
 	}
-
 	.card-emerald {
 		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
 		@apply bg-emerald-50 dark:bg-emerald-900 border-emerald-200 dark:border-emerald-700;
 	}
-
 	.card-violet {
 		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
 		@apply bg-violet-50 dark:bg-violet-900 border-violet-200 dark:border-violet-700;
 	}
-
 	.card-orange {
 		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
 		@apply bg-orange-50 dark:bg-orange-900 border-orange-200 dark:border-orange-700;
 	}
 
+	/*
+		Summary Text Styles
+		------------------
+		.text-summary-label: Label for summary fields
+		.text-summary-value-blue, .text-summary-value-emerald: Themed summary values
+	*/
 	.text-summary-label {
 		@apply text-xs font-semibold uppercase tracking-wide mb-1 text-gray-600 dark:text-gray-300;
 	}
-
 	.text-summary-value-blue {
 		@apply text-xl sm:text-2xl font-bold;
 		@apply text-blue-700 dark:text-blue-100;
 	}
-
 	.text-summary-value-emerald {
 		@apply text-xl sm:text-2xl font-bold;
 		@apply text-emerald-700 dark:text-emerald-100;

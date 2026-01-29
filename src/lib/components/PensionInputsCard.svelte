@@ -1,8 +1,10 @@
 <script lang="ts">
+    // PensionInputsCard.svelte: Handles user input for pension calculation
     import { Alert, Datepicker, Label, Select } from "flowbite-svelte";
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
+    // --- Props ---
     type Props = {
         ni: string;
         dob: string;
@@ -15,7 +17,6 @@
         onPersist?: () => void;
         onRecalculate?: () => void;
     };
-
     let {
         ni = $bindable(),
         dob = $bindable(),
@@ -29,18 +30,21 @@
         onRecalculate
     }: Props = $props();
 
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 50 }, (_, i) => currentYear - 25 + i);
+    // --- Year options for selects ---
+    const currentYear: number = new Date().getFullYear();
+    const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 25 + i);
 
-    let niDraft = $state("");
-    let isEditingNi = $state(false);
+    // --- Local state for controlled inputs ---
+    let niDraft: string = $state("");
+    let isEditingNi: boolean = $state(false);
+    let startYearSelect: string = $state("");
+    let endYearSelect: string = $state("");
+    let cycleDaysSelect: string = $state(String(cycleDays ?? 28));
+    let dobDate: Date | undefined = $state<Date | undefined>(undefined);
 
-    let startYearSelect = $state("");
-    let endYearSelect = $state("");
-    let cycleDaysSelect = $state(String(cycleDays ?? 28));
-
-    let dobDate = $state<Date | undefined>(undefined);
-
+    /**
+     * Convert ISO date string (YYYY-MM-DD) to local Date
+     */
     function isoToDateLocal(iso: string): Date | null {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
         const [y, m, d] = iso.split("-").map((p) => Number.parseInt(p, 10));
@@ -48,6 +52,9 @@
         return new Date(y, m - 1, d);
     }
 
+    /**
+     * Convert local Date to ISO date string (YYYY-MM-DD)
+     */
     function dateToIsoLocal(date: Date): string {
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -55,21 +62,23 @@
         return `${y}-${m}-${d}`;
     }
 
+    // --- Effects to sync local state with props ---
     $effect.pre(() => {
         startYearSelect = String(startYear);
         endYearSelect = String(endYear);
         cycleDaysSelect = String(cycleDays);
     });
-
     $effect.pre(() => {
         // Keep local draft in sync with bound value, but don't stomp while the user is typing.
         if (!isEditingNi && niDraft !== ni) niDraft = ni;
     });
-
     $effect.pre(() => {
         dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
     });
 
+    /**
+     * Apply selected start year to bound value
+     */
     function applyStartYear() {
         const n = Number.parseInt(startYearSelect, 10);
         if (Number.isFinite(n)) {
@@ -232,7 +241,9 @@
 
 </script>
 
+
 <div class="p-6 space-y-6">
+    <!-- --- Input Section Header --- -->
     <div>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inputs</h2>
         <p class="text-sm text-gray-600 dark:text-gray-300">
@@ -243,6 +254,7 @@
     <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
         <div class="space-y-5">
             <div class="space-y-3">
+                <!-- NI code input -->
                 <div>
                     <Label for="ni-code" class="block mb-1 text-sm">NI code (last 3 characters of NI number)</Label>
                     <input
@@ -277,6 +289,7 @@
                     {/if}
                 </div>
 
+                <!-- Date of birth input -->
                 <div>
                     <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
                     <div class="w-full sm:max-w-[18rem]">
@@ -312,6 +325,7 @@
                     </p>
                 </div>
 
+                <!-- Start/End year selects -->
                 <div class="grid grid-cols-1 sm:inline-grid sm:grid-cols-2 gap-3">
                     <div>
                         <Label for="start-year" class="block mb-1 text-sm">Start Year</Label>
@@ -344,6 +358,7 @@
                     </div>
                 </div>
 
+                <!-- Payment frequency select -->
                 <div>
                     <Label for="cycle-days" class="block mb-1 text-sm">Payment Frequency</Label>
                     <Select
@@ -363,6 +378,7 @@
                     </p>
                 </div>
 
+                <!-- Error alert -->
                 {#if error}
                     <Alert color="red" class="dark:bg-red-900 dark:text-red-200 text-sm">
                         <span class="font-medium">Error:</span> {error}
@@ -372,12 +388,14 @@
         </div>
 
         <div class="space-y-3">
+            <!-- SPA calculation and payment preview -->
             {#if dob && !spa}
                 <Alert color="red" class="text-sm">Please enter a valid date.</Alert>
             {/if}
 
             {#if spa}
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4">
+                    <!-- Pre-2016 SPA warning -->
                     {#if showPre2016SpaWarning}
                         <div
                             role="alert"
@@ -397,6 +415,7 @@
                         </div>
                     {/if}
 
+                    <!-- First payment after SPA -->
                     {#if firstPaymentAfterSpa}
                         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                             <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
@@ -413,6 +432,7 @@
                                 </div>
                             {/if}
 
+                            <!-- Second payment after SPA -->
                             {#if secondPaymentAfterSpa}
                                 <div class="mt-3">
                                     <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">

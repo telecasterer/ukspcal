@@ -1,4 +1,6 @@
 <script lang="ts">
+
+
     import {
         generatePayments,
         type Payment,
@@ -34,18 +36,20 @@
         "ddd, d mmmm yyyy",
     ]);
 
-    // State
-    let ni = $state("");
-    let startYear = $state(new Date().getFullYear());
-    let endYear = $state(new Date().getFullYear() + 1);
-    let cycleDays = $state<number>(28);
-    let showWeekends = $state(true);
-    let showBankHolidays = $state(true);
-    let csvDateFormat = $state<DateFormat>("dd/mm/yyyy");
-    let icsEventName = $state("UK State Pension Payment");
-    let icsCategory = $state("Finance");
-    let icsColor = $state("#22c55e");
-    let dob = $state("");
+    // --- State variables (using Svelte runes mode) ---
+    let ni: string = $state("");
+    let startYear: number = $state(new Date().getFullYear());
+    let endYear: number = $state(new Date().getFullYear() + 1);
+    let cycleDays: number = $state<number>(28);
+    let showWeekends: boolean = $state(true);
+    let showBankHolidays: boolean = $state(true);
+    let csvDateFormat: DateFormat = $state<DateFormat>("dd/mm/yyyy");
+    let icsEventName: string = $state("UK State Pension Payment");
+    let icsCategory: string = $state("Finance");
+    let icsColor: string = $state("#22c55e");
+    let dob: string = $state("");
+
+    // --- Utility: Read dark mode preference from localStorage ---
     function readDarkModeFromStorage(): boolean {
         if (typeof window === "undefined") return false;
         try {
@@ -55,22 +59,21 @@
         }
     }
 
-    let darkMode = $state(readDarkModeFromStorage());
-    let hasLoadedPersistedInputs = $state(false);
-    let hasUserCommittedInputs = $state(false);
-    let isFacebookInAppBrowser = $state(false);
-    let isStandalone = $state(false);
-    let canInstallPwa = $state(false);
-    let showInstallHelpModal = $state(false);
-    let showIosInstallHelp = $state(false);
+    let darkMode: boolean = $state(readDarkModeFromStorage());
+    let hasLoadedPersistedInputs: boolean = $state(false);
+    let hasUserCommittedInputs: boolean = $state(false);
+    let isFacebookInAppBrowser: boolean = $state(false);
+    let isStandalone: boolean = $state(false);
+    let canInstallPwa: boolean = $state(false);
+    let showInstallHelpModal: boolean = $state(false);
+    let showIosInstallHelp: boolean = $state(false);
     let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
 
-    function persistInputs() {
+    // --- Input persistence logic ---
+    function persistInputs(): void {
         if (typeof window === "undefined") return;
         if (!hasLoadedPersistedInputs) return;
-
         hasUserCommittedInputs = true;
-
         const payload = {
             ni,
             dob,
@@ -84,7 +87,6 @@
             icsCategory,
             icsColor,
         };
-
         // Ignore storage quota / private mode errors.
         savePersistedInputs(localStorage, PERSIST_KEY, payload);
     }
@@ -146,7 +148,11 @@
             if (persisted.dob !== undefined) dob = persisted.dob;
             if (persisted.startYear !== undefined)
                 startYear = persisted.startYear;
-            if (persisted.endYear !== undefined) endYear = persisted.endYear;
+            if (persisted.endYear !== undefined) {
+                endYear = Number(persisted.endYear);
+            } else if (typeof lastBankHolidayYear === 'number' && Number(endYear) < lastBankHolidayYear) {
+                endYear = lastBankHolidayYear;
+            }
             if (persisted.cycleDays !== undefined)
                 cycleDays = persisted.cycleDays;
             if (persisted.showWeekends !== undefined)
@@ -162,6 +168,9 @@
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
         } catch {
             // Ignore invalid/corrupt stored values.
+            if (typeof lastBankHolidayYear === 'number' && Number(endYear) < lastBankHolidayYear) {
+                endYear = lastBankHolidayYear;
+            }
         } finally {
             hasLoadedPersistedInputs = true;
         }
@@ -177,7 +186,18 @@
     });
 
     let { data } = $props();
-    const { bankHolidays } = $derived(data);
+    let bankHolidays = $derived(data.bankHolidays);
+
+    // Reactively compute the latest bank holiday date and year (runes mode)
+    let lastBankHolidayIso = $derived.by(() => {
+        const hols = bankHolidays;
+        const keys = Object.keys(hols);
+        return keys.sort().pop();
+    });
+    let lastBankHolidayYear = $derived.by(() => {
+        const iso = lastBankHolidayIso;
+        return iso ? Number(iso.slice(0, 4)) : null;
+    });
 
     let result: PensionResult | null = $state(null);
     let error = $state("");
@@ -306,11 +326,12 @@
     }
 </script>
 
-<!-- Navigation -->
+<!-- --- Navigation Bar --- -->
 <nav
     class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
 >
     {#if isFacebookInAppBrowser}
+        <!-- Info banner for in-app browser users -->
         <div
             class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900"
         >
@@ -342,6 +363,7 @@
                 Help
             </a>
             {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
+                <!-- Install button for PWA or iOS help -->
                 <button
                     onclick={handleInstallClick}
                     class="px-3 py-2 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
@@ -351,6 +373,7 @@
                     Install
                 </button>
             {/if}
+            <!-- Dark mode toggle button -->
             <button
                 onclick={() => {
                     darkMode = !darkMode;
@@ -369,6 +392,7 @@
 </nav>
 
 {#if showInstallHelpModal}
+    <!-- Modal for iOS install help -->
     <div class="fixed inset-0 z-[60]">
         <button
             type="button"
@@ -410,12 +434,12 @@
     </div>
 {/if}
 
-<!-- Main Content -->
+<!-- --- Main Content --- -->
 <div
     class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
 >
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
+        <!-- Header section -->
         <div class="mb-8">
             <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 UK State Pension Payment Calendar
@@ -436,6 +460,7 @@
             <div
                 class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700"
             >
+                <!-- Pension input form -->
                 <div class="lg:col-span-8">
                     <PensionInputsCard
                         bind:ni
@@ -451,6 +476,7 @@
                     />
                 </div>
 
+                <!-- Summary card -->
                 <div class="lg:col-span-4">
                     {#if result}
                         <SummaryCard {result} embedded />
@@ -474,7 +500,7 @@
             </div>
         </Card>
 
-        <!-- Results Section -->
+        <!-- Results Section: Calendar and payments -->
         {#if result}
             {#key `${result.ni}:${startYear}:${endYear}:${cycleDays}`}
                 <div class="w-full space-y-6 max-w-7xl mx-auto">

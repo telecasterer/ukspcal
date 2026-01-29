@@ -1,4 +1,5 @@
 <script lang="ts">
+    // CalendarView.svelte: Renders the multi-month calendar, export, and print controls
     import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
     import { monthName, previousMonth, nextMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
@@ -9,10 +10,11 @@
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { onMount, tick } from "svelte";
 
-    const pageSize = 6;
+    // --- Constants ---
+    const pageSize = 6; // Number of months to show at once
+    const navStep = 3;  // How many months to jump on navigation
 
-    const navStep = 3;
-
+    // --- Props ---
     export let result: PensionResult;
     export let payments: Payment[];
     export let bankHolidays: Record<string, string>;
@@ -20,20 +22,21 @@
     export let showBankHolidays: boolean;
     export let currentMonth: number;
     export let currentYear: number;
-
     export let csvDateFormat: DateFormat;
     export let icsEventName: string;
     export let icsCategory: string;
     export let icsColor: string;
     export let onPersist: (() => void) | undefined;
 
-    // Rendering the full multi-month grid is expensive; only do it for printing.
-    let renderPrintAllMonths = false;
-
+    // --- State ---
+    let renderPrintAllMonths = false; // Only render all months for print
     let printUnsupportedOpen = false;
     let isFacebookInAppBrowser = false;
     let copyLinkStatus = "";
 
+    /**
+     * Copy the current page URL to clipboard
+     */
     async function copyLinkToClipboard() {
         copyLinkStatus = "";
         try {
@@ -45,13 +48,15 @@
         }
     }
 
+    /**
+     * Print the calendar (rendering all months if needed)
+     */
     async function handlePrint() {
         // Facebook/Messenger iOS in-app browsers frequently block print dialogs.
         if (isFacebookInAppBrowser) {
             printUnsupportedOpen = true;
             return;
         }
-
         renderPrintAllMonths = true;
         await tick();
         try {
@@ -61,6 +66,7 @@
         }
     }
 
+    // --- Print event listeners and Facebook in-app browser detection ---
     onMount(() => {
         const ua = navigator.userAgent ?? "";
         // FBAN/FBAV are used by Facebook iOS webviews (incl. Messenger in-app browser).
@@ -69,7 +75,6 @@
         const onBeforePrint = () => {
             renderPrintAllMonths = true;
         };
-
         const onAfterPrint = () => {
             renderPrintAllMonths = false;
         };
@@ -224,8 +229,9 @@
     }
 </script>
 
+
 <div class="space-y-6">
-    <!-- Month Navigation and Controls -->
+    <!-- --- Month Navigation and Controls --- -->
     <div class="w-full calendar-controls">
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div class="mb-4">
@@ -237,8 +243,9 @@
                         </div>
                     </div>
 
-                    <!-- Mobile: 2x2 grid, Desktop: single row with ordering -->
+                    <!-- Controls: Previous/Next, Export, Print -->
                     <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2">
+                        <!-- Previous month button -->
                         <Button
                             onclick={handlePreviousMonth}
                             color="light"
@@ -248,6 +255,7 @@
                             ← Previous
                         </Button>
 
+                        <!-- Next month button -->
                         <Button
                             onclick={handleNextMonth}
                             color="light"
@@ -257,6 +265,7 @@
                             Next →
                         </Button>
 
+                        <!-- Export menu -->
                         <Button
                             id="export-menu"
                             color="light"
@@ -278,6 +287,7 @@
                             >
                         </Dropdown>
 
+                        <!-- Print button -->
                         <Button
                             onclick={handlePrint}
                             color="light"
@@ -290,7 +300,7 @@
                 </div>
             </div>
 
-            <!-- Checkboxes for filtering -->
+            <!-- Checkboxes for filtering weekends and holidays -->
             <div class="flex flex-wrap gap-4">
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
                     <FlowbiteCheckbox bind:checked={showWeekends} onchange={() => onPersist?.()} />
@@ -304,6 +314,7 @@
         </div>
     </div>
 
+    <!-- --- CSV Export Modal --- -->
     <Modal title="Download spreadsheet (CSV)" bind:open={csvModalOpen} size="md">
         <div class="space-y-4">
             <div>
@@ -328,6 +339,7 @@
         </div>
     </Modal>
 
+    <!-- --- ICS Export Modal --- -->
     <Modal title="Add to calendar (ICS)" bind:open={icsModalOpen} size="md">
         <div class="space-y-4">
             <div>
@@ -400,7 +412,8 @@
         </div>
     </Modal>
 
-    <!-- Multiple Month Calendar Grid (screen) -->
+
+    <!-- --- Multiple Month Calendar Grid (screen) --- -->
     {#if !renderPrintAllMonths}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid screen-only">
             {#each visibleMonths as monthData (monthData.year * 12 + monthData.month)}
@@ -416,7 +429,7 @@
         </div>
     {/if}
 
-    <!-- Print: all months from start to end -->
+    <!-- --- Print: all months from start to end --- -->
     {#if renderPrintAllMonths}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid print-only">
             {#each allMonths as monthData (monthData.year * 12 + monthData.month)}
@@ -432,6 +445,7 @@
         </div>
     {/if}
 
+    <!-- --- Print Unsupported Modal (Facebook in-app browser) --- -->
     <Modal title="Printing not available" bind:open={printUnsupportedOpen} size="md">
         <div class="space-y-3">
             <p class="text-sm text-gray-700 dark:text-gray-200">

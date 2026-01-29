@@ -1,4 +1,22 @@
 <script lang="ts">
+    /**
+     * --- HELP PAGE LOGIC ---
+     *
+     * 1. Extract the latest bank holiday from layout data.
+     * 2. Replace the placeholder in the markdown with the formatted date.
+     * 3. Parse the markdown into structured sections and subsections for rendering.
+     */
+
+    // --- 1. Extract latest bank holiday from layout data ---
+    export let data: { bankHolidays: Record<string, string> };
+    const bankHolidays = data?.bankHolidays || {};
+    // Get the latest bank holiday ISO date and name (or fallback)
+    const lastBankHolidayIso = Object.keys(bankHolidays).sort().pop();
+    const latestBankHolidayString = lastBankHolidayIso
+        ? `${new Date(lastBankHolidayIso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} (${bankHolidays[lastBankHolidayIso]})`
+        : "not available";
+
+    // --- 2. Import markdown and replace placeholder ---
     import MarkdownIt from "markdown-it";
     import helpMarkdown from "./help.md?raw";
     import {
@@ -8,9 +26,12 @@
         Footer,
         FooterIcon,
     } from "flowbite-svelte";
-    import { buildInfo } from "$lib/buildInfo";
-    // import { formatIsoForDisplay } from '$lib/utils/dateFormatting'; // Not found, so comment out
+    import { buildInfo, buildInfoFormatted } from "$lib/buildInfo";
 
+    // Replace the placeholder in the markdown with the latest bank holiday string
+    const helpMarkdownReplaced = helpMarkdown.replace("{{LATEST_BANK_HOLIDAY}}", latestBankHolidayString);
+
+    // --- 3. Parse markdown into structured sections ---
     // Types for help sections
     type HelpSubSection = { title: string; html: string };
     type HelpSection = {
@@ -19,45 +40,43 @@
         subSections?: HelpSubSection[];
     };
 
+    // Initialize markdown parser
     const md = new MarkdownIt({ html: true, linkify: true });
     const sections: HelpSection[] = [];
-    const allTokens = md.parse(helpMarkdown, {});
+    const allTokens = md.parse(helpMarkdownReplaced, {});
 
+    // State for section parsing
     let currentSection: HelpSection | null = null;
     let currentSubSection: HelpSubSection | null = null;
-    let bodyTokens: typeof allTokens = [];
-    let subBodyTokens: typeof allTokens = [];
+    let bodyTokens: any[] = [];
+    let subBodyTokens: any[] = [];
 
-    function pushSubSection() {
-        if (currentSubSection) {
-            currentSubSection.html = md.renderer.render(
-                subBodyTokens,
-                md.options,
-                {},
-            );
-            if (!currentSection!.subSections) currentSection!.subSections = [];
-            currentSection!.subSections.push(currentSubSection);
+    /**
+     * Push the current H3 subsection (if any) into the current H2 section.
+     * Renders the collected tokens as HTML.
+     */
+    function pushSubSection(): void {
+        if (currentSubSection && currentSection) {
+            currentSubSection.html = md.renderer.render(subBodyTokens, md.options, {});
+            if (!currentSection.subSections) currentSection.subSections = [];
+            currentSection.subSections.push(currentSubSection);
             currentSubSection = null;
             subBodyTokens = [];
         }
     }
 
-    function pushSection() {
+    /**
+     * Push the current H2 section (if any) into the sections array.
+     * Renders the collected tokens as HTML.
+     */
+    function pushSection(): void {
         if (!currentSection) return;
         // If there were any H3s, render content before first H3 as html
         if (currentSection.subSections && bodyTokens.length > 0) {
-            currentSection.html = md.renderer.render(
-                bodyTokens,
-                md.options,
-                {},
-            );
+            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
         } else if (!currentSection.subSections) {
             // No H3s: render all content as html
-            currentSection.html = md.renderer.render(
-                bodyTokens,
-                md.options,
-                {},
-            );
+            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
         }
         sections.push(currentSection);
         currentSection = null;
@@ -66,6 +85,8 @@
         subBodyTokens = [];
     }
 
+    // --- Main token parsing loop ---
+    // Walk through all tokens and build up sections and subsections
     for (let i = 0; i < allTokens.length; i++) {
         const token = allTokens[i];
         if (token.type === "heading_open" && token.tag === "h2") {
@@ -73,34 +94,20 @@
             pushSection();
             const inline = allTokens[i + 1];
             currentSection = {
-                title:
-                    inline && inline.type === "inline"
-                        ? inline.content.trim()
-                        : "Section",
+                title: inline && inline.type === "inline" ? inline.content.trim() : "Section",
             };
             // Skip over the h2 (heading_open, inline, heading_close).
-            while (
-                i < allTokens.length &&
-                allTokens[i].type !== "heading_close"
-            )
-                i++;
+            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
             continue;
         } else if (token.type === "heading_open" && token.tag === "h3") {
             pushSubSection();
             const inline = allTokens[i + 1];
             currentSubSection = {
-                title:
-                    inline && inline.type === "inline"
-                        ? inline.content.trim()
-                        : "Subsection",
+                title: inline && inline.type === "inline" ? inline.content.trim() : "Subsection",
                 html: "",
             };
             // Skip over the h3 (heading_open, inline, heading_close).
-            while (
-                i < allTokens.length &&
-                allTokens[i].type !== "heading_close"
-            )
-                i++;
+            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
             continue;
         }
         if (currentSubSection) {
@@ -119,6 +126,7 @@
         class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="max-w-4xl mx-auto space-y-6">
+            
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h1
@@ -135,6 +143,7 @@
                 <Button color="light" href="/" class="shrink-0">← Back</Button>
             </div>
 
+            <!-- Main help content rendered as accordion sections -->
             <div
                 class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
             >
@@ -156,6 +165,7 @@
                                         {@html section.html}
                                     </div>
                                 {/if}
+                                <!-- Render H3 subsections as nested accordions -->
                                 <Accordion class="w-full ml-2">
                                     {#each section.subSections as sub, j}
                                         <AccordionItem
@@ -185,12 +195,12 @@
                         </AccordionItem>
                     {/each}
 
-                    <!-- Add app details as last accordion item -->
+                    <!-- App details as last accordion item -->
                     <AccordionItem
                         classes={{ content: "bg-white dark:bg-gray-900/30" }}
                     >
                         {#snippet header()}
-                            <span>About this app</span>
+                            <span>Version information</span>
                         {/snippet}
                         <div
                             class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
@@ -199,7 +209,7 @@
                                 <div
                                     class="flex flex-row flex-nowrap items-baseline"
                                 >
-                                    <dt class="font-semibold min-w-[5.5rem]">
+                                    <dt class="font-semibold min-w-[6.5rem]">
                                         Developer:
                                     </dt>
                                     <dd class="ml-2">Paul Robins</dd>
@@ -207,7 +217,7 @@
                                 <div
                                     class="flex flex-row flex-nowrap items-baseline"
                                 >
-                                    <dt class="font-semibold min-w-[5.5rem]">
+                                    <dt class="font-semibold min-w-[6.5rem]">
                                         Version:
                                     </dt>
                                     <dd class="ml-2">
@@ -217,21 +227,21 @@
                                 <div
                                     class="flex flex-row flex-nowrap items-baseline"
                                 >
-                                    <dt class="font-semibold min-w-[5.5rem]">
+                                    <dt class="font-semibold min-w-[6.5rem]">
                                         Commit date:
                                     </dt>
                                     <dd class="ml-2">
-                                        {buildInfo.commitDate}
+                                        {buildInfoFormatted.commitDate}
                                     </dd>
                                 </div>
                                 <div
                                     class="flex flex-row flex-nowrap items-baseline"
                                 >
-                                    <dt class="font-semibold min-w-[5.5rem]">
+                                    <dt class="font-semibold min-w-[6.5rem]">
                                         Build date:
                                     </dt>
                                     <dd class="ml-2">
-                                        {buildInfo.buildTime}
+                                        {buildInfoFormatted.buildTime}
                                     </dd>
                                 </div>
                             </dl>
@@ -242,6 +252,7 @@
         </div>
     </div>
 
+    <!-- Footer with sources and GitHub link -->
     <Footer
         footerType="default"
         class="rounded-none border-t border-gray-200 dark:border-gray-700 shadow-none p-3 md:p-3"

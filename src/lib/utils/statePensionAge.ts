@@ -1,63 +1,71 @@
+/**
+ * Result of state pension age calculation.
+ * - spaDate: ISO yyyy-mm-dd string
+ * - spaAgeYears: Years at SPA
+ * - spaAgeMonths: Months at SPA
+ * - source: Rule type used
+ */
 export type SpaResult = {
-    spaDate: string; // ISO yyyy-mm-dd
+    spaDate: string;
     spaAgeYears: number;
     spaAgeMonths: number;
     source: "fixed" | "offset" | "birthday";
 };
 
+/**
+ * Rule for determining state pension age.
+ * - fixed: SPA is a fixed date
+ * - offset: SPA is DOB + years/months
+ * - birthday: SPA is on a birthday (e.g., 65th)
+ */
 type Rule =
-    | {
-          start: string;
-          end: string;
-          type: "fixed";
-          spaDate: string;
-      }
-    | {
-          start: string;
-          end: string;
-          type: "offset";
-          years: number;
-          months: number;
-      }
-    | {
-          start: string;
-          end: string;
-          type: "birthday";
-          years: number;
-      };
+    | { start: string; end: string; type: "fixed"; spaDate: string }
+    | { start: string; end: string; type: "offset"; years: number; months: number }
+    | { start: string; end: string; type: "birthday"; years: number };
 
+/**
+ * Check if a string is a valid ISO yyyy-mm-dd date.
+ */
 function isIsoDate(value: string): boolean {
     return /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
+/**
+ * Parse an ISO yyyy-mm-dd string as a UTC Date (midnight).
+ * Throws if invalid.
+ */
 function parseIsoDate(value: string): Date {
-    // Interpreted as UTC midnight to avoid TZ drift.
     const d = new Date(value + "T00:00:00Z");
     if (Number.isNaN(d.getTime())) throw new Error("Invalid date");
     return d;
 }
 
+/**
+ * Format a Date as ISO yyyy-mm-dd (UTC).
+ */
 function formatIsoDateUTC(date: Date): string {
     return date.toISOString().slice(0, 10);
 }
 
+/**
+ * Get number of days in a UTC month (month0 is 0-based).
+ */
 function daysInMonthUTC(year: number, month0: number): number {
-    // month0 is 0-based
     return new Date(Date.UTC(year, month0 + 1, 0)).getUTCDate();
 }
 
+/**
+ * Add years and months to a UTC date, clamping day to end of month if needed.
+ */
 function addYearsMonthsClampedUTC(dob: Date, years: number, months: number): Date {
     const y = dob.getUTCFullYear();
     const m = dob.getUTCMonth();
     const day = dob.getUTCDate();
-
     const totalMonths = m + months;
     const targetYear = y + years + Math.floor(totalMonths / 12);
     const targetMonth = ((totalMonths % 12) + 12) % 12;
-
     const dim = daysInMonthUTC(targetYear, targetMonth);
     const clampedDay = Math.min(day, dim);
-
     return new Date(Date.UTC(targetYear, targetMonth, clampedDay));
 }
 

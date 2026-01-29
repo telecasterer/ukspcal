@@ -1,64 +1,92 @@
+
+// Types for date formatting and input persistence
 import type { DateFormat } from "./dateFormatting";
 
+/**
+ * The shape of user inputs persisted to storage.
+ * All fields are required and should be serializable as JSON.
+ */
 export type PersistedInputs = {
-	ni: string;
-	dob: string;
-	startYear: number;
-	endYear: number;
-	cycleDays: number;
-	showWeekends: boolean;
-	showBankHolidays: boolean;
-	csvDateFormat: DateFormat;
-	icsEventName: string;
-	icsCategory: string;
-	icsColor: string;
+  ni: string; // National Insurance number (or similar identifier)
+  dob: string; // Date of birth (ISO string)
+  startYear: number;
+  endYear: number;
+  cycleDays: number;
+  showWeekends: boolean;
+  showBankHolidays: boolean;
+  csvDateFormat: DateFormat;
+  icsEventName: string;
+  icsCategory: string;
+  icsColor: string;
 };
 
+/**
+ * Options for parsing persisted inputs, to restrict allowed values.
+ */
 export type PersistedInputsParseOptions = {
-	allowedCycleDays: ReadonlySet<number>;
-	allowedDateFormats: ReadonlySet<DateFormat>;
+  allowedCycleDays: ReadonlySet<number>;
+  allowedDateFormats: ReadonlySet<DateFormat>;
 };
 
+/**
+ * Interface for reading from storage (e.g., localStorage).
+ */
 export type StorageLike = {
-	getItem: (key: string) => string | null;
+  getItem: (key: string) => string | null;
 };
 
+/**
+ * Interface for writing to storage (e.g., localStorage).
+ */
 export type StorageWriterLike = {
-	setItem: (key: string, value: string) => void;
+  setItem: (key: string, value: string) => void;
 };
 
+/**
+ * Parse a value as a year (integer), or return null if invalid.
+ */
 function toYear(value: unknown): number | null {
-	if (typeof value === "number" && Number.isFinite(value)) return value;
-	if (typeof value === "string") {
-		const n = Number.parseInt(value, 10);
-		if (Number.isFinite(n)) return n;
-	}
-	return null;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const n = Number.parseInt(value, 10);
+    if (Number.isFinite(n)) return n;
+  }
+  return null;
 }
 
+/**
+ * Parse a value as an integer, or return null if invalid.
+ */
 function toInt(value: unknown): number | null {
-	if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
-	if (typeof value === "string") {
-		const n = Number.parseInt(value, 10);
-		if (Number.isFinite(n)) return n;
-	}
-	return null;
+  if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
+  if (typeof value === "string") {
+    const n = Number.parseInt(value, 10);
+    if (Number.isFinite(n)) return n;
+  }
+  return null;
 }
 
+/**
+ * Parse a value as a boolean, or return null if invalid.
+ */
 function toBool(value: unknown): boolean | null {
-	if (typeof value === "boolean") return value;
-	if (typeof value === "string") {
-		if (value.toLowerCase() === "true") return true;
-		if (value.toLowerCase() === "false") return false;
-	}
-	return null;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    if (value.toLowerCase() === "true") return true;
+    if (value.toLowerCase() === "false") return false;
+  }
+  return null;
 }
 
+/**
+ * Parse a value as a trimmed string, limited to maxLen, or null if not a string.
+ */
 function toLimitedString(value: unknown, maxLen: number): string | null {
-	if (typeof value !== "string") return null;
-	const s = value.trim();
-	if (!s) return "";
-	return s.length > maxLen ? s.slice(0, maxLen) : s;
+  if (typeof value !== "string") return null;
+  const s = value.trim();
+  if (!s) return "";
+  if (s.length > maxLen) return s.slice(0, maxLen);
+  return s;
 }
 
 function toHexColor(value: unknown): string | null {

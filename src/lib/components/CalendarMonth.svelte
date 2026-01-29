@@ -1,7 +1,9 @@
 <script lang="ts">
+    // CalendarMonth.svelte: Renders a single month grid with payment and holiday highlights
     import { generateCalendarDays, monthName } from "$lib/utils/calendarHelpers";
     import type { Payment } from "$lib/pensionEngine";
 
+    // --- Props ---
     type Props = {
         year: number;
         month: number;
@@ -10,33 +12,46 @@
         payments: Payment[];
         bankHolidays: Record<string, string>;
     };
-
     let { year, month, showWeekends, showBankHolidays, payments, bankHolidays }: Props = $props();
 
+    // --- Derived: Map of paid date to Payment ---
     const paymentsByPaid = $derived.by(() => {
         const map = new Map<string, Payment>();
         for (const p of payments) map.set(p.paid, p);
         return map;
     });
 
+    /**
+     * Get payment for a given day of this month (if any)
+     */
     function getPaymentForDate(day: number): Payment | null {
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         return paymentsByPaid.get(dateStr) ?? null;
     }
 
+    /**
+     * Get bank holiday name for a given day (if any)
+     */
     function getBankHolidayForDate(day: number): string | null {
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         return bankHolidays[dateStr] || null;
     }
 
+    /**
+     * True if the given day is a weekend (UTC)
+     */
     function isWeekendDay(day: number): boolean {
         const date = new Date(Date.UTC(year, month, day));
         const dow = date.getUTCDay();
         return dow === 0 || dow === 6;
     }
 
+    // --- Calendar grid for this month (array of day numbers/nulls) ---
     const calendarDays = $derived(generateCalendarDays(year, month));
 
+    /**
+     * Compute extra CSS classes for a calendar day cell
+     */
     function getDayExtraClasses(
         day: number | null,
         weekend: boolean,
@@ -80,6 +95,7 @@
             {@const holiday = day && showBankHolidays ? getBankHolidayForDate(day) : null}
             {@const weekend = day ? isWeekendDay(day) : false}
 
+            <!-- Calendar day cell: highlights payment, early, holiday, weekend -->
             <div
                 class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-start bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${getDayExtraClasses(day, weekend, payment, showWeekends, holiday)}`}
                 title={holiday && !payment ? holiday : undefined}
