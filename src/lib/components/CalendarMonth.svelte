@@ -111,20 +111,20 @@
     <div class="px-3 py-2 text-xs text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 space-y-1">
         <div class="flex flex-wrap gap-2 justify-center">
             <span class="inline-flex items-center gap-1">
-                <span class="w-2 h-2 rounded bg-green-400 dark:bg-green-600"></span>
+                <span class="w-3 h-3 rounded bg-emerald-500 dark:bg-emerald-600"></span>
                 <span>Payment</span>
             </span>
             <span class="inline-flex items-center gap-1">
-                <span class="w-2 h-2 rounded bg-amber-400 dark:bg-amber-600"></span>
+                <span class="w-3 h-3 rounded bg-amber-500 dark:bg-amber-600"></span>
                 <span>Early</span>
             </span>
             <span class="inline-flex items-center gap-1">
-                <span class="w-2 h-2 rounded bg-blue-300 dark:bg-blue-700"></span>
+                <span class="w-3 h-3 rounded bg-blue-500 dark:bg-blue-700"></span>
                 <span>Holiday</span>
             </span>
             {#if showWeekends}
                 <span class="inline-flex items-center gap-1">
-                    <span class="w-2 h-2 rounded bg-gray-100 dark:bg-gray-900/50 border border-gray-300"></span>
+                    <span class="w-3 h-3 rounded bg-gray-100 dark:bg-gray-900/50 border border-gray-300"></span>
                     <span>Weekend</span>
                 </span>
             {/if}

@@ -101,7 +101,7 @@
 	}
 
 	.calendar-day.payment {
-		@apply bg-green-500 dark:bg-green-600 text-white dark:text-gray-50 font-bold;
+		@apply bg-emerald-500 dark:bg-emerald-600 text-white dark:text-gray-50 font-bold;
 	}
 
 	.calendar-day.early-payment {
@@ -109,7 +109,7 @@
 	}
 
 	.calendar-day.holiday {
-		@apply bg-blue-300 dark:bg-blue-700 text-slate-900 dark:text-gray-100;
+		@apply bg-blue-500 dark:bg-blue-700 text-slate-900 dark:text-gray-100;
 	}
 }
 
