@@ -6,7 +6,7 @@
 	--------------------
 	- Imports Tailwind and config
 	- Defines custom component classes using @apply for maintainability
-	- All screen styles (including dark mode) are here; print styles are in styles/calendar.css
+	- All screen styles (including dark mode) are here; print styles are in styles/calendarPrint.css
 */
 
 @layer components {
@@ -100,15 +100,18 @@
 		@apply bg-gray-100 dark:bg-gray-900/50;
 	}
 
-	.calendar-day.payment {
+	.calendar-day.payment,
+	.legend-item.payment {
 		@apply bg-emerald-500 dark:bg-emerald-600 text-white dark:text-gray-50 font-bold;
 	}
 
-	.calendar-day.early-payment {
+	.calendar-day.early-payment,
+	.legend-item.early-payment {
 		@apply bg-amber-500 dark:bg-amber-600 text-white dark:text-gray-50 font-bold;
 	}
 
-	.calendar-day.holiday {
+	.calendar-day.holiday,
+	.legend-item.holiday {
 		@apply bg-blue-500 dark:bg-blue-700 text-slate-900 dark:text-gray-100;
 	}
 }

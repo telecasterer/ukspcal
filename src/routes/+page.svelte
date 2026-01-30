@@ -24,7 +24,7 @@
         shouldShowIosInstallHelp,
         type BeforeInstallPromptEvent,
     } from "$lib/utils/pwaInstall";
-    import "../styles/calendar.css";
+    import "../styles/calendarPrint.css";
 
     const PERSIST_KEY = "ukspcal.inputs.v1";
     const ALLOWED_CYCLE_DAYS = new Set([7, 14, 28, 91]);
