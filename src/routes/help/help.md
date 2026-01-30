@@ -81,7 +81,7 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
 
 - Click the **Install** button or use your browser’s “Add to Home Screen”/“Install App” feature.
 - ![Example](/help/images/install.png)
-- Once installed, the app works offline and updates automatically.
+- Once installed, the app updates automatically.
 
 ## UK Bank Holiday Data
 
