@@ -17,6 +17,29 @@
         savePersistedInputs,
     } from "$lib/utils/inputPersistence";
     import { onMount } from "svelte";
+    import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
+        // Reset all fields and clear all saved values
+        function handleResetAll() {
+            clearAllAppStorage();
+            // Reset all state variables to defaults
+            ni = "";
+            dob = "";
+            startYear = new Date().getFullYear();
+            endYear = new Date().getFullYear() + 1;
+            cycleDays = 28;
+            showWeekends = true;
+            showBankHolidays = true;
+            csvDateFormat = "dd/mm/yyyy";
+            icsEventName = "UK State Pension Payment";
+            icsCategory = "Finance";
+            icsColor = "#22c55e";
+            // Optionally reset dark mode
+            // darkMode = false;
+            result = null;
+            error = "";
+            hasUserCommittedInputs = false;
+            hasLoadedPersistedInputs = true;
+        }
     import {
         computeIsStandalone,
         getDisplayModeStandalone,
@@ -474,6 +497,7 @@
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
                         onRecalculate={generate}
+                        on:restoreDefaults={handleResetAll}
                     />
                 </div>
 

@@ -1,6 +1,24 @@
 <script lang="ts">
     // PensionInputsCard.svelte: Handles user input for pension calculation
-    import { Alert, Datepicker, Label, Select } from "flowbite-svelte";
+import { Alert, Datepicker, Label, Select, Button, Modal } from "flowbite-svelte";
+import { createEventDispatcher } from "svelte";
+
+// Modal state for restore defaults
+let showRestoreModal = $state(false);
+const dispatch = createEventDispatcher();
+
+function handleRestoreDefaultsClick() {
+    showRestoreModal = true;
+}
+
+function handleRestoreDefaultsConfirm() {
+    showRestoreModal = false;
+    dispatch("restoreDefaults");
+}
+
+function handleRestoreDefaultsCancel() {
+    showRestoreModal = false;
+}
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
@@ -242,14 +260,38 @@
 </script>
 
 
+
 <div class="p-6 space-y-6">
     <!-- --- Input Section Header --- -->
-    <div>
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inputs</h2>
-        <p class="text-sm text-gray-600 dark:text-gray-300">
-            Enter your NI code and date of birth to generate the payment schedule.
-        </p>
+    <div class="flex items-center justify-between mb-2">
+        <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inputs</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Enter your NI code and date of birth to generate the payment schedule.
+            </p>
+        </div>
+        <button
+            type="button"
+            class="ml-2 flex items-center gap-1 !text-xs !font-normal px-2 py-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            style="min-width:0; background: none; border: none;"
+            onclick={handleRestoreDefaultsClick}
+            aria-label="Restore defaults"
+            tabindex="-1"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4h4M4.93 4.93A7 7 0 1110 17a7 7 0 01-5.07-12.07"/></svg>
+            Restore defaults
+        </button>
     </div>
+
+    <Modal title="Restore default values?" bind:open={showRestoreModal} size="md" aria-label="Restore defaults confirmation">
+        <div class="space-y-4">
+            <p class="text-sm text-gray-700 dark:text-gray-200">This will reset all inputs to their default settings.</p>
+            <div class="flex gap-2 justify-end mt-4">
+                <Button color="light" onclick={handleRestoreDefaultsCancel}>Cancel</Button>
+                <Button color="blue" onclick={handleRestoreDefaultsConfirm}>Restore defaults</Button>
+            </div>
+        </div>
+    </Modal>
 
     <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
         <div class="space-y-5">

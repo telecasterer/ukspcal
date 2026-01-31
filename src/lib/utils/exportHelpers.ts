@@ -1,3 +1,6 @@
+// Default values for ICS alarm
+export const DEFAULT_ICS_ALARM_TITLE = "Upcoming UK State Pension Payment";
+export const DEFAULT_ICS_ALARM_DESCRIPTION = "Your UK state pension payment is due soon.";
 /**
  * Export utilities for CSV, ICS, and print functionality
  *
@@ -15,6 +18,10 @@ export interface ExportOptions {
     icsEventName: string;
     icsCategory: string;
     icsColor: string;
+    icsAlarmEnabled?: boolean;
+    icsAlarmDaysBefore?: number;
+    icsAlarmTitle?: string;
+    icsAlarmDescription?: string;
 }
 
 /**
@@ -172,6 +179,7 @@ export function generateICS(
     const isHexColor = /^#[0-9a-f]{6}$/i.test(color);
 
     // ---- Recurring event (standard schedule) ----
+
     icsLines.push("BEGIN:VEVENT");
     icsLines.push(`UID:uksp-recurring-${escapeICSText(result.ni)}@ukspcal`);
     icsLines.push(`DTSTAMP:${dtstamp}`);
@@ -188,7 +196,6 @@ export function generateICS(
         if (isHexColor) {
             icsLines.push(`X-APPLE-CALENDAR-COLOR:${color}`);
         } else {
-            // COLOR is defined in RFC 7986 (typically as a CSS color name). Many clients ignore it.
             icsLines.push(`COLOR:${escapeICSText(color)}`);
         }
     }
@@ -197,9 +204,21 @@ export function generateICS(
         icsLines.push(`EXDATE;VALUE=DATE:${exdate}`);
     }
 
+    // --- Add VALARM for recurring event if enabled ---
+    if (options.icsAlarmEnabled && options.icsAlarmDaysBefore && options.icsAlarmDaysBefore > 0) {
+        const trigger = `-P${options.icsAlarmDaysBefore}D`;
+        icsLines.push("BEGIN:VALARM");
+        icsLines.push("ACTION:DISPLAY");
+        icsLines.push(`DESCRIPTION:${escapeICSText(options.icsAlarmDescription || DEFAULT_ICS_ALARM_DESCRIPTION)}`);
+        icsLines.push(`SUMMARY:${escapeICSText(options.icsAlarmTitle || DEFAULT_ICS_ALARM_TITLE)}`);
+        icsLines.push(`TRIGGER:${trigger}`);
+        icsLines.push("END:VALARM");
+    }
+
     icsLines.push("END:VEVENT");
 
     // ---- Early payment overrides (explicit single events) ----
+
     for (const earlyPayment of earlyPayments) {
         const paidDate = new Date(earlyPayment.paid + "T00:00:00Z");
         const note = getPaymentStatus(earlyPayment, result);
@@ -217,6 +236,17 @@ export function generateICS(
         }
         if (color && isHexColor) {
             icsLines.push(`X-APPLE-CALENDAR-COLOR:${color}`);
+        }
+
+        // --- Add VALARM for early payment if enabled ---
+        if (options.icsAlarmEnabled && options.icsAlarmDaysBefore && options.icsAlarmDaysBefore > 0) {
+            const trigger = `-P${options.icsAlarmDaysBefore}D`;
+            icsLines.push("BEGIN:VALARM");
+            icsLines.push("ACTION:DISPLAY");
+            icsLines.push(`DESCRIPTION:${escapeICSText(options.icsAlarmDescription || DEFAULT_ICS_ALARM_DESCRIPTION)}`);
+            icsLines.push(`SUMMARY:${escapeICSText(options.icsAlarmTitle || DEFAULT_ICS_ALARM_TITLE)}`);
+            icsLines.push(`TRIGGER:${trigger}`);
+            icsLines.push("END:VALARM");
         }
 
         icsLines.push("END:VEVENT");

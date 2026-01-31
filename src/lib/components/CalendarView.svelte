@@ -7,6 +7,8 @@
     import type { Payment } from "$lib/pensionEngine";
     import type { PensionResult } from "$lib/pensionEngine";
     import { exportCSV, generateICS } from "$lib/utils/exportHelpers";
+    import IcsAlarmDialog from "./IcsAlarmDialog.svelte";
+    import { loadIcsAlarmSettings, saveIcsAlarmSettings, type IcsAlarmSettings } from "$lib/utils/icsAlarmPersistence";
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { onMount, tick } from "svelte";
 
@@ -33,6 +35,10 @@
     let printUnsupportedOpen = false;
     let isFacebookInAppBrowser = false;
     let copyLinkStatus = "";
+
+    // ICS Alarm dialog state
+    let alarmDialogOpen = false;
+    let alarmSettings: IcsAlarmSettings = loadIcsAlarmSettings();
 
     /**
      * Copy the current page URL to clipboard
@@ -162,8 +168,26 @@
     }
 
     function handleExportIcs() {
-        generateICS(payments, result, { csvDateFormat, icsEventName, icsCategory, icsColor });
+        generateICS(payments, result, {
+            csvDateFormat,
+            icsEventName,
+            icsCategory,
+            icsColor,
+            icsAlarmEnabled: alarmSettings.alarmEnabled,
+            icsAlarmDaysBefore: alarmSettings.daysBefore,
+            icsAlarmTitle: alarmSettings.alarmTitle,
+            icsAlarmDescription: alarmSettings.alarmDescription
+        });
         icsModalOpen = false;
+    }
+
+    function openAlarmDialog() {
+        alarmDialogOpen = true;
+    }
+
+    function handleAlarmDialogSave(e: CustomEvent<IcsAlarmSettings>) {
+        alarmSettings = e.detail;
+        saveIcsAlarmSettings(alarmSettings);
     }
 
     function handlePreviousMonth() {
@@ -404,13 +428,30 @@
                     Best-effort: Apple Calendar may use this; Google Calendar often ignores event colour from ICS imports.
                 </p>
             </div>
-
+            <div>
+                <Button color="light" onclick={openAlarmDialog}>
+                    Alarm settings
+                </Button>
+                {#if alarmSettings.alarmEnabled}
+                    <span class="ml-2 text-xs text-green-600 dark:text-green-400">Alarm: {alarmSettings.daysBefore} day(s) before</span>
+                {/if}
+            </div>
             <div class="flex gap-2 justify-end">
                 <Button color="light" onclick={() => (icsModalOpen = false)}>Cancel</Button>
                 <Button color="blue" onclick={handleExportIcs}>Download ICS</Button>
             </div>
         </div>
     </Modal>
+
+    <IcsAlarmDialog
+        bind:open={alarmDialogOpen}
+        alarmEnabled={alarmSettings.alarmEnabled}
+        daysBefore={alarmSettings.daysBefore}
+        alarmTitle={alarmSettings.alarmTitle}
+        alarmDescription={alarmSettings.alarmDescription}
+        on:save={handleAlarmDialogSave}
+        on:close={() => (alarmDialogOpen = false)}
+    />
 
 
     <!-- --- Multiple Month Calendar Grid (screen) --- -->
