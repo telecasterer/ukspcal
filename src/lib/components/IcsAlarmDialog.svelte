@@ -10,24 +10,24 @@
 
   const dispatch = createEventDispatcher();
 
-  let localAlarmEnabled = alarmEnabled;
+  let localReminderEnabled = alarmEnabled;
   let localDaysBefore = daysBefore;
-  let localAlarmTitle = alarmTitle;
-  let localAlarmDescription = alarmDescription;
+  let localReminderTitle = alarmTitle;
+  let localReminderDescription = alarmDescription;
 
   onMount(() => {
-    localAlarmEnabled = alarmEnabled;
+    localReminderEnabled = alarmEnabled;
     localDaysBefore = daysBefore;
-    localAlarmTitle = alarmTitle;
-    localAlarmDescription = alarmDescription;
+    localReminderTitle = alarmTitle;
+    localReminderDescription = alarmDescription;
   });
 
   function save() {
     dispatch("save", {
-      alarmEnabled: localAlarmEnabled,
+      alarmEnabled: localReminderEnabled,
       daysBefore: localDaysBefore,
-      alarmTitle: localAlarmTitle,
-      alarmDescription: localAlarmDescription
+      alarmTitle: localReminderTitle,
+      alarmDescription: localReminderDescription
     });
     dispatch("close");
   }
@@ -37,25 +37,25 @@
   }
 </script>
 
-<Modal title="ICS Alarm Settings" bind:open={open} size="md">
+<Modal title="Payment Reminder Settings" bind:open={open} size="md">
   <div class="space-y-4">
     <div>
       <Label class="flex items-center gap-2">
-        <input type="checkbox" bind:checked={localAlarmEnabled} />
-        Enable alarm for payment days
+        <input type="checkbox" bind:checked={localReminderEnabled} />
+        Enable reminder for payment days
       </Label>
     </div>
     <div class="flex gap-2 items-center">
       <Label for="days-before" class="text-sm">Days before event</Label>
-      <Input id="days-before" type="number" min="0" max="30" bind:value={localDaysBefore} class="w-20" disabled={!localAlarmEnabled} />
+      <Input id="days-before" type="number" min="0" max="30" bind:value={localDaysBefore} class="w-20" disabled={!localReminderEnabled} />
     </div>
     <div>
-      <Label for="alarm-title" class="text-sm">Alarm title</Label>
-      <Input id="alarm-title" type="text" bind:value={localAlarmTitle} class="w-full" disabled={!localAlarmEnabled} />
+      <Label for="reminder-title" class="text-sm">Reminder title</Label>
+      <Input id="reminder-title" type="text" bind:value={localReminderTitle} class="w-full" disabled={!localReminderEnabled} />
     </div>
     <div>
-      <Label for="alarm-description" class="text-sm">Alarm description</Label>
-      <Input id="alarm-description" type="text" bind:value={localAlarmDescription} class="w-full" disabled={!localAlarmEnabled} />
+      <Label for="reminder-description" class="text-sm">Reminder description</Label>
+      <Input id="reminder-description" type="text" bind:value={localReminderDescription} class="w-full" disabled={!localReminderEnabled} />
     </div>
     <div class="flex gap-2 justify-end">
       <Button color="light" onclick={cancel}>Cancel</Button>

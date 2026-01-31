@@ -1,6 +1,3 @@
-
-
-
 ## Quick Start
 
 1. Enter your National Insurance (NI) code suffix (the last 3 characters of your National Insurance number, e.g. <strong>35C</strong>) and your date of birth.
@@ -76,6 +73,8 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
   - All your *normal payment* dates are exported as a single **recurring event**. This event repeats according to your chosen **Payment frequency** (e.g. every 28 days, 14 days, etc.).
   - If a payment would fall on a bank holiday, it is moved to the previous working day as an *early payment*. Each *early payment* is exported as a separate **single event**, so you will see these as individual entries in your calendar.
   - This approach ensures your calendar app shows your regular payment pattern, but also highlights any early payments due to bank holidays.
+  - **Payment Reminders** You can set up calendar reminders for your payment days. Choose how many days in advance you want to be notified, and customize the reminder title and description. Reminders are included in exported calendar files (ICS) for easy import into your calendar app.
+
 
 ### Installing as an App
 

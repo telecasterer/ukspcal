@@ -7,8 +7,8 @@
     import type { Payment } from "$lib/pensionEngine";
     import type { PensionResult } from "$lib/pensionEngine";
     import { exportCSV, generateICS } from "$lib/utils/exportHelpers";
-    import IcsAlarmDialog from "./IcsAlarmDialog.svelte";
-    import { loadIcsAlarmSettings, saveIcsAlarmSettings, type IcsAlarmSettings } from "$lib/utils/icsAlarmPersistence";
+    import IcsReminderDialog from "./IcsAlarmDialog.svelte";
+    import { loadIcsAlarmSettings as loadIcsReminderSettings, saveIcsAlarmSettings as saveIcsReminderSettings, type IcsAlarmSettings as IcsReminderSettings } from "$lib/utils/icsAlarmPersistence";
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { onMount, tick } from "svelte";
 
@@ -36,9 +36,9 @@
     let isFacebookInAppBrowser = false;
     let copyLinkStatus = "";
 
-    // ICS Alarm dialog state
-    let alarmDialogOpen = false;
-    let alarmSettings: IcsAlarmSettings = loadIcsAlarmSettings();
+    // ICS Reminder dialog state
+    let reminderDialogOpen = false;
+    let reminderSettings: IcsReminderSettings = loadIcsReminderSettings();
 
     /**
      * Copy the current page URL to clipboard
@@ -173,21 +173,21 @@
             icsEventName,
             icsCategory,
             icsColor,
-            icsAlarmEnabled: alarmSettings.alarmEnabled,
-            icsAlarmDaysBefore: alarmSettings.daysBefore,
-            icsAlarmTitle: alarmSettings.alarmTitle,
-            icsAlarmDescription: alarmSettings.alarmDescription
+            icsAlarmEnabled: reminderSettings.alarmEnabled,
+            icsAlarmDaysBefore: reminderSettings.daysBefore,
+            icsAlarmTitle: reminderSettings.alarmTitle,
+            icsAlarmDescription: reminderSettings.alarmDescription
         });
         icsModalOpen = false;
     }
 
-    function openAlarmDialog() {
-        alarmDialogOpen = true;
+    function openReminderDialog() {
+        reminderDialogOpen = true;
     }
 
-    function handleAlarmDialogSave(e: CustomEvent<IcsAlarmSettings>) {
-        alarmSettings = e.detail;
-        saveIcsAlarmSettings(alarmSettings);
+    function handleReminderDialogSave(e: CustomEvent<IcsReminderSettings>) {
+        reminderSettings = e.detail;
+        saveIcsReminderSettings(reminderSettings);
     }
 
     function handlePreviousMonth() {
@@ -429,11 +429,11 @@
                 </p>
             </div>
             <div>
-                <Button color="light" onclick={openAlarmDialog}>
-                    Alarm settings
+                <Button color="light" onclick={openReminderDialog}>
+                    Reminder settings
                 </Button>
-                {#if alarmSettings.alarmEnabled}
-                    <span class="ml-2 text-xs text-green-600 dark:text-green-400">Alarm: {alarmSettings.daysBefore} day(s) before</span>
+                {#if reminderSettings.alarmEnabled}
+                    <span class="ml-2 text-xs text-green-600 dark:text-green-400">Reminder: {reminderSettings.daysBefore} day(s) before</span>
                 {/if}
             </div>
             <div class="flex gap-2 justify-end">
@@ -443,14 +443,14 @@
         </div>
     </Modal>
 
-    <IcsAlarmDialog
-        bind:open={alarmDialogOpen}
-        alarmEnabled={alarmSettings.alarmEnabled}
-        daysBefore={alarmSettings.daysBefore}
-        alarmTitle={alarmSettings.alarmTitle}
-        alarmDescription={alarmSettings.alarmDescription}
-        on:save={handleAlarmDialogSave}
-        on:close={() => (alarmDialogOpen = false)}
+    <IcsReminderDialog
+        bind:open={reminderDialogOpen}
+        alarmEnabled={reminderSettings.alarmEnabled}
+        daysBefore={reminderSettings.daysBefore}
+        alarmTitle={reminderSettings.alarmTitle}
+        alarmDescription={reminderSettings.alarmDescription}
+        on:save={handleReminderDialogSave}
+        on:close={() => (reminderDialogOpen = false)}
     />
 
 
