@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import { Input, Label, Button, Modal } from "flowbite-svelte";
+  import { Input, Label, Button, Modal, Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
 
   export let open: boolean;
   export let alarmEnabled: boolean = false;
@@ -32,9 +32,9 @@
 <Modal title="Payment Reminder Settings" bind:open={open} size="md">
   <div class="space-y-4">
     <div>
-      <Label class="flex items-center gap-2">
-        <input type="checkbox" bind:checked={localReminderEnabled} />
-        Enable reminder for payment days
+      <Label class="flex items-center gap-2 cursor-pointer text-sm">
+        <FlowbiteCheckbox bind:checked={localReminderEnabled} />
+        <span>Enable reminder for payment days</span>
       </Label>
     </div>
     <div class="flex gap-2 items-center">
