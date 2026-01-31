@@ -19,9 +19,7 @@
             icsCategory: "Finance",
             icsColor: "#22c55e",
             icsAlarmEnabled: true,
-            icsAlarmDaysBefore: 2,
-            icsAlarmTitle: "Test Alarm",
-            icsAlarmDescription: "Test alarm description."
+            icsAlarmDaysBefore: 2
         });
 
         expect(dl.blobs.length).toBe(1);
@@ -30,8 +28,9 @@
         // Check for VALARM block
         expect(ics).toContain("BEGIN:VALARM");
         expect(ics).toContain("TRIGGER:-P2D");
-        expect(ics).toContain("SUMMARY:Test Alarm");
-        expect(ics).toContain("DESCRIPTION:Test alarm description.");
+        expect(ics).toContain("SUMMARY:UK State Pension");
+        expect(ics).toContain("SUMMARY:Upcoming UK State Pension Payment");
+        expect(ics).toContain("DESCRIPTION:Your UK state pension payment is due soon.");
 
         dl.restore();
     });

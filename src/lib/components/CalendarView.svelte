@@ -9,6 +9,10 @@
     import { exportCSV, generateICS } from "$lib/utils/exportHelpers";
     import IcsReminderDialog from "./IcsAlarmDialog.svelte";
     import { loadIcsAlarmSettings as loadIcsReminderSettings, saveIcsAlarmSettings as saveIcsReminderSettings, type IcsAlarmSettings as IcsReminderSettings } from "$lib/utils/icsAlarmPersistence";
+    import { loadIcsEventTime, saveIcsEventTime } from "$lib/utils/icsEventTimePersistence";
+        // ICS Event time (persistent, default midday)
+        let icsEventTime = loadIcsEventTime();
+        $: if (icsEventTime) saveIcsEventTime(icsEventTime);
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { onMount, tick } from "svelte";
 
@@ -175,8 +179,7 @@
             icsColor,
             icsAlarmEnabled: reminderSettings.alarmEnabled,
             icsAlarmDaysBefore: reminderSettings.daysBefore,
-            icsAlarmTitle: reminderSettings.alarmTitle,
-            icsAlarmDescription: reminderSettings.alarmDescription
+            icsEventTime
         });
         icsModalOpen = false;
     }
@@ -400,6 +403,15 @@
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Some calendar apps ignore categories or don’t display them.</p>
             </div>
             <div>
+                <Label for="ics-event-time" class="block mb-2 text-sm">Event time</Label>
+                <Input
+                    id="ics-event-time"
+                    type="time"
+                    bind:value={icsEventTime}
+                    class="w-28 mb-4"
+                />
+            </div>
+            <div>
                 <Label class="block mb-2 text-sm">Colour</Label>
                 <div class="flex gap-3 items-center">
                     <input
@@ -447,8 +459,6 @@
         bind:open={reminderDialogOpen}
         alarmEnabled={reminderSettings.alarmEnabled}
         daysBefore={reminderSettings.daysBefore}
-        alarmTitle={reminderSettings.alarmTitle}
-        alarmDescription={reminderSettings.alarmDescription}
         on:save={handleReminderDialogSave}
         on:close={() => (reminderDialogOpen = false)}
     />

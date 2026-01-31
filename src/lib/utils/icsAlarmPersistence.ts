@@ -1,13 +1,10 @@
 // ICS alarm settings persistence helpers
 
-import { DEFAULT_ICS_ALARM_TITLE, DEFAULT_ICS_ALARM_DESCRIPTION } from "./exportHelpers";
 const REMINDER_SETTINGS_KEY = "ukspcal_ics_alarm_settings";
 
 export interface IcsAlarmSettings {
   alarmEnabled: boolean;
   daysBefore: number;
-  alarmTitle: string;
-  alarmDescription: string;
 }
 
 export function loadIcsAlarmSettings(): IcsAlarmSettings {
@@ -29,8 +26,6 @@ export function saveIcsAlarmSettings(settings: IcsAlarmSettings) {
 export function defaultIcsAlarmSettings(): IcsAlarmSettings {
   return {
     alarmEnabled: false,
-    daysBefore: 1,
-    alarmTitle: DEFAULT_ICS_ALARM_TITLE,
-    alarmDescription: DEFAULT_ICS_ALARM_DESCRIPTION
+    daysBefore: 1
   };
 }
