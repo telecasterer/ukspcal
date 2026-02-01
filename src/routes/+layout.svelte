@@ -9,7 +9,15 @@
 
 	onMount(() => {
 		injectAnalytics();
-		registerSW({ immediate: true });
+		const updateSW = registerSW({
+			immediate: true,
+			onNeedRefresh() {
+				updateSW(true);
+				if (typeof window !== "undefined") {
+					setTimeout(() => window.location.reload(), 250);
+				}
+			}
+		});
 	});
 </script>
 
