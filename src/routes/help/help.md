@@ -10,7 +10,7 @@
 
 - **Your data stays on your device.** Nothing you enter is sent to a server or shared with third parties.
 - **Settings are saved locally** in your browser’s storage, not in the cloud or on the application server.
-- **To remove saved data:** Click **Restore defaults** on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
+- **To remove saved data:** Click *Restore defaults* on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
 
 
 ## Using the App

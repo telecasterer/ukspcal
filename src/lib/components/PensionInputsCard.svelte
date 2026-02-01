@@ -50,7 +50,7 @@ function handleRestoreDefaultsCancel() {
 
     // --- Year options for selects ---
     const currentYear: number = new Date().getFullYear();
-    const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 25 + i);
+    const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 15 + i);
 
     // --- Local state for controlled inputs ---
     let niDraft: string = $state("");
@@ -270,20 +270,19 @@ function handleRestoreDefaultsCancel() {
                 Enter your NI code and date of birth to generate the payment schedule.
             </p>
         </div>
-        <button
-            type="button"
-            class="ml-2 flex items-center gap-1 !text-xs !font-normal px-2 py-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            style="min-width:0; background: none; border: none;"
+        <Button
+            color="light"
+            size="xs"
             onclick={handleRestoreDefaultsClick}
-            aria-label="Restore defaults"
-            tabindex="-1"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4h4M4.93 4.93A7 7 0 1110 17a7 7 0 01-5.07-12.07"/></svg>
-            Restore defaults
-        </button>
+            tabindex={-1}>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 30 20" 
+            stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4h4M4.93 4.93A7 7 0 1110 17a7 7 0 01-5.07-12.07"/></svg>
+         Restore defaults
+        </Button>
     </div>
 
-    <Modal title="Restore default values?" bind:open={showRestoreModal} size="md" aria-label="Restore defaults confirmation">
+    <Modal title="Restore default values?" bind:open={showRestoreModal} size="sm" aria-label="Restore defaults confirmation">
         <div class="space-y-4">
             <p class="text-sm text-gray-700 dark:text-gray-200">This will reset all inputs to their default settings.</p>
             <div class="flex gap-2 justify-end mt-4">
@@ -292,7 +291,7 @@ function handleRestoreDefaultsCancel() {
             </div>
         </div>
     </Modal>
-
+    <br/>
     <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
         <div class="space-y-5">
             <div class="space-y-3">
@@ -308,7 +307,7 @@ function handleRestoreDefaultsCancel() {
                         autocapitalize="characters"
                         spellcheck={false}
                         placeholder="e.g., 22D"
-                        class="w-full sm:max-w-[12rem] text-sm rounded-lg border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         onfocus={() => {
                             isEditingNi = true;
                         }}
