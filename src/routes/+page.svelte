@@ -10,6 +10,7 @@
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
+    import AppFooter from "$lib/components/AppFooter.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
     import { detectFacebookInAppBrowser } from "$lib/utils/inAppBrowser";
     import {
@@ -552,4 +553,5 @@
             {/key}
         {/if}
     </div>
+    <AppFooter />
 </div>
