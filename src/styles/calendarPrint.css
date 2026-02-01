@@ -1,5 +1,5 @@
 /*
-    Calendar Print Styles (styles/calendar.css)
+    Calendar Print Styles (styles/calendarPrint.css)
     ------------------------------------------
     - Print-focused CSS for calendar output
     - All screen styles are handled by Tailwind/app.css
@@ -91,8 +91,12 @@
     }
 
     .calendar-day.payment {
-        background: #22c55e !important;
-        color: #fff !important;
+            background: #22c55e !important;
+            color: #fff !important;
+        }
+        .legend-item.payment {
+            background: #22c55e !important;
+            color: #fff !important;
     }
     .calendar-day.payment .text-sm {
         background: transparent !important;
@@ -100,8 +104,12 @@
     }
 
     .calendar-day.early-payment {
-        background: #f59e0b !important;
-        color: #fff !important;
+            background: #f59e0b !important;
+            color: #fff !important;
+        }
+        .legend-item.early-payment {
+            background: #f59e0b !important;
+            color: #fff !important;
     }
     .calendar-day.early-payment .text-sm {
         background: transparent !important;
@@ -109,8 +117,12 @@
     }
 
     .calendar-day.holiday {
-        background: #60a5fa !important;
-        color: #0f172a !important;
+            background: #60a5fa !important;
+            color: #0f172a !important;
+        }
+        .legend-item.holiday {
+            background: #60a5fa !important;
+            color: #0f172a !important;
     }
     .calendar-day.holiday .text-sm {
         background: transparent !important;

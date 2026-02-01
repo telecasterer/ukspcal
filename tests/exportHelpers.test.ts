@@ -1,3 +1,39 @@
+    it("generateICS includes VALARM when alarm options are set", async () => {
+        const dl = setupDownloadMocks();
+
+        const payments: Payment[] = [
+            { due: "2026-01-02", paid: "2026-01-02", early: false },
+            { due: "2026-01-30", paid: "2026-01-29", early: true, holidays: ["Holiday"] }
+        ];
+
+        const result: PensionResult = {
+            ni: "29B",
+            normalDay: "Tuesday",
+            cycleDays: 28,
+            payments
+        };
+
+        generateICS(payments, result, {
+            csvDateFormat: "dd/mm/yyyy",
+            icsEventName: "UK State Pension, Payment",
+            icsCategory: "Finance",
+            icsColor: "#22c55e",
+            icsAlarmEnabled: true,
+            icsAlarmDaysBefore: 2
+        });
+
+        expect(dl.blobs.length).toBe(1);
+        const ics = await blobToText(dl.blobs[0]!);
+
+        // Check for VALARM block
+        expect(ics).toContain("BEGIN:VALARM");
+        expect(ics).toContain("TRIGGER:-P2D");
+        expect(ics).toContain("SUMMARY:UK State Pension");
+        expect(ics).toContain("SUMMARY:Upcoming UK State Pension Payment");
+        expect(ics).toContain("DESCRIPTION:Your UK state pension payment is due soon.");
+
+        dl.restore();
+    });
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from "vitest";

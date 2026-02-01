@@ -7,6 +7,12 @@
     import type { Payment } from "$lib/pensionEngine";
     import type { PensionResult } from "$lib/pensionEngine";
     import { exportCSV, generateICS } from "$lib/utils/exportHelpers";
+    import IcsReminderDialog from "./IcsAlarmDialog.svelte";
+    import { loadIcsAlarmSettings as loadIcsReminderSettings, saveIcsAlarmSettings as saveIcsReminderSettings, type IcsAlarmSettings as IcsReminderSettings } from "$lib/utils/icsAlarmPersistence";
+    import { loadIcsEventTime, saveIcsEventTime } from "$lib/utils/icsEventTimePersistence";
+        // ICS Event time (persistent, default midday)
+        let icsEventTime = loadIcsEventTime();
+        $: if (icsEventTime) saveIcsEventTime(icsEventTime);
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { onMount, tick } from "svelte";
 
@@ -33,6 +39,10 @@
     let printUnsupportedOpen = false;
     let isFacebookInAppBrowser = false;
     let copyLinkStatus = "";
+
+    // ICS Reminder dialog state
+    let reminderDialogOpen = false;
+    let reminderSettings: IcsReminderSettings = loadIcsReminderSettings();
 
     /**
      * Copy the current page URL to clipboard
@@ -162,8 +172,25 @@
     }
 
     function handleExportIcs() {
-        generateICS(payments, result, { csvDateFormat, icsEventName, icsCategory, icsColor });
+        generateICS(payments, result, {
+            csvDateFormat,
+            icsEventName,
+            icsCategory,
+            icsColor,
+            icsAlarmEnabled: reminderSettings.alarmEnabled,
+            icsAlarmDaysBefore: reminderSettings.daysBefore,
+            icsEventTime
+        });
         icsModalOpen = false;
+    }
+
+    function openReminderDialog() {
+        reminderDialogOpen = true;
+    }
+
+    function handleReminderDialogSave(e: CustomEvent<IcsReminderSettings>) {
+        reminderSettings = e.detail;
+        saveIcsReminderSettings(reminderSettings);
     }
 
     function handlePreviousMonth() {
@@ -376,6 +403,15 @@
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Some calendar apps ignore categories or don’t display them.</p>
             </div>
             <div>
+                <Label for="ics-event-time" class="block mb-2 text-sm">Event time</Label>
+                <Input
+                    id="ics-event-time"
+                    type="time"
+                    bind:value={icsEventTime}
+                    class="w-28 mb-4"
+                />
+            </div>
+            <div>
                 <Label class="block mb-2 text-sm">Colour</Label>
                 <div class="flex gap-3 items-center">
                     <input
@@ -404,13 +440,28 @@
                     Best-effort: Apple Calendar may use this; Google Calendar often ignores event colour from ICS imports.
                 </p>
             </div>
-
+            <div>
+                <Button color="light" onclick={openReminderDialog}>
+                    Reminder settings
+                </Button>
+                {#if reminderSettings.alarmEnabled}
+                    <span class="ml-2 text-xs text-green-600 dark:text-green-400">Reminder: {reminderSettings.daysBefore} day(s) before</span>
+                {/if}
+            </div>
             <div class="flex gap-2 justify-end">
                 <Button color="light" onclick={() => (icsModalOpen = false)}>Cancel</Button>
                 <Button color="blue" onclick={handleExportIcs}>Download ICS</Button>
             </div>
         </div>
     </Modal>
+
+    <IcsReminderDialog
+        bind:open={reminderDialogOpen}
+        alarmEnabled={reminderSettings.alarmEnabled}
+        daysBefore={reminderSettings.daysBefore}
+        on:save={handleReminderDialogSave}
+        on:close={() => (reminderDialogOpen = false)}
+    />
 
 
     <!-- --- Multiple Month Calendar Grid (screen) --- -->

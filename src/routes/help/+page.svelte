@@ -1,4 +1,39 @@
 <script lang="ts">
+            import { detectFacebookInAppBrowser } from "$lib/utils/inAppBrowser";
+            import { onMount, tick } from "svelte";
+            let isFacebookInAppBrowser: boolean = false;
+
+            onMount(() => {
+                const ua = navigator.userAgent ?? "";
+                isFacebookInAppBrowser = detectFacebookInAppBrowser({
+                    userAgent: ua,
+                    href: window.location.href,
+                });
+            });
+        // --- Dark mode state and utility (copied from main page) ---
+        function readDarkModeFromStorage(): boolean {
+            if (typeof window === "undefined") return false;
+            try {
+                return localStorage.getItem("darkMode") === "true";
+            } catch {
+                return false;
+            }
+        }
+        let darkMode: boolean = readDarkModeFromStorage();
+
+        // Make darkMode reactive and persist to localStorage, update document class
+        $: {
+            if (typeof window !== "undefined") {
+                try {
+                    localStorage.setItem("darkMode", darkMode.toString());
+                } catch {}
+                if (darkMode) {
+                    document.documentElement.classList.add("dark");
+                } else {
+                    document.documentElement.classList.remove("dark");
+                }
+            }
+        }
     /**
      * --- HELP PAGE LOGIC ---
      *
@@ -121,27 +156,50 @@
     pushSection();
 </script>
 
+
 <div class="flex flex-col min-h-screen">
-    <div
-        class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
-    >
-        <div class="max-w-4xl mx-auto space-y-6">
-            
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <h1
-                        class="text-3xl font-bold text-gray-900 dark:text-white"
-                    >
-                        Help
-                    </h1>
-                    <p class="mt-2 text-gray-600 dark:text-gray-300">
-                        This app calculates your UK State Pension age and
-                        payment calendar and allows you to print or export the
-                        calendar as csv or ics files.
-                    </p>
-                </div>
-                <Button color="light" href="/" class="shrink-0">← Back</Button>
+    {#if isFacebookInAppBrowser}
+        <div class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900">
+            <div class="max-w-7xl mx-auto px-4 py-1">
+                <p class="text-xs text-amber-800 dark:text-amber-200 leading-snug">
+                    <span class="sm:hidden">Tip: works best in Safari/Chrome/Edge (use “Open in browser”).</span>
+                    <span class="hidden sm:inline">Tip: this app works best in Safari/Chrome/Edge (use “Open in browser”).</span>
+                </p>
             </div>
+        </div>
+    {/if}
+    <!-- Blue top bar, matching main page -->
+    <!-- Exact copy of main page top bar for perfect alignment -->
+    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+            <div class="flex items-center gap-2">
+                <img src="/favicon.svg" alt="App icon" class="w-7 h-7" style="margin-bottom:2px;" />
+                <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">Help</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a
+                    href="/"
+                    class="px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                >
+                    ← Back
+                </a>
+                <button
+                    onclick={() => { darkMode = !darkMode; }}
+                    class="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    title="Toggle dark mode"
+                >
+                    {#if darkMode}
+                        ☀️
+                    {:else}
+                        🌙
+                    {/if}
+                </button>
+            </div>
+        </div>
+    </nav>
+    <!-- Main content area -->
+    <div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1">
+        <div class="max-w-4xl mx-auto space-y-6">
 
             <!-- Main help content rendered as accordion sections -->
             <div

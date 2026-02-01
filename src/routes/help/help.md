@@ -1,6 +1,3 @@
-
-
-
 ## Quick Start
 
 1. Enter your National Insurance (NI) code suffix (the last 3 characters of your National Insurance number, e.g. <strong>35C</strong>) and your date of birth.
@@ -13,7 +10,7 @@
 
 - **Your data stays on your device.** Nothing you enter is sent to a server or shared with third parties.
 - **Settings are saved locally** in your browser’s storage, not in the cloud or on the application server.
-- **To remove saved data:** Clear your browser’s site data for this app, or use a private/incognito window.
+- **To remove saved data:** Click *Restore defaults* on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
 
 
 ## Using the App
@@ -76,12 +73,14 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
   - All your *normal payment* dates are exported as a single **recurring event**. This event repeats according to your chosen **Payment frequency** (e.g. every 28 days, 14 days, etc.).
   - If a payment would fall on a bank holiday, it is moved to the previous working day as an *early payment*. Each *early payment* is exported as a separate **single event**, so you will see these as individual entries in your calendar.
   - This approach ensures your calendar app shows your regular payment pattern, but also highlights any early payments due to bank holidays.
+  - **Payment Reminders** You can set up calendar reminders for your payment days. Choose how many days in advance you want to be notified. Reminders are included in exported calendar files (ICS) for easy import into your calendar app.
+
 
 ### Installing as an App
 
 - Click the **Install** button or use your browser’s “Add to Home Screen”/“Install App” feature.
 - ![Example](/help/images/install.png)
-- Once installed, the app works offline and updates automatically.
+- Once installed, the app updates automatically.
 
 ## UK Bank Holiday Data
 
@@ -91,7 +90,7 @@ This app uses the official UK government source for bank holiday dates (https://
 **Latest UK bank holiday in data:** {{LATEST_BANK_HOLIDAY}}
 
 
-## Troubleshooting & FAQ
+## Troubleshooting
 
 ### In-app browser issues
 
@@ -99,7 +98,7 @@ This app uses the official UK government source for bank holiday dates (https://
 
 ### Printing problems
 
-- Use your browser’s print function. For best results, install the app or open in a standard browser.
+- For best results, install the app or open in a standard browser.
 
 ### Export not working
 
@@ -107,7 +106,7 @@ This app uses the official UK government source for bank holiday dates (https://
 
 ### How to clear saved data
 
-- Clear your browser’s site data for this app, or use a private/incognito window.
+- Click **Restore defaults** on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
 
 
 ## About State Pension Age

@@ -17,6 +17,29 @@
         savePersistedInputs,
     } from "$lib/utils/inputPersistence";
     import { onMount } from "svelte";
+    import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
+        // Reset all fields and clear all saved values
+        function handleResetAll() {
+            clearAllAppStorage();
+            // Reset all state variables to defaults
+            ni = "";
+            dob = "";
+            startYear = new Date().getFullYear();
+            endYear = new Date().getFullYear() + 1;
+            cycleDays = 28;
+            showWeekends = true;
+            showBankHolidays = true;
+            csvDateFormat = "dd/mm/yyyy";
+            icsEventName = "UK State Pension Payment";
+            icsCategory = "Finance";
+            icsColor = "#22c55e";
+            // Optionally reset dark mode
+            // darkMode = false;
+            result = null;
+            error = "";
+            hasUserCommittedInputs = false;
+            hasLoadedPersistedInputs = true;
+        }
     import {
         computeIsStandalone,
         getDisplayModeStandalone,
@@ -24,7 +47,7 @@
         shouldShowIosInstallHelp,
         type BeforeInstallPromptEvent,
     } from "$lib/utils/pwaInstall";
-    import "../styles/calendar.css";
+    import "../styles/calendarPrint.css";
 
     const PERSIST_KEY = "ukspcal.inputs.v1";
     const ALLOWED_CYCLE_DAYS = new Set([7, 14, 28, 91]);
@@ -351,9 +374,10 @@
             </div>
         </div>
     {/if}
-    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            📅 Pension Calendar
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        <div class="flex items-center gap-2">
+            <img src="/favicon.svg" alt="App icon" class="w-7 h-7" style="margin-bottom:2px;" />
+            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pension Calendar</span>
         </div>
         <div class="flex items-center gap-2">
             <a
@@ -366,7 +390,7 @@
                 <!-- Install button for PWA or iOS help -->
                 <button
                     onclick={handleInstallClick}
-                    class="px-3 py-2 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+                    class="px-3 py-1 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
                     title="Install app"
                     aria-label="Install app"
                 >
@@ -378,7 +402,7 @@
                 onclick={() => {
                     darkMode = !darkMode;
                 }}
-                class="text-2xl p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                class="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 title="Toggle dark mode"
             >
                 {#if darkMode}
@@ -473,6 +497,7 @@
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
                         onRecalculate={generate}
+                        on:restoreDefaults={handleResetAll}
                     />
                 </div>
 
