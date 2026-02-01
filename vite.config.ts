@@ -75,7 +75,6 @@ export default defineConfig({
 				suppressWarnings: true
 			},
 			workbox: {
-				additionalManifestEntries: [{ url: '/', revision: null }],
 				clientsClaim: true,
 				skipWaiting: true,
 				cleanupOutdatedCaches: true
