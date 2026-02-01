@@ -12,10 +12,11 @@
 		const updateSW = registerSW({
 			immediate: true,
 			onNeedRefresh() {
+				// New service worker is available, activate and reload
 				updateSW(true);
-				if (typeof window !== "undefined") {
-					setTimeout(() => window.location.reload(), 250);
-				}
+			},
+			onOfflineReady() {
+				// App is ready to work offline
 			}
 		});
 	});

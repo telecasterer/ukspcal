@@ -75,7 +75,10 @@ export default defineConfig({
 				suppressWarnings: true
 			},
 			workbox: {
-				additionalManifestEntries: [{ url: '/', revision: null }]
+				additionalManifestEntries: [{ url: '/', revision: null }],
+				clientsClaim: true,
+				skipWaiting: true,
+				cleanupOutdatedCaches: true
 			},
 			manifestFilename: 'manifest.webmanifest',
 			includeAssets: ['robots.txt', 'favicon.svg'],
