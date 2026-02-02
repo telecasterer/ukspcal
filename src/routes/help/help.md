@@ -3,7 +3,7 @@
 1. Enter your National Insurance (NI) code suffix (the last 3 characters of your National Insurance number, e.g. <strong>35C</strong>) and your date of birth.
 2. Choose your payment cycle and date range.
 3. View your personalised State Pension payment calendar.
-4. Export your calendar as CSV or ICS, or print it for your records.
+4. Export your calendar as CSV (spreadsheet) or ICS (calendar app), or print it for your records.
 5. (Optional, recommended) Install the app.
 
 ## Data Privacy
@@ -62,8 +62,6 @@
 - The suffix letter (A–D) affects the phase.
 - Payments repeat every 91 days, with bank-holiday payments paid early.
 
-
-
 ### Exporting Data
 
 - Click **Export** to download your payment calendar as a CSV or ICS file. Files are generated on your device and never uploaded.
@@ -87,7 +85,7 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
 This app uses the official UK government source for bank holiday dates (https://www.gov.uk/bank-holidays). The published data typically covers up to 2 years ahead from today. If you select a date range beyond the latest available bank holiday, the app will still work, but future bank holidays may not be included until the government updates their data.
 
 
-**Latest UK bank holiday in data:** {{LATEST_BANK_HOLIDAY}}
+**Latest official UK bank holiday currently available:** {{LATEST_BANK_HOLIDAY}}
 
 
 ## Troubleshooting
@@ -121,3 +119,7 @@ This tool is an unofficial calculator and is **not affiliated with, endorsed by,
 All dates and calculations are based on publicly available information (such as published pension schedules, the State Pension age timetable, and UK bank holiday lists) and may change at any time.
 
 **No warranty is provided.** Use at your own risk, and always check official sources if you need a definitive answer.
+
+## Feedback & Support
+
+Found a bug or have a suggestion? [Send us your feedback](https://tally.so/r/q4Vbq2) - we'd love to hear from you.
