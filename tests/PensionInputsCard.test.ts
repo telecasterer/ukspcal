@@ -57,9 +57,11 @@ describe("PensionInputsCard", () => {
         expect(document.activeElement).toBe(dobInput);
     });
 
-    it("shows DOB required hint when dob is empty", () => {
-        const { getByText } = renderCard();
-        expect(getByText(/Required to calculate your State Pension age/i)).toBeInTheDocument();
+    it("sets default DOB to Jan 1 of (current year - 66) when empty", () => {
+        const { getByDisplayValue } = renderCard();
+        const currentYear = new Date().getFullYear();
+        const expectedDefaultDob = `${currentYear - 66}-01-01`;
+        expect(getByDisplayValue(expectedDefaultDob)).toBeInTheDocument();
     });
 
     it("shows invalid-date alert when dob is present but invalid", () => {
