@@ -287,9 +287,9 @@ function handleRestoreDefaultsCancel() {
             size="xs"
             onclick={handleRestoreDefaultsClick}
             tabindex={-1}>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 30 20" 
-            stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4h4M4.93 4.93A7 7 0 1110 17a7 7 0 01-5.07-12.07"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" 
+            stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
          Restore defaults
         </Button>
     </div>
