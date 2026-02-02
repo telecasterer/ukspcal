@@ -555,3 +555,11 @@
     </div>
     <AppFooter />
 </div>
+
+<svelte:head>
+	<title>UK State Pension Calculator - Payment Dates & Schedule</title>
+	<meta property="og:title" content="UK State Pension Calculator - Payment Dates & Schedule" />
+	<meta property="og:description" content="Calculate your UK State Pension payment dates based on your National Insurance code and date of birth. Get an accurate pension schedule with bank holiday considerations." />
+	<meta property="og:url" content="https://ukspcal.vercel.app" />
+</svelte:head>
+

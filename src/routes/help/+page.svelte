@@ -315,6 +315,14 @@
     <AppFooter />
 </div>
 
+<svelte:head>
+	<title>Help - UK State Pension Calculator</title>
+	<meta property="og:title" content="Help - UK State Pension Calculator" />
+	<meta property="og:description" content="Learn how to use the UK State Pension Calculator. Get answers to frequently asked questions and understand how to calculate your pension dates." />
+	<meta property="og:url" content="https://ukspcal.vercel.app/help" />
+	<link rel="canonical" href="https://ukspcal.vercel.app/help" />
+</svelte:head>
+
 <style>
     /* Make hash navigation land nicely below the header area */
     .prose :global(h3) {
