@@ -38,6 +38,7 @@
 	<meta name="description" content="Calculate your UK State Pension payment dates based on your National Insurance code and date of birth. Get an accurate pension schedule with bank holiday considerations." />
 	<meta name="keywords" content="UK State Pension, pension calculator, State Pension age, pension dates, National Insurance" />
 	<meta name="theme-color" content="#2563eb" />
+	<meta name="google-site-verification" content="dcA8PMyEy_4d5j2XzWexJmLUW-vg-bY_AmgNrQHyMBU" />
 	
 	<!-- Open Graph Tags -->
 	<meta property="og:type" content="website" />
