@@ -1,6 +1,6 @@
 <script lang="ts">
     // PensionInputsCard.svelte: Handles user input for pension calculation
-import { Alert, Datepicker, Label, Select, Button, Modal } from "flowbite-svelte";
+import { Alert, Label, Select, Button, Modal } from "flowbite-svelte";
 import { createEventDispatcher } from "svelte";
 
 // Modal state for restore defaults
@@ -52,6 +52,14 @@ function handleRestoreDefaultsCancel() {
     const currentYear: number = new Date().getFullYear();
     const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 15 + i);
 
+    /**
+     * Calculate default DOB as Jan 1 of (current year - 66)
+     */
+    function getDefaultDob(): string {
+        const defaultYear = currentYear - 66;
+        return `${defaultYear}-01-01`;
+    }
+
     // --- Local state for controlled inputs ---
     let niDraft: string = $state("");
     let isEditingNi: boolean = $state(false);
@@ -91,6 +99,10 @@ function handleRestoreDefaultsCancel() {
         if (!isEditingNi && niDraft !== ni) niDraft = ni;
     });
     $effect.pre(() => {
+        // Set default DOB if empty (Jan 1 of current year - 66)
+        if (!dob) {
+            dob = getDefaultDob();
+        }
         dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
     });
 
@@ -333,26 +345,17 @@ function handleRestoreDefaultsCancel() {
                 <!-- Date of birth input -->
                 <div>
                     <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
-                    <div class="w-full sm:max-w-[18rem]">
-                        <Datepicker
-                            bind:value={dobDate}
-                            defaultDate={new Date(1960, 0, 1)}
-                            required
-                            locale="en-GB"
-                            inputClass="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                            inputProps={{ id: "dob", name: "dob" }}
-                            onselect={(x) => {
-                                if (x instanceof Date) {
-                                    dob = dateToIsoLocal(x);
-                                    onPersist?.();
-                                }
-                            }}
-                            onclear={() => {
-                                dob = "";
-                                onPersist?.();
-                            }}
-                        />
-                    </div>
+                    <input
+                        type="date"
+                        id="dob"
+                        name="dob"
+                        bind:value={dob}
+                        min="1900-01-01"
+                        max="{new Date().toISOString().split('T')[0]}"
+                        required
+                        onchange={() => onPersist?.()}
+                        class="block w-full sm:max-w-[18rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    />
                     {#if !dob}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
                     {/if}
