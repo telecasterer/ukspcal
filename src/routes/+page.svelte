@@ -100,6 +100,21 @@
         }
     });
 
+    // --- Derived first payment date after SPA ---
+    const firstPaymentDateFormatted = $derived.by(() => {
+        if (!result || result.payments.length === 0) return "";
+        try {
+            const d = new Date(result.payments[0].paid + "T00:00:00Z");
+            return d.toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            });
+        } catch {
+            return "";
+        }
+    });
+
     // --- Utility: Read dark mode preference from localStorage ---
     function readDarkModeFromStorage(): boolean {
         if (typeof window === "undefined") return false;
@@ -543,7 +558,7 @@
                 <!-- Summary card -->
                 <div class="lg:col-span-4 space-y-4">
                     {#if result}
-                        <SummaryCard {result} embedded spaDate={spaDateFormatted} />
+                        <SummaryCard {result} embedded spaDate={firstPaymentDateFormatted} />
                     {:else}
                         <div class="p-6">
                             <div class="mb-2">
