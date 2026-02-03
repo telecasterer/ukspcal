@@ -327,7 +327,7 @@
                         oninput={applyStartYear}
                         onchange={applyStartYear}
                         class="w-28"
-                        selectClass="text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        classes={{ select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
                     >
                         {#each years as year}
                             <option value={String(year)}>{year}</option>
@@ -345,7 +345,7 @@
                         oninput={applyNumberOfYears}
                         onchange={applyNumberOfYears}
                         class="w-28"
-                        selectClass="text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        classes={{ select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
                     >
                         {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
                             <option value={String(y)}>{y}</option>
