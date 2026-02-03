@@ -83,6 +83,9 @@
     let startYearSelect: string = $state("");
     let numberOfYearsInput: string = $state("");
 
+    // --- Initialize result early for use in deriveds ---
+    let result: PensionResult | null = $state(null);
+
     // --- Derived SPA date ---
     const spaDateFormatted = $derived.by(() => {
         if (!dob) return "";
@@ -260,7 +263,6 @@
         return iso ? Number(iso.slice(0, 4)) : null;
     });
 
-    let result: PensionResult | null = $state(null);
     let error = $state("");
 
     let currentCalendarMonth = $state(new Date().getMonth());
