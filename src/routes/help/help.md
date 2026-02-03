@@ -20,9 +20,10 @@
 - **NI code:** Enter the last 3 characters (2 digits and a letter, e.g., 22D) of your National Insurance number.
 - **Date of birth:** Used to calculate your State Pension Age (SPA) and set your calendar start.
 
-### Date Range
+### Calendar Date Range
 
-- Select the years you want to include. The app will always show your first payment after SPA, even if it falls outside your chosen range.
+- By defalt the calendar view will start with month of your first pension payment after reaching SPA.
+- You can select how many years of calendar you want to view, print, export but bear in mind that we usually only have the official UK bank holiday dates for the next two years.
 
 ### Payment Frequency
 

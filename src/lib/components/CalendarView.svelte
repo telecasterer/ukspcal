@@ -316,7 +316,7 @@
     <div class="w-full calendar-controls">
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-2">
             <!-- View Range Controls -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 items-start">
+            <div class="grid grid-cols-3 gap-1 items-start">
                 <div>
                     <Label for="start-year" class="block mb-1 text-xs text-gray-700 dark:text-gray-300">
                         Start Year
@@ -326,7 +326,7 @@
                         bind:value={startYearSelect}
                         oninput={applyStartYear}
                         onchange={applyStartYear}
-                        class="w-28"
+                        class="w-20"
                         classes={{ select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
                     >
                         {#each years as year}
@@ -344,7 +344,7 @@
                         bind:value={numberOfYearsInput}
                         oninput={applyNumberOfYears}
                         onchange={applyNumberOfYears}
-                        class="w-28"
+                        class="w-20"
                         classes={{ select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
                     >
                         {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
@@ -357,7 +357,7 @@
                     <Label for="payments-count" class="block mb-1 text-xs text-gray-700 dark:text-gray-300">
                         Payments
                     </Label>
-                    <div class="px-2.5 h-8 flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-semibold text-gray-900 dark:text-white w-28">
+                    <div class="px-2.5 h-8 flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-semibold text-gray-900 dark:text-white w-20">
                         {payments.length}
                     </div>
                 </div>
