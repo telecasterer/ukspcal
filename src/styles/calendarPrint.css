@@ -117,16 +117,16 @@
     }
 
     .calendar-day.holiday {
-            background: #60a5fa !important;
-            color: #0f172a !important;
+            background: #3b82f6 !important;
+            color: #fff !important;
         }
         .legend-item.holiday {
-            background: #60a5fa !important;
-            color: #0f172a !important;
+            background: #3b82f6 !important;
+            color: #fff !important;
     }
     .calendar-day.holiday .text-sm {
         background: transparent !important;
-        color: #0f172a !important;
+        color: #fff !important;
     }
 
     .screen-only {
