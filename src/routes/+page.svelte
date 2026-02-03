@@ -326,10 +326,11 @@
             return;
         }
 
+        const endYear = startYear + numberOfYears - 1;
         const generated = generatePayments(
             ni,
             startYear,
-            startYear + numberOfYears,
+            endYear,
             cycleDays,
             bankHolidays,
         );
