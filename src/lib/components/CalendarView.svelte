@@ -33,6 +33,11 @@
     export let icsCategory: string;
     export let icsColor: string;
     export let onPersist: (() => void) | undefined;
+    export let startYearSelect: string;
+    export let numberOfYearsInput: string;
+    export let years: number[];
+    export let applyStartYear: () => void;
+    export let applyNumberOfYears: () => void;
 
     // --- State ---
     let renderPrintAllMonths = false; // Only render all months for print
@@ -257,77 +262,108 @@
 </script>
 
 
-<div class="space-y-6">
-    <!-- --- Month Navigation and Controls --- -->
+<div class="space-y-2">
+    <!-- --- Header: Title and Export/Print --- -->
     <div class="w-full calendar-controls">
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div class="mb-4">
-                <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
-                    <div class="text-center sm:text-left">
-                        <div class="font-semibold text-gray-900 dark:text-white">Payment calendar</div>
-                        <div class="text-xs text-gray-600 dark:text-gray-300">
-                            Viewing {monthName(currentMonth)} {currentYear} · {payments.length} payments{#if rangeLabel} · {rangeLabel}{/if}
-                        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+            <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+                <div class="text-center sm:text-left">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Payment calendar</h3>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">
+                        Viewing {monthName(currentMonth)} {currentYear} · {payments.length} payments{#if rangeLabel} · {rangeLabel}{/if}
                     </div>
+                </div>
 
-                    <!-- Controls: Previous/Next, Export, Print -->
-                    <div class="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2">
-                        <!-- Previous month button -->
-                        <Button
-                            onclick={handlePreviousMonth}
-                            color="light"
-                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-1"
-                            disabled={focusedIndex <= 0}
+                <!-- Export/Print buttons -->
+                <div class="flex items-center gap-2">
+                    <!-- Export menu -->
+                    <Button
+                        id="export-menu"
+                        color="light"
+                        class="px-3 py-2 text-sm"
+                        title="Export"
+                    >
+                        ⬇️ Export
+                    </Button>
+                    <Dropdown
+                        triggeredBy="#export-menu"
+                        bind:isOpen={exportMenuOpen}
+                        class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
+                    >
+                        <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openCsvModal}
+                            >Download spreadsheet (CSV)</DropdownItem
                         >
-                            ← Previous
-                        </Button>
+                        <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openIcsModal}
+                            >Add to calendar (ICS)</DropdownItem
+                        >
+                    </Dropdown>
 
-                        <!-- Next month button -->
-                        <Button
-                            onclick={handleNextMonth}
-                            color="light"
-                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-4"
-                            disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
-                        >
-                            Next →
-                        </Button>
+                    <!-- Print button -->
+                    <Button
+                        onclick={handlePrint}
+                        color="light"
+                        class="px-3 py-2 text-sm"
+                        title="Print calendar"
+                    >
+                        🖨️ Print
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Export menu -->
-                        <Button
-                            id="export-menu"
-                            color="light"
-                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-2"
-                            title="Export"
-                        >
-                            ⬇️ Export
-                        </Button>
-                        <Dropdown
-                            triggeredBy="#export-menu"
-                            bind:isOpen={exportMenuOpen}
-                            class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
-                        >
-                            <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openCsvModal}
-                                >Download spreadsheet (CSV)</DropdownItem
-                            >
-                            <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openIcsModal}
-                                >Add to calendar (ICS)</DropdownItem
-                            >
-                        </Dropdown>
+    <!-- --- View Range and Display Filters --- -->
+    <div class="w-full calendar-controls">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-2">
+            <!-- View Range Controls -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 items-start">
+                <div>
+                    <Label for="start-year" class="block mb-1 text-xs text-gray-700 dark:text-gray-300">
+                        Start Year
+                    </Label>
+                    <Select
+                        id="start-year"
+                        bind:value={startYearSelect}
+                        oninput={applyStartYear}
+                        onchange={applyStartYear}
+                        class="w-28"
+                        selectClass="text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                        {#each years as year}
+                            <option value={String(year)}>{year}</option>
+                        {/each}
+                    </Select>
+                </div>
 
-                        <!-- Print button -->
-                        <Button
-                            onclick={handlePrint}
-                            color="light"
-                            class="w-full px-2.5 py-2 sm:w-auto sm:px-3 sm:py-2 sm:order-3"
-                            title="Print calendar"
-                        >
-                            🖨️ Print
-                        </Button>
+                <div>
+                    <Label for="number-of-years" class="block mb-1 text-xs text-gray-700 dark:text-gray-300">
+                        Duration (years)
+                    </Label>
+                    <Select
+                        id="number-of-years"
+                        bind:value={numberOfYearsInput}
+                        oninput={applyNumberOfYears}
+                        onchange={applyNumberOfYears}
+                        class="w-28"
+                        selectClass="text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                        {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
+                            <option value={String(y)}>{y}</option>
+                        {/each}
+                    </Select>
+                </div>
+
+                <div>
+                    <Label for="payments-count" class="block mb-1 text-xs text-gray-700 dark:text-gray-300">
+                        Payments
+                    </Label>
+                    <div class="px-2.5 h-8 flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-semibold text-gray-900 dark:text-white w-28">
+                        {payments.length}
                     </div>
                 </div>
             </div>
 
-            <!-- Checkboxes for filtering weekends and holidays -->
+            <!-- Weekends and Holidays filters -->
             <div class="flex flex-wrap gap-4">
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
                     <FlowbiteCheckbox bind:checked={showWeekends} onchange={() => onPersist?.()} />
@@ -337,6 +373,40 @@
                     <FlowbiteCheckbox bind:checked={showBankHolidays} onchange={() => onPersist?.()} />
                     <span>Holidays</span>
                 </Label>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- Month Navigation --- -->
+    <div class="w-full calendar-controls">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+            <div class="flex items-center justify-center gap-4">
+                <!-- Previous month button -->
+                <Button
+                    onclick={handlePreviousMonth}
+                    color="light"
+                    class="px-3 py-2"
+                    disabled={focusedIndex <= 0}
+                >
+                    ← Previous
+                </Button>
+
+                <!-- Current month display -->
+                <div class="text-center min-w-[120px]">
+                    <div class="font-semibold text-gray-900 dark:text-white">
+                        {monthName(currentMonth)} {currentYear}
+                    </div>
+                </div>
+
+                <!-- Next month button -->
+                <Button
+                    onclick={handleNextMonth}
+                    color="light"
+                    class="px-3 py-2"
+                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
+                >
+                    Next →
+                </Button>
             </div>
         </div>
     </div>

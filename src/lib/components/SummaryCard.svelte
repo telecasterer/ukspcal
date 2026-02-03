@@ -5,13 +5,15 @@
 
     export let result: PensionResult;
     export let embedded: boolean = false;
+    export let spaDate: string = "";
+
 </script>
 
 {#if embedded}
     <!-- Embedded summary (used in main input card) -->
     <div class="p-6 summary-section">
         <div class="mb-3">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h2>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400">Generated from the payment calendar inputs.</p>
         </div>
         <div class="grid grid-cols-2 gap-2">
@@ -30,10 +32,10 @@
                 <p class="text-xs font-semibold text-violet-600 dark:text-violet-300 uppercase">Cycle</p>
                 <p class="text-sm font-bold text-violet-700 dark:text-violet-100">{result.cycleDays}d</p>
             </Card>
-            <!-- Payments count -->
+            <!-- First Payment Date After SPA -->
             <Card size="xl" class="p-2 bg-orange-50 dark:bg-orange-900 border-orange-200 dark:border-orange-700">
-                <p class="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase">Payments</p>
-                <p class="text-sm font-bold text-orange-700 dark:text-orange-100">{result.payments.length}</p>
+                <p class="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase">First Payment</p>
+                <p class="text-sm font-bold text-orange-700 dark:text-orange-100">{spaDate}</p>
             </Card>
         </div>
     </div>
@@ -42,7 +44,7 @@
     <Card size="xl" class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 summary-section">
         <div class="p-6">
             <div class="mb-3">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h2>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Generated from the payment calendar inputs.</p>
             </div>
             <div class="grid grid-cols-2 gap-2">
@@ -61,10 +63,10 @@
                     <p class="text-xs font-semibold text-violet-600 dark:text-violet-300 uppercase">Cycle</p>
                     <p class="text-sm font-bold text-violet-700 dark:text-violet-100">{result.cycleDays}d</p>
                 </Card>
-                <!-- Payments count -->
+                <!-- First Payment Date After SPA -->
                 <Card size="xl" class="p-2 bg-orange-50 dark:bg-orange-900 border-orange-200 dark:border-orange-700">
-                    <p class="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase">Payments</p>
-                    <p class="text-sm font-bold text-orange-700 dark:text-orange-100">{result.payments.length}</p>
+                    <p class="text-xs font-semibold text-orange-600 dark:text-orange-300 uppercase">First Payment</p>
+                    <p class="text-sm font-bold text-orange-700 dark:text-orange-100">{spaDate}</p>
                 </Card>
             </div>
         </div>

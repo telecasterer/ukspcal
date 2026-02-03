@@ -11,7 +11,7 @@ function renderCard(overrides: Partial<Parameters<typeof render>[1]> = {}) {
         ni: "",
         dob: "",
         startYear: 2026,
-        endYear: 2027,
+        numberOfYears: 5,
         cycleDays: 28,
         error: "",
         bankHolidays: {},
@@ -88,7 +88,7 @@ describe("PensionInputsCard", () => {
                 ni: "29B",
                 dob: "1956-03-15",
                 startYear: 2026,
-                endYear: 2028,
+                numberOfYears: 2,
                 cycleDays: 28,
                 onFirstPaymentAfterSpa
             }

@@ -10,7 +10,7 @@ export type PersistedInputs = {
   ni: string; // National Insurance number (or similar identifier)
   dob: string; // Date of birth (ISO string)
   startYear: number;
-  endYear: number;
+  numberOfYears: number;
   cycleDays: number;
   showWeekends: boolean;
   showBankHolidays: boolean;
@@ -109,8 +109,8 @@ export function parsePersistedInputsObject(
 
 	const sy = toYear(parsed.startYear);
 	if (sy !== null) out.startYear = sy;
-	const ey = toYear(parsed.endYear);
-	if (ey !== null) out.endYear = ey;
+	const ny = toInt(parsed.numberOfYears);
+	if (ny !== null && ny > 0 && ny <= 50) out.numberOfYears = ny;
 
 	const cd = toInt(parsed.cycleDays);
 	if (cd !== null && options.allowedCycleDays.has(cd)) out.cycleDays = cd;

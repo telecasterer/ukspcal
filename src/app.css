@@ -144,6 +144,12 @@
     border-color: rgb(55 65 81); /* gray-700 */
 }
 
+/* Date input calendar icon in dark mode */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+	filter: invert(1) brightness(1.2);
+	opacity: 0.9;
+}
+
 /* Tighter app details table spacing */
 .help-markdown dl,
 .help-markdown dt,

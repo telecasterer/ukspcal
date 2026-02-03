@@ -28,7 +28,7 @@ describe("+page persistence", () => {
             ni: "29B",
             dob: "1956-03-15",
             startYear: 2026,
-            endYear: 2028,
+            numberOfYears: 2,
             cycleDays: 28,
             showWeekends: false,
             showBankHolidays: true,

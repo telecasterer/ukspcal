@@ -27,7 +27,7 @@ function handleRestoreDefaultsCancel() {
         ni: string;
         dob: string;
         startYear: number;
-        endYear: number;
+        numberOfYears: number;
         cycleDays: number;
         error: string;
         bankHolidays: Record<string, string>;
@@ -39,7 +39,7 @@ function handleRestoreDefaultsCancel() {
         ni = $bindable(),
         dob = $bindable(),
         startYear = $bindable(),
-        endYear = $bindable(),
+        numberOfYears = $bindable(),
         cycleDays = $bindable(),
         error = $bindable(),
         bankHolidays,
@@ -48,9 +48,7 @@ function handleRestoreDefaultsCancel() {
         onRecalculate
     }: Props = $props();
 
-    // --- Year options for selects ---
     const currentYear: number = new Date().getFullYear();
-    const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 15 + i);
 
     /**
      * Calculate default DOB as Jan 1 of (current year - 66)
@@ -63,8 +61,6 @@ function handleRestoreDefaultsCancel() {
     // --- Local state for controlled inputs ---
     let niDraft: string = $state("");
     let isEditingNi: boolean = $state(false);
-    let startYearSelect: string = $state("");
-    let endYearSelect: string = $state("");
     let cycleDaysSelect: string = $state(String(cycleDays ?? 28));
     let dobDate: Date | undefined = $state<Date | undefined>(undefined);
 
@@ -90,8 +86,6 @@ function handleRestoreDefaultsCancel() {
 
     // --- Effects to sync local state with props ---
     $effect.pre(() => {
-        startYearSelect = String(startYear);
-        endYearSelect = String(endYear);
         cycleDaysSelect = String(cycleDays);
     });
     $effect.pre(() => {
@@ -105,27 +99,6 @@ function handleRestoreDefaultsCancel() {
         }
         dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
     });
-
-    /**
-     * Apply selected start year to bound value
-     */
-    function applyStartYear() {
-        const n = Number.parseInt(startYearSelect, 10);
-        if (Number.isFinite(n)) {
-            startYear = n;
-            onPersist?.();
-            onRecalculate?.();
-        }
-    }
-
-    function applyEndYear() {
-        const n = Number.parseInt(endYearSelect, 10);
-        if (Number.isFinite(n)) {
-            endYear = n;
-            onPersist?.();
-            onRecalculate?.();
-        }
-    }
 
     function applyCycleDays() {
         const n = Number.parseInt(cycleDaysSelect, 10);
@@ -274,10 +247,8 @@ function handleRestoreDefaultsCancel() {
 
 
 <div class="p-6 space-y-6">
-    <!-- --- Input Section Header --- -->
     <div class="flex items-center justify-between mb-2">
         <div>
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inputs</h2>
             <p class="text-sm text-gray-600 dark:text-gray-300">
                 Enter your NI code and date of birth to generate the payment schedule.
             </p>
@@ -354,44 +325,11 @@ function handleRestoreDefaultsCancel() {
                         max="{new Date().toISOString().split('T')[0]}"
                         required
                         onchange={() => onPersist?.()}
-                        class="block w-full sm:max-w-[18rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                     {#if !dob}
                         <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
                     {/if}
-                </div>
-
-                <!-- Start/End year selects -->
-                <div class="grid grid-cols-1 sm:inline-grid sm:grid-cols-2 gap-3">
-                    <div>
-                        <Label for="start-year" class="block mb-1 text-sm">Start Year</Label>
-                        <Select
-                            id="start-year"
-                            bind:value={startYearSelect}
-                            oninput={applyStartYear}
-                            onchange={applyStartYear}
-                            class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        >
-                            {#each years as year}
-                                <option value={String(year)}>{year}</option>
-                            {/each}
-                        </Select>
-                    </div>
-
-                    <div>
-                        <Label for="end-year" class="block mb-1 text-sm">End Year</Label>
-                        <Select
-                            id="end-year"
-                            bind:value={endYearSelect}
-                            oninput={applyEndYear}
-                            onchange={applyEndYear}
-                            class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                        >
-                            {#each years as year}
-                                <option value={String(year)}>{year}</option>
-                            {/each}
-                        </Select>
-                    </div>
                 </div>
 
                 <!-- Payment frequency select -->
@@ -402,7 +340,7 @@ function handleRestoreDefaultsCancel() {
                         bind:value={cycleDaysSelect}
                         oninput={applyCycleDays}
                         onchange={applyCycleDays}
-                        class="w-full sm:max-w-[10rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        class="w-full sm:max-w-[12rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
                         <option value="7">7 days</option>
                         <option value="14">14 days</option>

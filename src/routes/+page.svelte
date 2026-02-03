@@ -6,7 +6,7 @@
         type Payment,
         type PensionResult,
     } from "$lib/pensionEngine";
-    import { Card } from "flowbite-svelte";
+    import { Card, Label, Select } from "flowbite-svelte";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
@@ -17,6 +17,7 @@
         loadPersistedInputs,
         savePersistedInputs,
     } from "$lib/utils/inputPersistence";
+    import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { onMount } from "svelte";
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
         // Reset all fields and clear all saved values
@@ -26,7 +27,7 @@
             ni = "";
             dob = "";
             startYear = new Date().getFullYear();
-            endYear = new Date().getFullYear() + 1;
+            numberOfYears = 5;
             cycleDays = 28;
             showWeekends = true;
             showBankHolidays = true;
@@ -63,7 +64,7 @@
     // --- State variables (using Svelte runes mode) ---
     let ni: string = $state("");
     let startYear: number = $state(new Date().getFullYear());
-    let endYear: number = $state(new Date().getFullYear() + 1);
+    let numberOfYears: number = $state(5);
     let cycleDays: number = $state<number>(28);
     let showWeekends: boolean = $state(true);
     let showBankHolidays: boolean = $state(true);
@@ -72,6 +73,32 @@
     let icsCategory: string = $state("Finance");
     let icsColor: string = $state("#22c55e");
     let dob: string = $state("");
+
+    const currentYear: number = new Date().getFullYear();
+    const years: number[] = Array.from(
+        { length: 50 },
+        (_, i) => currentYear - 15 + i,
+    );
+
+    let startYearSelect: string = $state("");
+    let numberOfYearsInput: string = $state("");
+
+    // --- Derived SPA date ---
+    const spaDateFormatted = $derived.by(() => {
+        if (!dob) return "";
+        try {
+            const spa = calculateStatePensionAge(dob);
+            if (!spa) return "";
+            const d = new Date(spa.spaDate + "T00:00:00Z");
+            return d.toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            });
+        } catch {
+            return "";
+        }
+    });
 
     // --- Utility: Read dark mode preference from localStorage ---
     function readDarkModeFromStorage(): boolean {
@@ -102,7 +129,7 @@
             ni,
             dob,
             startYear: Number(startYear),
-            endYear: Number(endYear),
+            numberOfYears: Number(numberOfYears),
             cycleDays: Number(cycleDays),
             showWeekends,
             showBankHolidays,
@@ -172,10 +199,8 @@
             if (persisted.dob !== undefined) dob = persisted.dob;
             if (persisted.startYear !== undefined)
                 startYear = persisted.startYear;
-            if (persisted.endYear !== undefined) {
-                endYear = Number(persisted.endYear);
-            } else if (typeof lastBankHolidayYear === 'number' && Number(endYear) < lastBankHolidayYear) {
-                endYear = lastBankHolidayYear;
+            if (persisted.numberOfYears !== undefined) {
+                numberOfYears = Number(persisted.numberOfYears);
             }
             if (persisted.cycleDays !== undefined)
                 cycleDays = persisted.cycleDays;
@@ -192,9 +217,6 @@
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
         } catch {
             // Ignore invalid/corrupt stored values.
-            if (typeof lastBankHolidayYear === 'number' && Number(endYear) < lastBankHolidayYear) {
-                endYear = lastBankHolidayYear;
-            }
         } finally {
             hasLoadedPersistedInputs = true;
         }
@@ -234,6 +256,29 @@
     let minPaymentIso = $state<string | null>(null);
     let lastFirstPaymentAfterSpaKey = $state<string | null>(null);
 
+    $effect.pre(() => {
+        startYearSelect = String(startYear);
+        numberOfYearsInput = String(numberOfYears);
+    });
+
+    function applyStartYear() {
+        const n = Number.parseInt(startYearSelect, 10);
+        if (Number.isFinite(n)) {
+            startYear = n;
+            persistInputs();
+            generate();
+        }
+    }
+
+    function applyNumberOfYears() {
+        const n = Number.parseInt(numberOfYearsInput, 10);
+        if (Number.isFinite(n) && n > 0 && n <= 50) {
+            numberOfYears = n;
+            persistInputs();
+            generate();
+        }
+    }
+
     // Dark mode effect
     $effect.pre(() => {
         if (typeof window !== "undefined") {
@@ -264,16 +309,10 @@
             return;
         }
 
-        if (endYear < startYear) {
-            error = "End year must be after start year";
-            result = null;
-            return;
-        }
-
         const generated = generatePayments(
             ni,
             startYear,
-            endYear,
+            startYear + numberOfYears,
             cycleDays,
             bankHolidays,
         );
@@ -313,7 +352,6 @@
 
         const start = Math.min(isoYear(payment.due), isoYear(payment.paid));
         startYear = start;
-        if (endYear < startYear + 1) endYear = startYear + 1;
 
         pendingCalendarFocusIso = payment.paid;
         generate();
@@ -491,7 +529,7 @@
                         bind:ni
                         bind:dob
                         bind:startYear
-                        bind:endYear
+                        bind:numberOfYears
                         bind:cycleDays
                         bind:error
                         {bankHolidays}
@@ -503,9 +541,9 @@
                 </div>
 
                 <!-- Summary card -->
-                <div class="lg:col-span-4">
+                <div class="lg:col-span-4 space-y-4">
                     {#if result}
-                        <SummaryCard {result} embedded />
+                        <SummaryCard {result} embedded spaDate={spaDateFormatted} />
                     {:else}
                         <div class="p-6">
                             <div class="mb-2">
@@ -522,14 +560,16 @@
                             </div>
                         </div>
                     {/if}
+
                 </div>
             </div>
         </Card>
 
         <!-- Results Section: Calendar and payments -->
         {#if result}
-            {#key `${result.ni}:${startYear}:${endYear}:${cycleDays}`}
+            {#key `${result.ni}:${startYear}:${numberOfYears}:${cycleDays}`}
                 <div class="w-full space-y-6 max-w-7xl mx-auto">
+                    <!-- Calendar -->
                     <Card
                         size="xl"
                         class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 calendar-print-wrapper"
@@ -546,6 +586,11 @@
                             bind:icsEventName
                             bind:icsCategory
                             bind:icsColor
+                            bind:startYearSelect
+                            bind:numberOfYearsInput
+                            {years}
+                            applyStartYear={applyStartYear}
+                            applyNumberOfYears={applyNumberOfYears}
                             onPersist={persistInputs}
                         />
                     </Card>
