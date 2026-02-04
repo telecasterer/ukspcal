@@ -25,6 +25,12 @@
 - By defalt the calendar view will start with month of your first pension payment after reaching SPA.
 - You can select how many years of calendar you want to view, print, export but bear in mind that we usually only have the official UK bank holiday dates for the next two years.
 
+### Display Options
+
+- **Weekends:** Toggle weekend days highlight on/off (weekends are shown in a light gray).
+- **UK Holidays:** Toggle UK bank holidays on/off (shown with a blue background and white text). These are the official UK bank holidays that affect payment dates—if your payment date falls on a UK bank holiday, it will be paid on the previous working day.
+- **Additional holidays:** Optionally display public holidays from another country alongside UK holidays for reference. Currently supports France, Germany, Spain, Italy, Netherlands, Belgium, Austria, Portugal, Ireland, Sweden, Denmark, Norway, Switzerland, United States, Canada, Australia, New Zealand, and Japan. These are marked with a flag 🇫🇷 (respective country emoji) icon on calendar days. **Important:** These additional country holidays are shown for information only and do not affect when the UK issues your payment. However, they may affect when your receiving bank credits the funds to your account, so they are useful for reference if you are receiving payments in another country.
+
 ### Payment Frequency
 
 **Note:** Most users do not need to read the detailed rules below. The app will automatically calculate your payment dates based on your NI code and chosen cycle. The following sections are for those who want to understand the calculation logic.

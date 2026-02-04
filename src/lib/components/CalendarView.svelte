@@ -38,6 +38,9 @@
     export let years: number[];
     export let applyStartYear: () => void;
     export let applyNumberOfYears: () => void;
+    export let selectedCountry: string;
+    export let additionalHolidays: Record<string, string>;
+    export let onCountryChange: ((country: string) => void) | undefined;
 
     // --- State ---
     let renderPrintAllMonths = false; // Only render all months for print
@@ -364,15 +367,65 @@
             </div>
 
             <!-- Weekends and Holidays filters -->
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-4 items-center">
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
                     <FlowbiteCheckbox bind:checked={showWeekends} onchange={() => onPersist?.()} />
                     <span>Weekends</span>
                 </Label>
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
                     <FlowbiteCheckbox bind:checked={showBankHolidays} onchange={() => onPersist?.()} />
-                    <span>Holidays</span>
+                    <span>UK Holidays</span>
                 </Label>
+                <div class="flex items-center gap-2">
+                    <Label class="flex items-center gap-2 cursor-pointer text-sm">
+                        <FlowbiteCheckbox
+                            checked={selectedCountry !== "none"}
+                            onchange={(e: Event) => {
+                                const target = e.target as HTMLInputElement;
+                                if (target.checked && selectedCountry === "none") {
+                                    selectedCountry = "FR";
+                                    onCountryChange?.("FR");
+                                } else if (!target.checked) {
+                                    selectedCountry = "none";
+                                    onCountryChange?.("none");
+                                }
+                                onPersist?.();
+                            }}
+                        />
+                        <span>Additional holidays</span>
+                    </Label>
+                    {#if selectedCountry !== "none"}
+                        <Select
+                            id="country-holidays"
+                            bind:value={selectedCountry}
+                            onchange={() => {
+                                onCountryChange?.(selectedCountry);
+                                onPersist?.();
+                            }}
+                            class="w-24"
+                            classes={{ select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
+                        >
+                            <option value="FR">France</option>
+                            <option value="DE">Germany</option>
+                            <option value="ES">Spain</option>
+                            <option value="IT">Italy</option>
+                            <option value="NL">Netherlands</option>
+                            <option value="BE">Belgium</option>
+                            <option value="AT">Austria</option>
+                            <option value="PT">Portugal</option>
+                            <option value="IE">Ireland</option>
+                            <option value="SE">Sweden</option>
+                            <option value="DK">Denmark</option>
+                            <option value="NO">Norway</option>
+                            <option value="CH">Switzerland</option>
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="AU">Australia</option>
+                            <option value="NZ">New Zealand</option>
+                            <option value="JP">Japan</option>
+                        </Select>
+                    {/if}
+                </div>
             </div>
         </div>
     </div>
@@ -545,6 +598,8 @@
                     {showBankHolidays}
                     {payments}
                     {bankHolidays}
+                    {additionalHolidays}
+                    {selectedCountry}
                 />
             {/each}
         </div>
@@ -561,6 +616,8 @@
                     {showBankHolidays}
                     {payments}
                     {bankHolidays}
+                    {additionalHolidays}
+                    {selectedCountry}
                 />
             {/each}
         </div>

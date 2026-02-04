@@ -20,6 +20,8 @@
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { onMount } from "svelte";
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
+    import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
+    import { loadHolidaysFromCache, saveHolidaysToCache } from "$lib/utils/holidayCache";
         // Reset all fields and clear all saved values
         function handleResetAll() {
             clearAllAppStorage();
@@ -73,6 +75,9 @@
     let icsCategory: string = $state("Finance");
     let icsColor: string = $state("#22c55e");
     let dob: string = $state("");
+    let selectedCountry: string = $state("none");
+    let additionalHolidays: Record<string, string> = $state({});
+    let isLoadingAdditionalHolidays: boolean = $state(false);
 
     const currentYear: number = new Date().getFullYear();
     const years: number[] = Array.from(
@@ -293,6 +298,43 @@
             numberOfYears = n;
             persistInputs();
             generate();
+        }
+    }
+
+    /**
+     * Handle country selection change
+     */
+    async function handleCountryChange(country: string) {
+        selectedCountry = country;
+        persistInputs();
+
+        if (country === "none") {
+            additionalHolidays = {};
+            return;
+        }
+
+        // Try to load from cache first
+        const cached = loadHolidaysFromCache(country);
+        if (cached) {
+            additionalHolidays = cached;
+            return;
+        }
+
+        // Fetch from API
+        isLoadingAdditionalHolidays = true;
+        try {
+            const yearsToFetch = Array.from(
+                { length: numberOfYears },
+                (_, i) => startYear + i
+            );
+            const holidays = await fetchHolidaysForCountryAndYears(country, yearsToFetch);
+            additionalHolidays = holidays;
+            saveHolidaysToCache(country, holidays);
+        } catch (error) {
+            console.error(`Error fetching holidays for ${country}:`, error);
+            additionalHolidays = {};
+        } finally {
+            isLoadingAdditionalHolidays = false;
         }
     }
 
@@ -610,6 +652,9 @@
                             applyStartYear={applyStartYear}
                             applyNumberOfYears={applyNumberOfYears}
                             onPersist={persistInputs}
+                            bind:selectedCountry
+                            {additionalHolidays}
+                            onCountryChange={handleCountryChange}
                         />
                     </Card>
                 </div>

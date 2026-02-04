@@ -129,6 +129,12 @@
         color: #fff !important;
     }
 
+    /* Ensure day numbers and flex containers have transparent backgrounds */
+    .calendar-day .text-sm,
+    .calendar-day > div {
+        background: transparent !important;
+    }
+
     .screen-only {
         display: none !important;
     }
