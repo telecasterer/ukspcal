@@ -80,6 +80,7 @@
     let selectedCountry: string = $state("none");
     let additionalHolidays: Record<string, string> = $state({});
     let isLoadingAdditionalHolidays: boolean = $state(false);
+    let lastAdditionalHolidaysKey: string = $state("");
 
     const currentYear: number = new Date().getFullYear();
     const years: number[] = Array.from(
@@ -320,21 +321,30 @@
 
         // Try to load from cache first
         const cached = loadHolidaysFromCache(country);
-        if (cached) {
-            additionalHolidays = cached;
+
+        const yearsToFetch = Array.from(
+            { length: numberOfYears },
+            (_, i) => startYear + i
+        );
+
+        // If cache covers all needed years, use it
+        if (cached && yearsToFetch.every((y) => cached.years.includes(y))) {
+            additionalHolidays = cached.data;
             return;
         }
 
-        // Fetch from API
+        // Fetch from API (only missing years if cache exists)
         isLoadingAdditionalHolidays = true;
         try {
-            const yearsToFetch = Array.from(
-                { length: numberOfYears },
-                (_, i) => startYear + i
-            );
-            const holidays = await fetchHolidaysForCountryAndYears(country, yearsToFetch);
-            additionalHolidays = holidays;
-            saveHolidaysToCache(country, holidays);
+            const missingYears = cached
+                ? yearsToFetch.filter((y) => !cached.years.includes(y))
+                : yearsToFetch;
+            const holidays = await fetchHolidaysForCountryAndYears(country, missingYears);
+            const merged = cached ? { ...cached.data, ...holidays } : holidays;
+            const mergedYears = cached ? [...new Set([...cached.years, ...missingYears])] : yearsToFetch;
+
+            additionalHolidays = merged;
+            saveHolidaysToCache(country, merged, mergedYears);
         } catch (error) {
             console.error(`Error fetching holidays for ${country}:`, error);
             additionalHolidays = {};
@@ -343,11 +353,19 @@
         }
     }
 
-    // Fetch holidays when app loads with a persisted country selection
+    // Fetch holidays when app loads or when year range changes with a selected country
     $effect.pre(() => {
-        if (hasLoadedPersistedInputs && selectedCountry !== "none") {
-            handleCountryChange(selectedCountry);
+        if (!hasLoadedPersistedInputs) return;
+        if (selectedCountry === "none") {
+            additionalHolidays = {};
+            lastAdditionalHolidaysKey = "";
+            return;
         }
+
+        const key = `${selectedCountry}:${startYear}:${numberOfYears}`;
+        if (key === lastAdditionalHolidaysKey) return;
+        lastAdditionalHolidaysKey = key;
+        handleCountryChange(selectedCountry);
     });
 
     // Dark mode effect

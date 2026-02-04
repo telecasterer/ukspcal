@@ -8,6 +8,7 @@ const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 export type CachedHolidays = {
     data: Record<string, string>;
     timestamp: number;
+    years: number[];
 };
 
 /**
@@ -29,7 +30,7 @@ function isCacheValid(cached: CachedHolidays | null): boolean {
 /**
  * Load holidays from cache
  */
-export function loadHolidaysFromCache(countryCode: string): Record<string, string> | null {
+export function loadHolidaysFromCache(countryCode: string): CachedHolidays | null {
     if (typeof window === "undefined" || typeof localStorage === "undefined") {
         return null;
     }
@@ -45,7 +46,12 @@ export function loadHolidaysFromCache(countryCode: string): Record<string, strin
             return null;
         }
 
-        return parsed.data;
+        if (!Array.isArray(parsed.years)) {
+            localStorage.removeItem(key);
+            return null;
+        }
+
+        return parsed;
     } catch (error) {
         console.error(`Error loading holiday cache for ${countryCode}:`, error);
         return null;
@@ -57,7 +63,8 @@ export function loadHolidaysFromCache(countryCode: string): Record<string, strin
  */
 export function saveHolidaysToCache(
     countryCode: string,
-    holidays: Record<string, string>
+    holidays: Record<string, string>,
+    years: number[]
 ): void {
     if (typeof window === "undefined" || typeof localStorage === "undefined") {
         return;
@@ -68,6 +75,7 @@ export function saveHolidaysToCache(
         const cached: CachedHolidays = {
             data: holidays,
             timestamp: Date.now(),
+            years: [...new Set(years)].sort((a, b) => a - b),
         };
         localStorage.setItem(key, JSON.stringify(cached));
     } catch (error) {
