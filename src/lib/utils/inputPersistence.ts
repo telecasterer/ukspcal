@@ -18,6 +18,7 @@ export type PersistedInputs = {
   icsEventName: string;
   icsCategory: string;
   icsColor: string;
+  selectedCountry: string; // Country code for additional holidays (e.g., 'FR', 'US', 'none')
 };
 
 /**
@@ -133,6 +134,8 @@ export function parsePersistedInputsObject(
 	if (category !== null) out.icsCategory = category;
 	const color = toHexColor(parsed.icsColor);
 	if (color !== null) out.icsColor = color;
+
+	if (typeof parsed.selectedCountry === "string") out.selectedCountry = parsed.selectedCountry;
 
 	return out;
 }

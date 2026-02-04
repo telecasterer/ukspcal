@@ -22,6 +22,7 @@
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
     import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
     import { loadHolidaysFromCache, saveHolidaysToCache } from "$lib/utils/holidayCache";
+    import { detectCountryFromTimezone } from "$lib/utils/timezoneDetection";
         // Reset all fields and clear all saved values
         function handleResetAll() {
             clearAllAppStorage();
@@ -75,6 +76,7 @@
     let icsCategory: string = $state("Finance");
     let icsColor: string = $state("#22c55e");
     let dob: string = $state("");
+    let detectedCountry: string = detectCountryFromTimezone();
     let selectedCountry: string = $state("none");
     let additionalHolidays: Record<string, string> = $state({});
     let isLoadingAdditionalHolidays: boolean = $state(false);
@@ -160,6 +162,7 @@
             icsEventName,
             icsCategory,
             icsColor,
+            selectedCountry,
         };
         // Ignore storage quota / private mode errors.
         savePersistedInputs(localStorage, PERSIST_KEY, payload);
@@ -238,6 +241,8 @@
             if (persisted.icsCategory !== undefined)
                 icsCategory = persisted.icsCategory;
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
+            if (persisted.selectedCountry !== undefined)
+                selectedCountry = persisted.selectedCountry;
         } catch {
             // Ignore invalid/corrupt stored values.
         } finally {
@@ -337,6 +342,13 @@
             isLoadingAdditionalHolidays = false;
         }
     }
+
+    // Fetch holidays when app loads with a persisted country selection
+    $effect.pre(() => {
+        if (hasLoadedPersistedInputs && selectedCountry !== "none") {
+            handleCountryChange(selectedCountry);
+        }
+    });
 
     // Dark mode effect
     $effect.pre(() => {
@@ -655,6 +667,7 @@
                             bind:selectedCountry
                             {additionalHolidays}
                             onCountryChange={handleCountryChange}
+                            {detectedCountry}
                         />
                     </Card>
                 </div>

@@ -41,6 +41,7 @@
     export let selectedCountry: string;
     export let additionalHolidays: Record<string, string>;
     export let onCountryChange: ((country: string) => void) | undefined;
+    export let detectedCountry: string = "none";
 
     // --- State ---
     let renderPrintAllMonths = false; // Only render all months for print
@@ -383,8 +384,9 @@
                             onchange={(e: Event) => {
                                 const target = e.target as HTMLInputElement;
                                 if (target.checked && selectedCountry === "none") {
-                                    selectedCountry = "FR";
-                                    onCountryChange?.("FR");
+                                    const countryToUse = detectedCountry !== "none" ? detectedCountry : "FR";
+                                    selectedCountry = countryToUse;
+                                    onCountryChange?.(countryToUse);
                                 } else if (!target.checked) {
                                     selectedCountry = "none";
                                     onCountryChange?.("none");
