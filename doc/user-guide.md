@@ -1,24 +1,43 @@
 # User Guide: UK State Pension Calendar App
 
 ## What is this app?
-A free, privacy-first tool to calculate your UK State Pension payment dates, export them, and print your calendar. No data leaves your device.
+A free, privacy-first tool to calculate your UK State Pension payment dates, export them, and print your calendar. All calculations happen locally in your browser.
 
-## How to Use
-1. Enter your NI code suffix (last 3 characters, e.g. 22D) and date of birth.
-2. Choose your payment cycle (28-day, 14-day, 7-day, or 91-day) and date range.
-3. View your payment calendar. Early payments (due to bank holidays) are highlighted.
-4. Export as CSV or ICS, or print for your records.
-5. (Optional) Install the app for offline use.
+## What you’ll need
+- Your **NI code suffix** (last three characters, e.g. `22D`).
+- Your **date of birth** (used to estimate State Pension age and the first payment after that age).
 
-## Data Privacy
-- All calculations happen in your browser.
-- No personal data is sent to any server.
-- Settings are saved only in your browser (local storage).
+## How to use the calculator
+1. Enter your NI code suffix and date of birth.
+2. Choose your payment cycle (7-day, 14-day, 28-day, or 91-day).
+3. Pick the start year and how many years to show.
+4. Review the calendar. Early payments (due to weekends/bank holidays) are highlighted.
+5. Export or print as needed.
+
+## Exports & downloads
+The app supports:
+- **CSV export** for spreadsheets.
+- **ICS export** for calendar apps (with optional alarms and event titles).
+- **Print view** for a paper or PDF copy.
+
+## Holidays and early payments
+- The calculator uses official UK bank holidays from GOV.UK.
+- If a payment date falls on a weekend or bank holiday, it moves earlier.
+- You can optionally overlay additional public holidays for another country (useful if you live abroad).
+
+## Saved settings & privacy
+- Inputs are saved in local storage so you don’t need to re-enter them.
+- No data is uploaded to any server.
+- Clearing site data in your browser will reset the saved values.
+
+## Accessibility & display tips
+- The app supports dark mode and print-friendly layouts.
+- If the app is opened inside an in-app browser (e.g. Facebook), you may see limited export/print support—open in Safari/Chrome/Edge for best results.
 
 ## Troubleshooting
-- If export/print features don’t work, try a different browser (Chrome, Safari, Edge).
-- For in-app browser issues (e.g. Facebook), open the app in your main browser.
-- To clear saved data, clear this site’s data in your browser settings.
+- **Export not working:** Try a different browser or disable ad-blockers.
+- **Calendar events show wrong time:** Check your time zone settings in your calendar app.
+- **Inputs not saving:** Ensure local storage is enabled for the site.
 
 ## Disclaimer
-This is an unofficial tool. Always check official sources for definitive answers. See the full disclaimer in the app help.
+This is an unofficial tool. Always confirm pension details with official sources. The Help page in the app contains a full disclaimer.
