@@ -203,6 +203,7 @@
         <svelte:fragment slot="actions">
             <Button
                 color="light"
+                size="sm"
                 onclick={() => {
                     goto("/");
                 }}
@@ -211,9 +212,11 @@
             </Button>
             <ShareButton
                 shareText="Calculate your State Pension Age and payment calendar."
+                size="sm"
             />
             <Button
                 color="light"
+                size="sm"
                 onclick={() => {
                     darkMode = !darkMode;
                 }}

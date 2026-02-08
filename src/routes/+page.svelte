@@ -494,6 +494,7 @@
     <svelte:fragment slot="actions">
         <Button
             color="light"
+            size="sm"
             onclick={() => {
                 goto("/help");
             }}
@@ -502,16 +503,18 @@
         </Button>
         <ShareButton
             shareText="Calculate your State Pension Age and payment calendar, including bank holiday adjustments."
+            size="sm"
         />
         {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
             <!-- Install button for PWA or iOS help -->
-            <Button color="blue" onclick={handleInstallClick} title="Install app" aria-label="Install app">
+            <Button color="blue" size="sm" onclick={handleInstallClick} title="Install app" aria-label="Install app">
                 Install
             </Button>
         {/if}
         <!-- Dark mode toggle button -->
         <Button
             color="light"
+            size="sm"
             onclick={() => {
                 darkMode = !darkMode;
             }}
