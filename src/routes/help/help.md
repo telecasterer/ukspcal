@@ -6,6 +6,8 @@
 4. Export your calendar as CSV (spreadsheet) or ICS (calendar app), or print it for your records.
 5. (Optional, recommended) Install the app.
 
+Know someone approaching retirement who might find this useful? {{handleCopyLink}}
+
 ## Data Privacy
 
 - **Your data stays on your device.** Nothing you enter is sent to a server or shared with third parties.
@@ -130,3 +132,14 @@ All dates and calculations are based on publicly available information (such as 
 ## Feedback & Support
 
 Found a bug or have a suggestion? [Send us your feedback](https://tally.so/r/q4Vbq2) - we'd love to hear from you.
+
+## Version information ##
+
+|                 |                           |
+|-----------------|---------------------------|
+| **Developer**   | Paul Robins               |
+| **Version**     | {{BUILDINFO_VERSION}}     |  
+| **Commit**      | {{BUILDINFO_COMMIT}}      | 
+| **Commit date** | {{BUILDINFO_COMMIT_DATE}} | 
+| **Build date**  | {{BUILDINFO_BUILD_TIME}}  |
+

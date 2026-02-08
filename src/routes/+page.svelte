@@ -1,18 +1,19 @@
 <script lang="ts">
-
-
     import {
         generatePayments,
         type Payment,
         type PensionResult,
     } from "$lib/pensionEngine";
-    import { Card, Label, Select } from "flowbite-svelte";
+    import { Button, Card, Label, Select } from "flowbite-svelte";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
     import AppFooter from "$lib/components/AppFooter.svelte";
+    import TopBar from "$lib/components/TopBar.svelte";
+    import ShareButton from "$lib/components/ShareButton.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
-    import { detectFacebookInAppBrowser } from "$lib/utils/inAppBrowser";
+    import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
+    import { applyDarkModeClass, persistDarkModeToStorage, readDarkModeFromStorage } from "$lib/utils/darkMode";
     import {
         loadPersistedInputs,
         savePersistedInputs,
@@ -21,30 +22,35 @@
     import { onMount } from "svelte";
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
     import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
-    import { loadHolidaysFromCache, saveHolidaysToCache } from "$lib/utils/holidayCache";
+    import { goto } from "$app/navigation";
+    import {
+        loadHolidaysFromCache,
+        saveHolidaysToCache,
+    } from "$lib/utils/holidayCache";
     import { detectCountryFromTimezone } from "$lib/utils/timezoneDetection";
-        // Reset all fields and clear all saved values
-        function handleResetAll() {
-            clearAllAppStorage();
-            // Reset all state variables to defaults
-            ni = "";
-            dob = "";
-            startYear = new Date().getFullYear();
-            numberOfYears = 5;
-            cycleDays = 28;
-            showWeekends = true;
-            showBankHolidays = true;
-            csvDateFormat = "dd/mm/yyyy";
-            icsEventName = "UK State Pension Payment";
-            icsCategory = "Finance";
-            icsColor = "#22c55e";
-            // Optionally reset dark mode
-            // darkMode = false;
-            result = null;
-            error = "";
-            hasUserCommittedInputs = false;
-            hasLoadedPersistedInputs = true;
-        }
+
+    // Reset all fields and clear all saved values
+    function handleResetAll() {
+        clearAllAppStorage();
+        // Reset all state variables to defaults
+        ni = "";
+        dob = "";
+        startYear = new Date().getFullYear();
+        numberOfYears = 5;
+        cycleDays = 28;
+        showWeekends = true;
+        showBankHolidays = true;
+        csvDateFormat = "dd/mm/yyyy";
+        icsEventName = "UK State Pension Payment";
+        icsCategory = "Finance";
+        icsColor = "#22c55e";
+        // Optionally reset dark mode
+        // darkMode = false;
+        result = null;
+        error = "";
+        hasUserCommittedInputs = false;
+        hasLoadedPersistedInputs = true;
+    }
     import {
         computeIsStandalone,
         getDisplayModeStandalone,
@@ -95,20 +101,20 @@
     let result: PensionResult | null = $state(null);
 
     // --- Derived SPA date ---
-    const spaDateFormatted = $derived.by(() => {
+    const spaDateIso = $derived.by(() => {
         if (!dob) return "";
         try {
             const spa = calculateStatePensionAge(dob);
-            if (!spa) return "";
-            const d = new Date(spa.spaDate + "T00:00:00Z");
-            return d.toLocaleDateString("en-GB", {
-                year: "numeric",
-                month: "short",
-                day: "numeric"
-            });
+            return spa?.spaDate ?? "";
         } catch {
             return "";
         }
+    });
+
+    const hasPassedSpa = $derived.by(() => {
+        if (!spaDateIso) return false;
+        const todayIso = new Date().toISOString().slice(0, 10);
+        return todayIso >= spaDateIso;
     });
 
     // --- Derived first payment date after SPA ---
@@ -119,22 +125,31 @@
             return d.toLocaleDateString("en-GB", {
                 year: "numeric",
                 month: "short",
-                day: "numeric"
+                day: "numeric",
             });
         } catch {
             return "";
         }
     });
 
-    // --- Utility: Read dark mode preference from localStorage ---
-    function readDarkModeFromStorage(): boolean {
-        if (typeof window === "undefined") return false;
+    const nextPaymentDateFormatted = $derived.by(() => {
+        if (!result || result.payments.length === 0 || !hasPassedSpa) return "";
+        const todayIso = new Date().toISOString().slice(0, 10);
+        const nextPayment = result.payments.find(
+            (payment) => payment.paid >= todayIso,
+        );
+        if (!nextPayment) return "";
         try {
-            return localStorage.getItem("darkMode") === "true";
+            const d = new Date(nextPayment.paid + "T00:00:00Z");
+            return d.toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            });
         } catch {
-            return false;
+            return "";
         }
-    }
+    });
 
     let darkMode: boolean = $state(readDarkModeFromStorage());
     let hasLoadedPersistedInputs: boolean = $state(false);
@@ -171,10 +186,7 @@
 
     onMount(() => {
         const ua = navigator.userAgent ?? "";
-        isFacebookInAppBrowser = detectFacebookInAppBrowser({
-            userAgent: ua,
-            href: window.location.href,
-        });
+        isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
 
         const mq =
             typeof window !== "undefined" &&
@@ -260,6 +272,8 @@
         };
     });
 
+    // Share handled by ShareButton component
+
     let { data } = $props();
     let bankHolidays = $derived(data.bankHolidays);
 
@@ -324,7 +338,7 @@
 
         const yearsToFetch = Array.from(
             { length: numberOfYears },
-            (_, i) => startYear + i
+            (_, i) => startYear + i,
         );
 
         // If cache covers all needed years, use it
@@ -339,9 +353,14 @@
             const missingYears = cached
                 ? yearsToFetch.filter((y) => !cached.years.includes(y))
                 : yearsToFetch;
-            const holidays = await fetchHolidaysForCountryAndYears(country, missingYears);
+            const holidays = await fetchHolidaysForCountryAndYears(
+                country,
+                missingYears,
+            );
             const merged = cached ? { ...cached.data, ...holidays } : holidays;
-            const mergedYears = cached ? [...new Set([...cached.years, ...missingYears])] : yearsToFetch;
+            const mergedYears = cached
+                ? [...new Set([...cached.years, ...missingYears])]
+                : yearsToFetch;
 
             additionalHolidays = merged;
             saveHolidaysToCache(country, merged, mergedYears);
@@ -371,16 +390,8 @@
     // Dark mode effect
     $effect.pre(() => {
         if (typeof window !== "undefined") {
-            try {
-                localStorage.setItem("darkMode", darkMode.toString());
-            } catch {
-                // Ignore storage quota / private mode errors.
-            }
-            if (darkMode) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
+            persistDarkModeToStorage(darkMode);
+            applyDarkModeClass(darkMode);
         }
     });
 
@@ -479,70 +490,41 @@
 </script>
 
 <!-- --- Navigation Bar --- -->
-<nav
-    class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
->
-    {#if isFacebookInAppBrowser}
-        <!-- Info banner for in-app browser users -->
-        <div
-            class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900"
+<TopBar title="Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
+    <svelte:fragment slot="actions">
+        <Button
+            color="light"
+            onclick={() => {
+                goto("/help");
+            }}
         >
-            <div class="max-w-7xl mx-auto px-4 py-1">
-                <p
-                    class="text-xs text-amber-800 dark:text-amber-200 leading-snug"
-                >
-                    <span class="sm:hidden"
-                        >Tip: works best in Safari/Chrome/Edge (use “Open in
-                        browser”).</span
-                    >
-                    <span class="hidden sm:inline"
-                        >Tip: this app works best in Safari/Chrome/Edge (use
-                        “Open in browser”).</span
-                    >
-                </p>
-            </div>
-        </div>
-    {/if}
-    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
-        <div class="flex items-center gap-2">
-            <img src="/favicon.svg" alt="App icon" class="w-7 h-7" style="margin-bottom:2px;" />
-            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pension Calendar</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <a
-                href="/help"
-                class="px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-            >
-                Help
-            </a>
-            {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
-                <!-- Install button for PWA or iOS help -->
-                <button
-                    onclick={handleInstallClick}
-                    class="px-3 py-1 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-200 hover:bg-blue-50 dark:hover:bg-gray-700 transition"
-                    title="Install app"
-                    aria-label="Install app"
-                >
-                    Install
-                </button>
+            Help
+        </Button>
+        <ShareButton
+            shareText="Calculate your State Pension Age and payment calendar, including bank holiday adjustments."
+        />
+        {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
+            <!-- Install button for PWA or iOS help -->
+            <Button color="blue" onclick={handleInstallClick} title="Install app" aria-label="Install app">
+                Install
+            </Button>
+        {/if}
+        <!-- Dark mode toggle button -->
+        <Button
+            color="light"
+            onclick={() => {
+                darkMode = !darkMode;
+            }}
+            title="Toggle dark mode"
+        >
+            {#if darkMode}
+                ☀️
+            {:else}
+                🌙
             {/if}
-            <!-- Dark mode toggle button -->
-            <button
-                onclick={() => {
-                    darkMode = !darkMode;
-                }}
-                class="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                title="Toggle dark mode"
-            >
-                {#if darkMode}
-                    ☀️
-                {:else}
-                    🌙
-                {/if}
-            </button>
-        </div>
-    </div>
-</nav>
+        </Button>
+    </svelte:fragment>
+</TopBar>
 
 {#if showInstallHelpModal}
     <!-- Modal for iOS install help -->
@@ -594,15 +576,27 @@
     <div class="max-w-7xl mx-auto">
         <!-- Header section -->
         <div class="mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                UK State Pension Payment Calendar
-            </h1>
-            <p class="text-lg text-gray-600 dark:text-gray-300">
-                Calculate your pension payment schedule based on your NI code
-            </p>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Privacy: this app does not save or share any personal data to a server.
-            </p>
+            <div
+                class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+            >
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                        UK State Pension Payment Calendar
+                    </h1>
+                    <p class="text-lg text-gray-600 dark:text-gray-300">
+                        Calculate your pension payment schedule based on your NI
+                        code.
+                    </p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Also calculates your State Pension Age and lets you
+                        print or export the calendar to your own device.
+                    </p>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                        Privacy: this app does not save or share any personal
+                        data on a server.
+                    </p>
+                </div>
+            </div>
         </div>
 
         <!-- Inputs + Summary (single cohesive card) -->
@@ -633,7 +627,12 @@
                 <!-- Summary card -->
                 <div class="lg:col-span-4 space-y-4">
                     {#if result}
-                        <SummaryCard {result} embedded spaDate={firstPaymentDateFormatted} />
+                        <SummaryCard
+                            {result}
+                            embedded
+                            spaDate={firstPaymentDateFormatted}
+                            nextPaymentDate={nextPaymentDateFormatted}
+                        />
                     {:else}
                         <div class="p-6">
                             <div class="mb-2">
@@ -650,7 +649,6 @@
                             </div>
                         </div>
                     {/if}
-
                 </div>
             </div>
         </Card>
@@ -679,8 +677,8 @@
                             bind:startYearSelect
                             bind:numberOfYearsInput
                             {years}
-                            applyStartYear={applyStartYear}
-                            applyNumberOfYears={applyNumberOfYears}
+                            {applyStartYear}
+                            {applyNumberOfYears}
                             onPersist={persistInputs}
                             bind:selectedCountry
                             {additionalHolidays}
@@ -696,9 +694,14 @@
 </div>
 
 <svelte:head>
-	<title>UK State Pension Calculator - Payment Dates & Schedule</title>
-	<meta property="og:title" content="UK State Pension Calculator - Payment Dates & Schedule" />
-	<meta property="og:description" content="Calculate your UK State Pension payment dates based on your National Insurance code and date of birth. Get an accurate pension schedule with bank holiday considerations." />
-	<meta property="og:url" content="https://ukspcal.vercel.app" />
+    <title>UK State Pension Calculator - Payment Dates & Schedule</title>
+    <meta
+        property="og:title"
+        content="UK State Pension Calculator - Payment Dates & Schedule"
+    />
+    <meta
+        property="og:description"
+        content="Calculate your UK State Pension payment dates based on your National Insurance code and date of birth. Get an accurate pension schedule with bank holiday considerations."
+    />
+    <meta property="og:url" content="https://ukspcal.vercel.app" />
 </svelte:head>
-

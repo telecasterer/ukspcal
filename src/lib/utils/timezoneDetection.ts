@@ -37,7 +37,8 @@ const timezoneToCountryCode: Record<string, string> = {
     'Pacific/Auckland': 'NZ',
     // Asia
     'Asia/Tokyo': 'JP',
-    'Asia/Shanghai': 'JP', // China - map to JP as closest
+    // Asia mappings default to JP as a conservative fallback until more countries are supported.
+    'Asia/Shanghai': 'JP', // China
     'Asia/Hong_Kong': 'JP',
     'Asia/Singapore': 'JP',
     'Asia/Bangkok': 'JP',

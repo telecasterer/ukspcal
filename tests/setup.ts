@@ -35,6 +35,19 @@ if (typeof globalThis !== "undefined" && typeof (globalThis as any).Intersection
 	};
 }
 
+if (typeof globalThis !== "undefined" && typeof (globalThis as any).HTMLDialogElement !== "undefined") {
+	const proto = (globalThis as any).HTMLDialogElement?.prototype;
+	if (proto && typeof proto.showModal !== "function") {
+		proto.showModal = () => undefined;
+	}
+	if (proto && typeof proto.show !== "function") {
+		proto.show = () => undefined;
+	}
+	if (proto && typeof proto.close !== "function") {
+		proto.close = () => undefined;
+	}
+}
+
 // JSDOM doesn't implement Web Animations; Svelte transitions may call element.animate().
 if (typeof Element !== "undefined" && typeof (Element.prototype as any).animate !== "function") {
 	(Element.prototype as any).animate = () => {

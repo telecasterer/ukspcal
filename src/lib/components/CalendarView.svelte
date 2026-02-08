@@ -8,12 +8,15 @@
     import type { PensionResult } from "$lib/pensionEngine";
     import { exportCSV, generateICS } from "$lib/utils/exportHelpers";
     import IcsReminderDialog from "./IcsAlarmDialog.svelte";
-    import { loadIcsAlarmSettings as loadIcsReminderSettings, saveIcsAlarmSettings as saveIcsReminderSettings, type IcsAlarmSettings as IcsReminderSettings } from "$lib/utils/icsAlarmPersistence";
+    import {
+        loadIcsAlarmSettings as loadIcsReminderSettings,
+        saveIcsAlarmSettings as saveIcsReminderSettings,
+        type IcsAlarmSettings as IcsReminderSettings
+    } from "$lib/utils/icsAlarmPersistence";
     import { loadIcsEventTime, saveIcsEventTime } from "$lib/utils/icsEventTimePersistence";
-        // ICS Event time (persistent, default midday)
-        let icsEventTime = loadIcsEventTime();
-        $: if (icsEventTime) saveIcsEventTime(icsEventTime);
+    import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
+    import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
     import { onMount, tick } from "svelte";
 
     // --- Constants ---
@@ -58,14 +61,15 @@
      */
     async function copyLinkToClipboard() {
         copyLinkStatus = "";
-        try {
-            const url = window.location.href;
-            await navigator.clipboard.writeText(url);
-            copyLinkStatus = "Link copied.";
-        } catch {
-            copyLinkStatus = "Couldn't copy automatically — please copy the address bar URL.";
-        }
+        const ok = await copyLinkToClipboardUtil();
+        copyLinkStatus = ok
+            ? "Link copied."
+            : "Couldn't copy automatically — please copy the address bar URL.";
     }
+
+    // ICS Event time (persistent, default midday)
+    let icsEventTime = loadIcsEventTime();
+    $: if (icsEventTime) saveIcsEventTime(icsEventTime);
 
     /**
      * Print the calendar (rendering all months if needed)
@@ -87,9 +91,7 @@
 
     // --- Print event listeners and Facebook in-app browser detection ---
     onMount(() => {
-        const ua = navigator.userAgent ?? "";
-        // FBAN/FBAV are used by Facebook iOS webviews (incl. Messenger in-app browser).
-        isFacebookInAppBrowser = /FBAN|FBAV/i.test(ua);
+        isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
 
         const onBeforePrint = () => {
             renderPrintAllMonths = true;
@@ -279,38 +281,40 @@
                 </div>
 
                 <!-- Export/Print buttons -->
-                <div class="flex items-center gap-2">
-                    <!-- Export menu -->
-                    <Button
-                        id="export-menu"
-                        color="light"
-                        class="px-3 py-2 text-sm"
-                        title="Export"
-                    >
-                        ⬇️ Export
-                    </Button>
-                    <Dropdown
-                        triggeredBy="#export-menu"
-                        bind:isOpen={exportMenuOpen}
-                        class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
-                    >
-                        <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openCsvModal}
-                            >Download spreadsheet (CSV)</DropdownItem
+                <div class="flex flex-col items-center sm:items-end gap-1">
+                    <div class="flex items-center gap-2">
+                        <!-- Export menu -->
+                        <Button
+                            id="export-menu"
+                            color="light"
+                            class="px-3 py-2 text-sm"
+                            title="Export"
                         >
-                        <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openIcsModal}
-                            >Add to calendar (ICS)</DropdownItem
+                            ⬇️ Export
+                        </Button>
+                        <Dropdown
+                            triggeredBy="#export-menu"
+                            bind:isOpen={exportMenuOpen}
+                            class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
                         >
-                    </Dropdown>
+                            <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openCsvModal}
+                                >Download spreadsheet (CSV)</DropdownItem
+                            >
+                            <DropdownItem class="text-gray-700 dark:text-gray-100" onclick={openIcsModal}
+                                >Add to calendar (ICS)</DropdownItem
+                            >
+                        </Dropdown>
 
-                    <!-- Print button -->
-                    <Button
-                        onclick={handlePrint}
-                        color="light"
-                        class="px-3 py-2 text-sm"
-                        title="Print calendar"
-                    >
-                        🖨️ Print
-                    </Button>
+                        <!-- Print button -->
+                        <Button
+                            onclick={handlePrint}
+                            color="light"
+                            class="px-3 py-2 text-sm"
+                            title="Print calendar"
+                        >
+                            🖨️ Print
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -543,7 +547,7 @@
                         id="ics-color"
                         type="color"
                         bind:value={icsColor}
-                        on:change={() => onPersist?.()}
+                        onchange={() => onPersist?.()}
                         class="h-12 w-24 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
                     />
                     <Input

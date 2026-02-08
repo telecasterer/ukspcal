@@ -1,7 +1,7 @@
 <script lang="ts">
     // CalendarMonth.svelte: Renders a single month grid with payment and holiday highlights
     import { generateCalendarDays, monthName } from "$lib/utils/calendarHelpers";
-    import { getFlagEmoji } from "$lib/utils/countryFlags";
+    import { getFlagSvg } from "$lib/utils/countryFlags";
     import type { Payment } from "$lib/pensionEngine";
 
     // --- Props ---
@@ -60,6 +60,9 @@
     // --- Calendar grid for this month (array of day numbers/nulls) ---
     const calendarDays = $derived(generateCalendarDays(year, month));
 
+    // --- Derived: flag svg for selected country ---
+    const flagSvg = $derived.by(() => (selectedCountry !== "none" ? getFlagSvg(selectedCountry) : ""));
+
     /**
      * Compute extra CSS classes for a calendar day cell
      */
@@ -68,14 +71,16 @@
         weekend: boolean,
         payment: Payment | null,
         showWeekends: boolean,
-        holiday: string | null
+        holiday: string | null,
+        additionalHoliday: string | null
     ): string {
         return [
             !day ? "empty" : "",
             weekend && showWeekends && day && !payment && !holiday ? "weekend" : "",
             payment && !payment.early ? "payment" : "",
             payment?.early ? "early-payment" : "",
-            holiday && !payment ? "holiday" : ""
+            holiday && !payment ? "holiday" : "",
+            additionalHoliday && !payment && !holiday ? "additional-holiday" : ""
         ]
             .filter(Boolean)
             .join(" ");
@@ -109,14 +114,19 @@
 
             <!-- Calendar day cell: highlights payment, early, holiday, weekend -->
             <div
-                class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${getDayExtraClasses(day, weekend, payment, showWeekends, holiday)}`}
+                class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${getDayExtraClasses(day, weekend, payment, showWeekends, holiday, additionalHoliday)}`}
                 title={holiday && !payment ? holiday : additionalHoliday ? additionalHoliday : undefined}
             >
                 {#if day}
                     <div class="flex justify-between items-start w-full">
                         <div class="text-sm font-semibold">{day}</div>
-                        {#if additionalHoliday && !payment}
-                            <div class="text-lg leading-none" title={additionalHoliday}>{getFlagEmoji(selectedCountry)}</div>
+                        {#if additionalHoliday && !payment && flagSvg}
+                            <img
+                                src={flagSvg}
+                                alt={`${selectedCountry} flag`}
+                                class="w-4 h-4"
+                                title={additionalHoliday}
+                            />
                         {/if}
                     </div>
                 {/if}
@@ -137,7 +147,7 @@
             </span>
             <span class="inline-flex items-center gap-1">
                 <span class="w-3 h-3 rounded legend-item holiday"></span>
-                <span>UK Holiday</span>
+                <span>UK-Holiday</span>
             </span>
             {#if showWeekends}
                 <span class="inline-flex items-center gap-1">
@@ -147,8 +157,14 @@
             {/if}
             {#if selectedCountry !== "none"}
                 <span class="inline-flex items-center gap-1">
-                    <span class="text-sm">{getFlagEmoji(selectedCountry)}</span>
-                    <span>Holiday</span>
+                    {#if flagSvg}
+                        <img
+                            src={flagSvg}
+                            alt={`${selectedCountry} flag`}
+                            class="w-4 h-4"
+                        />
+                    {/if}
+                    <span>{selectedCountry}-Holiday</span>
                 </span>
             {/if}
         </div>

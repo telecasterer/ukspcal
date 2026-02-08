@@ -10,7 +10,8 @@
 */
 
 @layer components {
-	/*
+
+    /*
 		Button Styles
 		-------------
 		.btn: Base button
@@ -18,116 +19,133 @@
 		.btn-secondary: Secondary action
 		.btn-icon: Icon/utility button
 	*/
-	.btn {
-		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
-	}
-	.btn-primary {
-		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
-		@apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white;
-	}
-	.btn-secondary {
-		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
-		@apply bg-slate-500 hover:bg-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white;
-	}
-	.btn-icon {
-		@apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
-		@apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 p-2;
-	}
+    .btn {
+        @apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
+    }
 
-	/*
+    .btn-primary {
+        @apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
+        @apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white;
+    }
+
+    .btn-secondary {
+        @apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
+        @apply bg-slate-500 hover:bg-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 text-white;
+    }
+
+    .btn-icon {
+        @apply px-4 py-2.5 rounded-lg font-semibold transition-all cursor-pointer;
+        @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 p-2;
+    }
+
+    /*
 		Card Styles
 		-----------
 		.card: Generic card
 		.card-blue, .card-emerald, .card-violet, .card-orange: Themed cards
 	*/
-	.card {
-		@apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-6;
-	}
-	.card-blue {
-		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
-		@apply bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700;
-	}
-	.card-emerald {
-		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
-		@apply bg-emerald-50 dark:bg-emerald-900 border-emerald-200 dark:border-emerald-700;
-	}
-	.card-violet {
-		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
-		@apply bg-violet-50 dark:bg-violet-900 border-violet-200 dark:border-violet-700;
-	}
-	.card-orange {
-		@apply rounded-lg border p-3 sm:p-4 shadow-sm;
-		@apply bg-orange-50 dark:bg-orange-900 border-orange-200 dark:border-orange-700;
-	}
+    .card {
+        @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-6;
+    }
 
-	/*
+    .card-blue {
+        @apply rounded-lg border p-3 sm:p-4 shadow-sm;
+        @apply bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700;
+    }
+
+    .card-emerald {
+        @apply rounded-lg border p-3 sm:p-4 shadow-sm;
+        @apply bg-emerald-50 dark:bg-emerald-900 border-emerald-200 dark:border-emerald-700;
+    }
+
+    .card-violet {
+        @apply rounded-lg border p-3 sm:p-4 shadow-sm;
+        @apply bg-violet-50 dark:bg-violet-900 border-violet-200 dark:border-violet-700;
+    }
+
+    .card-orange {
+        @apply rounded-lg border p-3 sm:p-4 shadow-sm;
+        @apply bg-orange-50 dark:bg-orange-900 border-orange-200 dark:border-orange-700;
+    }
+
+    /*
 		Summary Text Styles
 		------------------
 		.text-summary-label: Label for summary fields
 		.text-summary-value-blue, .text-summary-value-emerald: Themed summary values
 	*/
-	.text-summary-label {
-		@apply text-xs font-semibold uppercase tracking-wide mb-1 text-gray-600 dark:text-gray-300;
-	}
-	.text-summary-value-blue {
-		@apply text-xl sm:text-2xl font-bold;
-		@apply text-blue-700 dark:text-blue-100;
-	}
-	.text-summary-value-emerald {
-		@apply text-xl sm:text-2xl font-bold;
-		@apply text-emerald-700 dark:text-emerald-100;
-	}
+    .text-summary-label {
+        @apply text-xs font-semibold uppercase tracking-wide mb-1 text-gray-600 dark:text-gray-300;
+    }
 
-	.text-summary-value-violet {
-		@apply text-xl sm:text-2xl font-bold;
-		@apply text-violet-700 dark:text-violet-100;
-	}
+    .text-summary-value-blue {
+        @apply text-xl sm:text-2xl font-bold;
+        @apply text-blue-700 dark:text-blue-100;
+    }
 
-	.text-summary-value-orange {
-		@apply text-xl sm:text-2xl font-bold;
-		@apply text-orange-700 dark:text-orange-100;
-	}
+    .text-summary-value-emerald {
+        @apply text-xl sm:text-2xl font-bold;
+        @apply text-emerald-700 dark:text-emerald-100;
+    }
+
+    .text-summary-value-violet {
+        @apply text-xl sm:text-2xl font-bold;
+        @apply text-violet-700 dark:text-violet-100;
+    }
+
+    .text-summary-value-orange {
+        @apply text-xl sm:text-2xl font-bold;
+        @apply text-orange-700 dark:text-orange-100;
+    }
 }
 
 /* Calendar semantic modifiers (used by CalendarMonth.svelte)
    Defined in utilities layer so they override per-element utility classes like bg-white. */
 @layer utilities {
-	.calendar-day.empty {
-		@apply bg-gray-50 dark:bg-slate-950;
-	}
+    /* ...existing code... */
 
-	.calendar-day.weekend {
-		@apply bg-gray-100 dark:bg-gray-900/50;
-	}
+    .calendar-day.payment {
+        @apply bg-emerald-500 dark:bg-emerald-600 text-white dark:text-gray-50 font-bold;
+    }
 
-	.calendar-day.payment,
-	.legend-item.payment {
-		@apply bg-emerald-500 dark:bg-emerald-600 text-white dark:text-gray-50 font-bold;
-	}
+    .legend-item.payment {
+        @apply bg-emerald-500 dark:bg-emerald-600 text-white dark:text-gray-50 font-bold;
+    }
 
-	.calendar-day.early-payment,
-	.legend-item.early-payment {
-		@apply bg-amber-500 dark:bg-amber-600 text-white dark:text-gray-50 font-bold;
-	}
+    .calendar-day.early-payment {
+        @apply bg-amber-500 dark:bg-amber-600 text-white dark:text-gray-50 font-bold;
+    }
 
-	.calendar-day.holiday,
-	.legend-item.holiday {
-		@apply bg-blue-500 dark:bg-blue-700 text-white dark:text-white;
-	}
+    .legend-item.early-payment {
+        @apply bg-amber-500 dark:bg-amber-600 text-white dark:text-gray-50 font-bold;
+    }
+
+    .calendar-day.holiday {
+        @apply bg-blue-500 dark:bg-blue-700 text-white dark:text-white;
+    }
+
+    .legend-item.holiday {
+        @apply bg-blue-500 dark:bg-blue-700 text-white dark:text-white;
+    }
+
+    .calendar-day.additional-holiday {
+    }
 }
 
 /* Help markdown heading size overrides */
 .help-markdown h2 {
-  font-size: 1.25rem; /* Tailwind text-xl */
-  font-weight: 700;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    /* Tailwind text-xl */
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
 }
+
 .help-markdown h3 {
-  font-size: .9rem; 
-  font-weight: 600;
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
+    font-size: .9rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Help markdown image styling */
@@ -136,18 +154,21 @@
     height: auto;
     display: block;
     margin: 0.75rem 0;
-    border: 1px solid rgb(229 231 235); /* gray-200 */
+    border: 1px solid rgb(229 231 235);
+    /* gray-200 */
     border-radius: 0.5rem;
     box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.22);
 }
+
 .dark .help-markdown img {
-    border-color: rgb(55 65 81); /* gray-700 */
+    border-color: rgb(55 65 81);
+    /* gray-700 */
 }
 
 /* Date input calendar icon in dark mode */
 .dark input[type="date"]::-webkit-calendar-picker-indicator {
-	filter: invert(1) brightness(1.2);
-	opacity: 0.9;
+    filter: invert(1) brightness(1.2);
+    opacity: 0.9;
 }
 
 /* Tighter app details table spacing */

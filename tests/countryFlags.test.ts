@@ -1,59 +1,58 @@
 import { describe, it, expect } from 'vitest';
-import { getFlagEmoji, countryCodeToFlagEmoji } from '../src/lib/utils/countryFlags';
+import { getFlagSvg, countryCodeToFlagSvg } from '../src/lib/utils/countryFlags';
 
 describe('countryFlags', () => {
-    describe('countryCodeToFlagEmoji', () => {
+    describe('countryCodeToFlagSvg', () => {
         it('contains all expected country codes', () => {
             const expectedCountries = ['FR', 'DE', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE', 'SE', 'DK', 'NO', 'CH', 'US', 'CA', 'AU', 'NZ', 'JP'];
 
             for (const country of expectedCountries) {
-                expect(countryCodeToFlagEmoji[country]).toBeDefined();
+                expect(countryCodeToFlagSvg[country]).toBeDefined();
             }
         });
 
-        it('has all valid flag emojis (basic regional indicators check)', () => {
-            for (const [code, emoji] of Object.entries(countryCodeToFlagEmoji)) {
-                // Flag emojis are typically 2 characters long (regional indicator pairs)
-                expect(emoji.length).toBeGreaterThan(0);
-                expect(typeof emoji).toBe('string');
+        it('has all valid flag svg urls', () => {
+            for (const [code, svgUrl] of Object.entries(countryCodeToFlagSvg)) {
+                expect(svgUrl.length).toBeGreaterThan(0);
+                expect(typeof svgUrl).toBe('string');
             }
         });
 
         it('maps specific countries correctly', () => {
-            expect(countryCodeToFlagEmoji['FR']).toBe('🇫🇷');
-            expect(countryCodeToFlagEmoji['DE']).toBe('🇩🇪');
-            expect(countryCodeToFlagEmoji['US']).toBe('🇺🇸');
-            expect(countryCodeToFlagEmoji['JP']).toBe('🇯🇵');
-            expect(countryCodeToFlagEmoji['GB']).toBeUndefined(); // Should not exist if not in supported list
+            expect(countryCodeToFlagSvg['FR']).toContain('fr');
+            expect(countryCodeToFlagSvg['DE']).toContain('de');
+            expect(countryCodeToFlagSvg['US']).toContain('us');
+            expect(countryCodeToFlagSvg['JP']).toContain('jp');
+            expect(countryCodeToFlagSvg['GB']).toBeUndefined(); // Should not exist if not in supported list
         });
     });
 
-    describe('getFlagEmoji', () => {
-        it('returns the correct flag for a valid country code', () => {
-            expect(getFlagEmoji('FR')).toBe('🇫🇷');
-            expect(getFlagEmoji('US')).toBe('🇺🇸');
-            expect(getFlagEmoji('AU')).toBe('🇦🇺');
+    describe('getFlagSvg', () => {
+        it('returns the correct flag url for a valid country code', () => {
+            expect(getFlagSvg('FR')).toContain('fr');
+            expect(getFlagSvg('US')).toContain('us');
+            expect(getFlagSvg('AU')).toContain('au');
         });
 
         it('returns empty string for unknown country code', () => {
-            expect(getFlagEmoji('XX')).toBe('');
-            expect(getFlagEmoji('ZZ')).toBe('');
-            expect(getFlagEmoji('')).toBe('');
+            expect(getFlagSvg('XX')).toBe('');
+            expect(getFlagSvg('ZZ')).toBe('');
+            expect(getFlagSvg('')).toBe('');
         });
 
         it('is case-sensitive', () => {
-            expect(getFlagEmoji('fr')).toBe('');
-            expect(getFlagEmoji('Fr')).toBe('');
-            expect(getFlagEmoji('FR')).toBe('🇫🇷');
+            expect(getFlagSvg('fr')).toBe('');
+            expect(getFlagSvg('Fr')).toBe('');
+            expect(getFlagSvg('FR')).toContain('fr');
         });
 
         it('handles all supported countries', () => {
             const supportedCountries = ['FR', 'DE', 'ES', 'IT', 'NL', 'BE', 'AT', 'PT', 'IE', 'SE', 'DK', 'NO', 'CH', 'US', 'CA', 'AU', 'NZ', 'JP'];
 
             for (const country of supportedCountries) {
-                const emoji = getFlagEmoji(country);
-                expect(emoji).not.toBe('');
-                expect(emoji.length).toBeGreaterThan(0);
+                const svgUrl = getFlagSvg(country);
+                expect(svgUrl).not.toBe('');
+                expect(svgUrl.length).toBeGreaterThan(0);
             }
         });
     });

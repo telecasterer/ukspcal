@@ -33,3 +33,14 @@ export function detectFacebookInAppBrowser(options: { userAgent: string; href: s
     isFacebookInAppBrowserUserAgent(options.userAgent)
   );
 }
+
+/**
+ * Detect Facebook's in-app browser using window.navigator and window.location.
+ */
+export function detectFacebookInAppBrowserFromWindow(): boolean {
+  if (typeof window === "undefined") return false;
+  return detectFacebookInAppBrowser({
+    userAgent: navigator.userAgent ?? "",
+    href: window.location.href,
+  });
+}

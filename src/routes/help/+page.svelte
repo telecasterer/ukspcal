@@ -1,40 +1,43 @@
 <script lang="ts">
-            import { detectFacebookInAppBrowser } from "$lib/utils/inAppBrowser";
-            import { onMount, tick } from "svelte";
-            import AppFooter from "$lib/components/AppFooter.svelte";
-            let isFacebookInAppBrowser: boolean = false;
+    import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
+    import {
+        applyDarkModeClass,
+        persistDarkModeToStorage,
+        readDarkModeFromStorage,
+    } from "$lib/utils/darkMode";
+    import { onMount, tick } from "svelte";
+    import AppFooter from "$lib/components/AppFooter.svelte";
+    import TopBar from "$lib/components/TopBar.svelte";
+    import ShareButton from "$lib/components/ShareButton.svelte";
+    import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
+    import { goto } from "$app/navigation";
 
-            onMount(() => {
-                const ua = navigator.userAgent ?? "";
-                isFacebookInAppBrowser = detectFacebookInAppBrowser({
-                    userAgent: ua,
-                    href: window.location.href,
-                });
-            });
-        // --- Dark mode state and utility (copied from main page) ---
-        function readDarkModeFromStorage(): boolean {
-            if (typeof window === "undefined") return false;
-            try {
-                return localStorage.getItem("darkMode") === "true";
-            } catch {
-                return false;
-            }
-        }
-        let darkMode: boolean = readDarkModeFromStorage();
+    let isFacebookInAppBrowser: boolean = false;
+    let copyLinkStatus = "";
 
-        // Make darkMode reactive and persist to localStorage, update document class
-        $: {
-            if (typeof window !== "undefined") {
-                try {
-                    localStorage.setItem("darkMode", darkMode.toString());
-                } catch {}
-                if (darkMode) {
-                    document.documentElement.classList.add("dark");
-                } else {
-                    document.documentElement.classList.remove("dark");
-                }
-            }
+    onMount(() => {
+        isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
+    });
+
+    async function handleCopyLink() {
+        copyLinkStatus = "";
+        const ok = await copyLinkToClipboardUtil();
+        copyLinkStatus = ok
+            ? "Link copied."
+            : "Couldn't copy automatically — please copy the address bar URL.";
+    }
+
+    // Share handled by ShareButton component
+    // --- Dark mode state ---
+    let darkMode: boolean = readDarkModeFromStorage();
+
+    // Make darkMode reactive and persist to localStorage, update document class
+    $: {
+        if (typeof window !== "undefined") {
+            persistDarkModeToStorage(darkMode);
+            applyDarkModeClass(darkMode);
         }
+    }
     /**
      * --- HELP PAGE LOGIC ---
      *
@@ -64,8 +67,19 @@
     } from "flowbite-svelte";
     import { buildInfo, buildInfoFormatted } from "$lib/buildInfo";
 
-    // Replace the placeholder in the markdown with the latest bank holiday string
-    const helpMarkdownReplaced = helpMarkdown.replace("{{LATEST_BANK_HOLIDAY}}", latestBankHolidayString);
+    // Replace placeholders in the markdown with dynamic values
+    const placeholderMap: Record<string, string> = {
+        "{{LATEST_BANK_HOLIDAY}}": latestBankHolidayString,
+        "{{BUILDINFO_VERSION}}": buildInfo.version,
+        "{{BUILDINFO_COMMIT}}": buildInfo.commit,
+        "{{BUILDINFO_COMMIT_DATE}}": buildInfoFormatted.commitDate,
+        "{{BUILDINFO_BUILD_TIME}}": buildInfoFormatted.buildTime,
+    };
+
+    const helpMarkdownReplaced = Object.entries(placeholderMap).reduce(
+        (acc, [key, value]) => acc.replaceAll(key, value),
+        helpMarkdown,
+    );
 
     // --- 3. Parse markdown into structured sections ---
     // Types for help sections
@@ -93,7 +107,11 @@
      */
     function pushSubSection(): void {
         if (currentSubSection && currentSection) {
-            currentSubSection.html = md.renderer.render(subBodyTokens, md.options, {});
+            currentSubSection.html = md.renderer.render(
+                subBodyTokens,
+                md.options,
+                {},
+            );
             if (!currentSection.subSections) currentSection.subSections = [];
             currentSection.subSections.push(currentSubSection);
             currentSubSection = null;
@@ -109,10 +127,18 @@
         if (!currentSection) return;
         // If there were any H3s, render content before first H3 as html
         if (currentSection.subSections && bodyTokens.length > 0) {
-            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
+            currentSection.html = md.renderer.render(
+                bodyTokens,
+                md.options,
+                {},
+            );
         } else if (!currentSection.subSections) {
             // No H3s: render all content as html
-            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
+            currentSection.html = md.renderer.render(
+                bodyTokens,
+                md.options,
+                {},
+            );
         }
         sections.push(currentSection);
         currentSection = null;
@@ -130,20 +156,34 @@
             pushSection();
             const inline = allTokens[i + 1];
             currentSection = {
-                title: inline && inline.type === "inline" ? inline.content.trim() : "Section",
+                title:
+                    inline && inline.type === "inline"
+                        ? inline.content.trim()
+                        : "Section",
             };
             // Skip over the h2 (heading_open, inline, heading_close).
-            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
+            while (
+                i < allTokens.length &&
+                allTokens[i].type !== "heading_close"
+            )
+                i++;
             continue;
         } else if (token.type === "heading_open" && token.tag === "h3") {
             pushSubSection();
             const inline = allTokens[i + 1];
             currentSubSection = {
-                title: inline && inline.type === "inline" ? inline.content.trim() : "Subsection",
+                title:
+                    inline && inline.type === "inline"
+                        ? inline.content.trim()
+                        : "Subsection",
                 html: "",
             };
             // Skip over the h3 (heading_open, inline, heading_close).
-            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
+            while (
+                i < allTokens.length &&
+                allTokens[i].type !== "heading_close"
+            )
+                i++;
             continue;
         }
         if (currentSubSection) {
@@ -157,51 +197,41 @@
     pushSection();
 </script>
 
-
 <div class="flex flex-col min-h-screen">
-    {#if isFacebookInAppBrowser}
-        <div class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900">
-            <div class="max-w-7xl mx-auto px-4 py-1">
-                <p class="text-xs text-amber-800 dark:text-amber-200 leading-snug">
-                    <span class="sm:hidden">Tip: works best in Safari/Chrome/Edge (use “Open in browser”).</span>
-                    <span class="hidden sm:inline">Tip: this app works best in Safari/Chrome/Edge (use “Open in browser”).</span>
-                </p>
-            </div>
-        </div>
-    {/if}
     <!-- Blue top bar, matching main page -->
-    <!-- Exact copy of main page top bar for perfect alignment -->
-    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
-            <div class="flex items-center gap-2">
-                <img src="/favicon.svg" alt="App icon" class="w-7 h-7" style="margin-bottom:2px;" />
-                <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">Help</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <a
-                    href="/"
-                    class="px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                >
-                    ← Back
-                </a>
-                <button
-                    onclick={() => { darkMode = !darkMode; }}
-                    class="text-2xl p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                    title="Toggle dark mode"
-                >
-                    {#if darkMode}
-                        ☀️
-                    {:else}
-                        🌙
-                    {/if}
-                </button>
-            </div>
-        </div>
-    </nav>
+    <TopBar title="Help" showInAppBanner={isFacebookInAppBrowser}>
+        <svelte:fragment slot="actions">
+            <Button
+                color="light"
+                onclick={() => {
+                    goto("/");
+                }}
+            >
+                ← Back
+            </Button>
+            <ShareButton
+                shareText="Calculate your State Pension Age and payment calendar."
+            />
+            <Button
+                color="light"
+                onclick={() => {
+                    darkMode = !darkMode;
+                }}
+                title="Toggle dark mode"
+            >
+                {#if darkMode}
+                    ☀️
+                {:else}
+                    🌙
+                {/if}
+            </Button>
+        </svelte:fragment>
+    </TopBar>
     <!-- Main content area -->
-    <div class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1">
+    <div
+        class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+    >
         <div class="max-w-4xl mx-auto space-y-6">
-
             <!-- Main help content rendered as accordion sections -->
             <div
                 class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
@@ -253,59 +283,6 @@
                             {/if}
                         </AccordionItem>
                     {/each}
-
-                    <!-- App details as last accordion item -->
-                    <AccordionItem
-                        classes={{ content: "bg-white dark:bg-gray-900/30" }}
-                    >
-                        {#snippet header()}
-                            <span>Version information</span>
-                        {/snippet}
-                        <div
-                            class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
-                        >
-                            <dl>
-                                <div
-                                    class="flex flex-row flex-nowrap items-baseline"
-                                >
-                                    <dt class="font-semibold min-w-[6.5rem]">
-                                        Developer:
-                                    </dt>
-                                    <dd class="ml-2">Paul Robins</dd>
-                                </div>
-                                <div
-                                    class="flex flex-row flex-nowrap items-baseline"
-                                >
-                                    <dt class="font-semibold min-w-[6.5rem]">
-                                        Version:
-                                    </dt>
-                                    <dd class="ml-2">
-                                        {buildInfo.version} (commit {buildInfo.commit})
-                                    </dd>
-                                </div>
-                                <div
-                                    class="flex flex-row flex-nowrap items-baseline"
-                                >
-                                    <dt class="font-semibold min-w-[6.5rem]">
-                                        Commit date:
-                                    </dt>
-                                    <dd class="ml-2">
-                                        {buildInfoFormatted.commitDate}
-                                    </dd>
-                                </div>
-                                <div
-                                    class="flex flex-row flex-nowrap items-baseline"
-                                >
-                                    <dt class="font-semibold min-w-[6.5rem]">
-                                        Build date:
-                                    </dt>
-                                    <dd class="ml-2">
-                                        {buildInfoFormatted.buildTime}
-                                    </dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </AccordionItem>
                 </Accordion>
             </div>
         </div>
@@ -316,11 +293,14 @@
 </div>
 
 <svelte:head>
-	<title>Help - UK State Pension Calculator</title>
-	<meta property="og:title" content="Help - UK State Pension Calculator" />
-	<meta property="og:description" content="Learn how to use the UK State Pension Calculator. Get answers to frequently asked questions and understand how to calculate your pension dates." />
-	<meta property="og:url" content="https://ukspcal.vercel.app/help" />
-	<link rel="canonical" href="https://ukspcal.vercel.app/help" />
+    <title>Help - UK State Pension Calculator</title>
+    <meta property="og:title" content="Help - UK State Pension Calculator" />
+    <meta
+        property="og:description"
+        content="Learn how to use the UK State Pension Calculator. Get answers to frequently asked questions and understand how to calculate your pension dates."
+    />
+    <meta property="og:url" content="https://ukspcal.vercel.app/help" />
+    <link rel="canonical" href="https://ukspcal.vercel.app/help" />
 </svelte:head>
 
 <style>

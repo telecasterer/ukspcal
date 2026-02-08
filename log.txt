@@ -1,0 +1,34 @@
+732b682328af312ca8d2082a1f71bd7111a0dd67 Update addtional holidays when duration changes
+4168839f8140d7368e3fb74f92b9877f86eebb7b fixed persistence for additional countries holidays
+22983964b047fc6b78c7d6a27b2e707dd8dbca06 Added optional overlay of another countries public holidays in calendar view.
+afd0afaffce40861690bb6df3a24f49e6b5e4b4f Corrected duration (years) which was n+1 instead of n
+2927a8b7d1bfde32eecf5e5007276bf18341f9d8 Updated help and calendar view controls layout
+598a4db5a0eeb4a0474ca1dcd44842180f4c1a5a Change calendar payment day text to white
+5a93642c5d78c4bab2e4581d1893de2a91192c0a Fix build error
+f367ee82d3e9e1fb420d39342c27b08c52595783 Fixed first payment date in Schedule summary
+9e20f51d52bdc1fc40f404f75cdc485d5fb97e3b Updated Select components classes prop instead deprecated selectClass
+f81ee2bfeca1b86cbc8311764d5d89cacfc77b8b Layout changes to improve ergonomics
+bdde271ad73d470ee842aa1087ce7e508bd0c4ed removed static sitemap
+022082bb1e5aa9ee7b75c1db2c5adee3f1794bf5 SEO stuff
+6b853c10b1cbf6ccaeed35f5a6b1a98605bf4e8d Added SEO meta tags
+5d4f85871e8d8ffa268f8182541ba73c7efcaaea Updated tests
+2c3c27ffd9e84ca7d7f39f458e28f56b5d674faf icon tweaks
+61d527c410c73ec5bfe92f5ac95275f326931230 Change back to nate datepicker for date of birth input
+675b2e8a0073a20091ffd7d94dd06967d491019c Tweaks to help page
+4d98acfe75703c18c8806e9fe954024ce6d82793 Urgent fix
+a5f65301ef55f53814840d18c7b3d3841675ab6c fixed problem with service worker not updating correctly
+cfa4410d69329c865742523a73108573d1c059a3 Added soft-reload when new service worker is available.
+25d66c61e9640e614625412fbab5cb24a5cc8f84 Added floating feedback button component to layout.
+8fa2a0eee6a7fa4b1f1304534a74e7da93c91e38 Added feedback link to footer
+72be258722854ae5fe7597198f3e793b0de15aa6 Allow vercel toolbar in CSP
+18074bc521cc60b41c068f77a90ec84321406433 remove hardcoded paths in CSP for service worker in vercel.json
+19a8bbe38c6c0bd29512c1f0c13fd9e730835adb Fix CSP by adding root URL to precache list
+05d4f3b1f9c4b6569f73f3455950a4ae8eb75e7b Added CSP to vercel.json to improve security.
+53f2d8b5623fdcdc1ffbd5aa0a31536c6e28ca4f Bump tar from 7.5.6 to 7.5.7 (#4)
+1092657ea337dcfb6635478a9d51fb09c423b252 ui tweaks to PensionInputsCard.svelte
+10435a9d391ce88d9ad2a641ed5ac9ab3c12ae0a Normalised checkbox styles and added corrected ICS event time format to use local time instead of UTC.
+bfb39fe2c750b40349fdb54981b27ec75bd314ae Remove calendar reminder description and title because they arent supported by all calendar apps. Added support for event time in calendar exports.
+9cda415472ec5a49bef175f39606c688411f8006 Renamed Alarms to Reminders for payments
+96897e533747c06c0fcdb6f384d26fc597ee9aa0 Added ICS alarm dialog and persistence functionality. Added reset app data feature.
+314fa5b9c81d785edbb2981851f753aa3c68f584 Updated calendar print styles and fixed layout issues in CalendarMonth component.
+3541751414063b7ed1b4a01f00114c2767346117 Updated calendar colors to use emerald, amber, and blue shades and legend sizes for better visual distinction.
