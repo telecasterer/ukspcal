@@ -6,7 +6,7 @@
     export let shareText = "Calculate your State Pension Age and payment calendar.";
     export let shareUrl: string | null = null;
     export let toastDurationMs = 4000;
-    export let size: string | undefined = undefined;
+    export let size: "xs" | "sm" | "md" | "lg" | "xl" | undefined = undefined;
 
     let shareStatus = "";
     let shareStatusTimeout: ReturnType<typeof setTimeout> | null = null;
