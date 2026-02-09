@@ -1,28 +1,30 @@
-# Release notes (2026-01-25)
+# Release notes (2026-02-08)
 
 ## Changes
 
-- Fix Flowbite Datepicker styling that could make the selected month label appear blank (Tailwind now includes the relevant Flowbite templates + a `primary` palette is defined).
-- Change persistence to **commit-only** (writes happen on blur/change rather than per-keystroke), reducing UI stalls in iOS WebKit contexts (including in-app browsers such as Facebook Messenger).
-- Restore Flowbite-Svelte Datepicker’s built-in calendar icon behavior (remove custom icon workarounds).
+- Top bar actions now use smaller Flowbite button sizing to reduce title overlap in compact layouts.
+- Share button now supports a `size` prop (Flowbite sizes) and is used in top bar actions.
+- Calendar day highlight styles were simplified (removed extra borders/rings).
+- Added `SummaryCardContent` to dedupe summary markup.
+- Expanded clear-all storage helper to cover all app keys and holiday cache.
+- Added and expanded unit tests for new and existing components/utilities.
+- Documentation updated (user guide, README, component reference).
 
 ## Developer notes
 
 - Node.js: use `nvm` and `nvm use` (see `.nvmrc`). This project requires Node 18+.
 
-## QA checklist (focus: iPad Chrome + Messenger in-app browser)
+## QA checklist (focus: top bar layout + calendar UI)
 
-1. NI field
-   - Type `12D` (or other valid value) and ensure typing stays responsive.
-   - Verify nothing is persisted until you leave the field (blur).
-2. Date of birth Datepicker
-   - Tap the built-in calendar icon and confirm the picker stays open.
-   - Select a date and confirm it persists after a reload.
-3. Year range / cycle
-   - Change start/end year and payment cycle; confirm persistence on change and restore after reload.
-4. Calendar export options
-   - Toggle calendar options and CSV format; confirm persistence on change.
-   - In ICS modal: edit event name/category/colour; confirm persistence on blur.
+1. Top bar actions
+   - Verify buttons do not overlap the title on narrow screens.
+   - Confirm Help/Share/Install/Dark Mode buttons are still usable.
+2. Share action
+   - Share opens native share (if available) or copies link.
+3. Calendar highlights
+   - Payment/early/holiday/additional holiday cells render without heavy borders/rings.
+4. Clear-all storage
+   - Ensure reset clears inputs, ICS settings, and holiday cache.
 
 If any step fails specifically in Messenger/Chrome but not Safari, capture:
 - iOS version

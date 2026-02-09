@@ -1,5 +1,6 @@
 <script lang="ts">
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
+    import { capturePosthog } from "$lib/utils/posthog";
     import { Button } from "flowbite-svelte";
 
     export let shareTitle = "UK State Pension Payment Calendar";
@@ -21,11 +22,13 @@
         const url = shareUrl ?? window.location.href;
         try {
             if (navigator.share) {
+                capturePosthog("share_attempt", { method: "native" });
                 await navigator.share({
                     title: shareTitle,
                     text: shareText,
                     url,
                 });
+                capturePosthog("share_success", { method: "native" });
                 shareStatus = "Share opened.";
                 shareStatusTimeout = setTimeout(() => {
                     shareStatus = "";
@@ -34,10 +37,13 @@
                 return;
             }
         } catch {
+            capturePosthog("share_failed", { method: "native" });
             // Fall back to copy below
         }
 
+        capturePosthog("share_attempt", { method: "copy" });
         const ok = await copyLinkToClipboardUtil(url);
+        capturePosthog("share_result", { method: "copy", success: ok });
         shareStatus = ok
             ? "Link copied."
             : "Couldn't copy automatically — please copy the address bar URL.";

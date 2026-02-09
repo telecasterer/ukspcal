@@ -20,7 +20,8 @@
     "flag-icons": "^7.5.0",
     "flowbite": "^4.0.1",
     "flowbite-svelte": "^1.31.0",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "^14.1.0",
+    "posthog-js": "^1.343.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.9.0",

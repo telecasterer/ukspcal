@@ -8,6 +8,9 @@
 - **IcsAlarmDialog.svelte** — Modal to configure ICS alarm settings.
 - **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options.
 - **SummaryCard.svelte** — Summary panel (first payment, pension age, normal weekday).
+- **SummaryCardContent.svelte** — Shared markup for summary content (used by SummaryCard).
+- **ShareButton.svelte** — Share/copy action button with optional size.
+- **TopBar.svelte** — App header with title, icon, and action slot.
 
 ## Core logic (src/lib)
 - **pensionEngine.ts** — Generates payment schedules and applies holiday adjustments.
@@ -18,9 +21,14 @@
 
 ## Utilities (src/lib/utils)
 - **calendarHelpers.ts** — Calendar layout helpers.
+- **clearAllAppStorage.ts** — Clears app-specific local storage keys.
+- **clipboard.ts** — Clipboard helper with fallback copy support.
+- **darkMode.ts** — Dark mode persistence and DOM class helpers.
 - **dateFormatting.ts** — Date formatting utilities for display/export.
 - **exportHelpers.ts** — CSV and ICS export builders.
 - **holidayCache.ts** — Cache helpers for additional holiday data.
+- **icsAlarmPersistence.ts** — Persist ICS alarm settings.
+- **icsEventTimePersistence.ts** — Persist ICS event time selection.
 - **inputPersistence.ts** — Persisting form state in local storage.
 - **statePensionAge.ts** — State Pension age calculation.
 - **pwaInstall.ts** — PWA install prompt helpers.

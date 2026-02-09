@@ -17,6 +17,7 @@
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
+    import { capturePosthog } from "$lib/utils/posthog";
     import { onMount, tick } from "svelte";
 
     // --- Constants ---
@@ -77,14 +78,17 @@
     async function handlePrint() {
         // Facebook/Messenger iOS in-app browsers frequently block print dialogs.
         if (isFacebookInAppBrowser) {
+            capturePosthog("print_blocked", { reason: "in_app_browser" });
             printUnsupportedOpen = true;
             return;
         }
         renderPrintAllMonths = true;
         await tick();
         try {
+            capturePosthog("print_attempt", { payments_count: payments.length });
             window.print();
         } catch {
+            capturePosthog("print_failed");
             printUnsupportedOpen = true;
         }
     }
@@ -178,11 +182,21 @@
     }
 
     function handleExportCsv() {
+        capturePosthog("export_csv", {
+            payments_count: payments.length,
+            date_format: csvDateFormat
+        });
         exportCSV(payments, result, csvDateFormat);
         csvModalOpen = false;
     }
 
     function handleExportIcs() {
+        capturePosthog("export_ics", {
+            payments_count: payments.length,
+            alarm_enabled: reminderSettings.alarmEnabled,
+            alarm_days_before: reminderSettings.daysBefore,
+            event_time: icsEventTime
+        });
         generateICS(payments, result, {
             csvDateFormat,
             icsEventName,
