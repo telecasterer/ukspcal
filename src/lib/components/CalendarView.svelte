@@ -587,7 +587,7 @@
 
                 <!-- Current month display -->
                 <div class="text-center min-w-[120px]">
-                    <div class="font-semibold text-gray-900 dark:text-white">
+                    <div class="text-sm font-semibold text-gray-900 dark:text-white">
                         {visibleRangeLabel}
                     </div>
                 </div>
@@ -814,7 +814,7 @@
 
                 <!-- Current month display -->
                 <div class="text-center min-w-[120px]">
-                    <div class="font-semibold text-gray-900 dark:text-white">
+                    <div class="text-sm font-semibold text-gray-900 dark:text-white">
                         {visibleRangeLabel}
                     </div>
                 </div>
