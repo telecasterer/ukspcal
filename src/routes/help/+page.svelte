@@ -10,6 +10,7 @@
     import TopBar from "$lib/components/TopBar.svelte";
     import ShareButton from "$lib/components/ShareButton.svelte";
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
+    import { capturePosthog } from "$lib/utils/posthog";
     import { goto } from "$app/navigation";
 
     let isFacebookInAppBrowser: boolean = false;
@@ -17,6 +18,7 @@
 
     onMount(() => {
         isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
+        capturePosthog("help_opened");
     });
 
     async function handleCopyLink() {

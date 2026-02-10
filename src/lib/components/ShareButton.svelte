@@ -37,7 +37,16 @@
                 }, toastDurationMs);
                 return;
             }
-        } catch {
+        } catch (error) {
+            if (error instanceof DOMException && error.name === "AbortError") {
+                capturePosthog("share_cancelled", { method: "native" });
+                shareStatus = "Share cancelled.";
+                shareStatusTimeout = setTimeout(() => {
+                    shareStatus = "";
+                    shareStatusTimeout = null;
+                }, toastDurationMs);
+                return;
+            }
             capturePosthog("share_failed", { method: "native" });
             // Fall back to copy below
         }

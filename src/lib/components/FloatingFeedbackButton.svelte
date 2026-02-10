@@ -1,8 +1,17 @@
+<script lang="ts">
+    import { capturePosthog } from "$lib/utils/posthog";
+
+    function handleFeedbackClick() {
+        capturePosthog("feedback_opened");
+    }
+</script>
+
 <a
     href="https://tally.so/r/q4Vbq2"
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Send feedback"
+    onclick={handleFeedbackClick}
     class="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out hover:scale-110"
     title="Send feedback"
 >

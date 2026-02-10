@@ -32,6 +32,7 @@
         saveHolidaysToCache,
     } from "$lib/utils/holidayCache";
     import { detectCountryFromTimezone } from "$lib/utils/timezoneDetection";
+    import { capturePosthog } from "$lib/utils/posthog";
 
     // Reset all fields and clear all saved values
     function handleResetAll() {
@@ -215,12 +216,14 @@
             e.preventDefault?.();
             deferredInstallPrompt = e as BeforeInstallPromptEvent;
             canInstallPwa = true;
+            capturePosthog("install_prompt_shown");
         };
 
         const onAppInstalled = () => {
             deferredInstallPrompt = null;
             canInstallPwa = false;
             computeStandalone();
+            capturePosthog("install_prompt_accepted");
         };
 
         window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
@@ -478,7 +481,12 @@
             await deferredInstallPrompt.prompt();
             // Clear prompt either way; browser usually only allows it once.
             try {
-                await deferredInstallPrompt.userChoice;
+                const choice = await deferredInstallPrompt.userChoice;
+                if (choice.outcome === "accepted") {
+                    capturePosthog("install_prompt_accepted");
+                } else {
+                    capturePosthog("install_prompt_dismissed");
+                }
             } catch {
                 // Ignore
             }
@@ -489,7 +497,13 @@
 
         if (showIosInstallHelp) {
             showInstallHelpModal = true;
+            capturePosthog("install_help_opened");
         }
+    }
+
+    function handleHelpClick() {
+        capturePosthog("help_opened");
+        goto("/help");
     }
 </script>
 
@@ -499,9 +513,7 @@
         <Button
             color="light"
             size="sm"
-            onclick={() => {
-                goto("/help");
-            }}
+            onclick={handleHelpClick}
         >
             Help
         </Button>
@@ -709,10 +721,10 @@
 </div>
 
 <svelte:head>
-    <title>UK State Pension Calculator - Payment Dates & Schedule</title>
+    <title>UK State Pension Age & Payment Calendar</title>
     <meta
         property="og:title"
-        content="UK State Pension Calculator - Payment Dates & Schedule"
+        content="UK State Pension Age & Payment Calendar"
     />
     <meta
         property="og:description"

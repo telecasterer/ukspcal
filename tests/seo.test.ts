@@ -43,7 +43,9 @@ describe("SEO - Meta Tags and Schema", () => {
     });
 
     it("should have page-specific title on main page", () => {
-        expect(mainPageContent).toContain("<title>UK State Pension Calculator");
+        expect(mainPageContent).toContain(
+            "<title>UK State Pension Age & Payment Calendar"
+        );
     });
 
     it("should have page-specific title on help page", () => {
@@ -55,7 +57,7 @@ describe("SEO - Meta Tags and Schema", () => {
     it("should have Open Graph title on main page", () => {
         expect(mainPageContent).toContain('property="og:title"');
         expect(mainPageContent).toContain(
-            "UK State Pension Calculator - Payment Dates & Schedule"
+            "UK State Pension Age & Payment Calendar"
         );
     });
 
