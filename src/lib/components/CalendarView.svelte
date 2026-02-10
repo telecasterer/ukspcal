@@ -193,6 +193,19 @@
     let csvModalOpen = false;
     let icsModalOpen = false;
 
+    let bottomNavEl: HTMLDivElement | null = null;
+
+    async function keepBottomNavInView() {
+        const prevBottom = bottomNavEl?.getBoundingClientRect().bottom;
+        await tick();
+        requestAnimationFrame(() => {
+            if (!bottomNavEl || prevBottom === undefined) return;
+            const nextBottom = bottomNavEl.getBoundingClientRect().bottom;
+            const delta = nextBottom - prevBottom;
+            if (delta !== 0) window.scrollBy(0, delta);
+        });
+    }
+
     function openCsvModal() {
         exportMenuOpen = false;
         csvModalOpen = true;
@@ -271,6 +284,16 @@
         const newMonth = nextMonth(currentMonth, currentYear);
         currentMonth = newMonth.month;
         currentYear = newMonth.year;
+    }
+
+    async function handlePreviousMonthFromBottom() {
+        handlePreviousMonth();
+        await keepBottomNavInView();
+    }
+
+    async function handleNextMonthFromBottom() {
+        handleNextMonth();
+        await keepBottomNavInView();
     }
 
     /**
@@ -756,14 +779,14 @@
     {/if}
 
     <!-- --- Month Navigation (Bottom) --- -->
-    <div class="w-full calendar-controls">
+    <div class="w-full calendar-controls" bind:this={bottomNavEl}>
         <div
             class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
         >
             <div class="flex items-center justify-center gap-4">
                 <!-- Previous month button -->
                 <Button
-                    onclick={handlePreviousMonth}
+                    onclick={handlePreviousMonthFromBottom}
                     color="light"
                     class="px-3 py-2"
                     disabled={focusedIndex <= 0}
@@ -781,7 +804,7 @@
 
                 <!-- Next month button -->
                 <Button
-                    onclick={handleNextMonth}
+                    onclick={handleNextMonthFromBottom}
                     color="light"
                     class="px-3 py-2"
                     disabled={
