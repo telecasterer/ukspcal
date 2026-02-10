@@ -755,6 +755,46 @@
         </div>
     {/if}
 
+    <!-- --- Month Navigation (Bottom) --- -->
+    <div class="w-full calendar-controls">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+        >
+            <div class="flex items-center justify-center gap-4">
+                <!-- Previous month button -->
+                <Button
+                    onclick={handlePreviousMonth}
+                    color="light"
+                    class="px-3 py-2"
+                    disabled={focusedIndex <= 0}
+                >
+                    ← Previous
+                </Button>
+
+                <!-- Current month display -->
+                <div class="text-center min-w-[120px]">
+                    <div class="font-semibold text-gray-900 dark:text-white">
+                        {monthName(currentMonth)}
+                        {currentYear}
+                    </div>
+                </div>
+
+                <!-- Next month button -->
+                <Button
+                    onclick={handleNextMonth}
+                    color="light"
+                    class="px-3 py-2"
+                    disabled={
+                        focusedIndex === -1 ||
+                        focusedIndex >= allMonths.length - 1
+                    }
+                >
+                    Next →
+                </Button>
+            </div>
+        </div>
+    </div>
+
     <!-- --- Print Unsupported Modal (Facebook in-app browser) --- -->
     <Modal
         title="Printing not available"
