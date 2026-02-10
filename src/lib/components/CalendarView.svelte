@@ -188,6 +188,11 @@
     let allMonths: Array<{ month: number; year: number }> = [];
     let focusedIndex = -1;
     let visibleMonths: Array<{ month: number; year: number }> = [];
+    let visibleRangeLabel = "";
+    const shortMonthName = (month: number) =>
+        new Date(2000, month, 1).toLocaleDateString("en-GB", {
+            month: "short",
+        });
 
     let exportMenuOpen = false;
     let csvModalOpen = false;
@@ -332,6 +337,20 @@
         const maxStart = Math.max(0, allMonths.length - pageSize);
         const start = Math.min(Math.max(0, idx), maxStart);
         visibleMonths = allMonths.slice(start, start + pageSize);
+    }
+    $: {
+        if (!visibleMonths.length) {
+            visibleRangeLabel = "";
+        } else {
+            const first = visibleMonths[0];
+            const last = visibleMonths[visibleMonths.length - 1];
+            const fmt = (m: { month: number; year: number }) =>
+                `${shortMonthName(m.month)} ${m.year}`;
+            visibleRangeLabel =
+                first.month === last.month && first.year === last.year
+                    ? fmt(first)
+                    : `${fmt(first)} – ${fmt(last)}`;
+        }
     }
 </script>
 
@@ -569,8 +588,7 @@
                 <!-- Current month display -->
                 <div class="text-center min-w-[120px]">
                     <div class="font-semibold text-gray-900 dark:text-white">
-                        {monthName(currentMonth)}
-                        {currentYear}
+                        {visibleRangeLabel}
                     </div>
                 </div>
 
@@ -797,8 +815,7 @@
                 <!-- Current month display -->
                 <div class="text-center min-w-[120px]">
                     <div class="font-semibold text-gray-900 dark:text-white">
-                        {monthName(currentMonth)}
-                        {currentYear}
+                        {visibleRangeLabel}
                     </div>
                 </div>
 
