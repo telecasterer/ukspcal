@@ -9,8 +9,8 @@ describe("IcsAlarmDialog", () => {
         const saveHandler = vi.fn();
         const { getByText } = render(IcsAlarmDialogHarness, {
             props: {
-                onSave: saveHandler
-            }
+                onSave: saveHandler,
+            },
         });
 
         await fireEvent.click(getByText("Save"));

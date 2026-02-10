@@ -7,7 +7,6 @@
     export let embedded: boolean = false;
     export let spaDate: string = "";
     export let nextPaymentDate: string = "";
-
 </script>
 
 {#if embedded}
@@ -17,7 +16,9 @@
     </div>
 {:else}
     <!-- Standalone summary card (used in results section) -->
-    <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg">
+    <div
+        class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg"
+    >
         <div class="p-6">
             <SummaryCardContent {result} {spaDate} {nextPaymentDate} />
         </div>

@@ -3,7 +3,7 @@ import {
     generateCalendarDays,
     monthName,
     nextMonth,
-    previousMonth
+    previousMonth,
 } from "../src/lib/utils/calendarHelpers";
 
 describe("calendarHelpers", () => {

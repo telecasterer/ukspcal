@@ -1,39 +1,46 @@
-    it("generateICS includes VALARM when alarm options are set", async () => {
-        const dl = setupDownloadMocks();
+it("generateICS includes VALARM when alarm options are set", async () => {
+    const dl = setupDownloadMocks();
 
-        const payments: Payment[] = [
-            { due: "2026-01-02", paid: "2026-01-02", early: false },
-            { due: "2026-01-30", paid: "2026-01-29", early: true, holidays: ["Holiday"] }
-        ];
+    const payments: Payment[] = [
+        { due: "2026-01-02", paid: "2026-01-02", early: false },
+        {
+            due: "2026-01-30",
+            paid: "2026-01-29",
+            early: true,
+            holidays: ["Holiday"],
+        },
+    ];
 
-        const result: PensionResult = {
-            ni: "29B",
-            normalDay: "Tuesday",
-            cycleDays: 28,
-            payments
-        };
+    const result: PensionResult = {
+        ni: "29B",
+        normalDay: "Tuesday",
+        cycleDays: 28,
+        payments,
+    };
 
-        generateICS(payments, result, {
-            csvDateFormat: "dd/mm/yyyy",
-            icsEventName: "UK State Pension, Payment",
-            icsCategory: "Finance",
-            icsColor: "#22c55e",
-            icsAlarmEnabled: true,
-            icsAlarmDaysBefore: 2
-        });
-
-        expect(dl.blobs.length).toBe(1);
-        const ics = await blobToText(dl.blobs[0]!);
-
-        // Check for VALARM block
-        expect(ics).toContain("BEGIN:VALARM");
-        expect(ics).toContain("TRIGGER:-P2D");
-        expect(ics).toContain("SUMMARY:UK State Pension");
-        expect(ics).toContain("SUMMARY:Upcoming UK State Pension Payment");
-        expect(ics).toContain("DESCRIPTION:Your UK state pension payment is due soon.");
-
-        dl.restore();
+    generateICS(payments, result, {
+        csvDateFormat: "dd/mm/yyyy",
+        icsEventName: "UK State Pension, Payment",
+        icsCategory: "Finance",
+        icsColor: "#22c55e",
+        icsAlarmEnabled: true,
+        icsAlarmDaysBefore: 2,
     });
+
+    expect(dl.blobs.length).toBe(1);
+    const ics = await blobToText(dl.blobs[0]!);
+
+    // Check for VALARM block
+    expect(ics).toContain("BEGIN:VALARM");
+    expect(ics).toContain("TRIGGER:-P2D");
+    expect(ics).toContain("SUMMARY:UK State Pension");
+    expect(ics).toContain("SUMMARY:Upcoming UK State Pension Payment");
+    expect(ics).toContain(
+        "DESCRIPTION:Your UK state pension payment is due soon."
+    );
+
+    dl.restore();
+});
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -67,7 +74,9 @@ function setupDownloadMocks() {
     (globalThis.URL as any).revokeObjectURL = revokeObjectURL;
 
     // Avoid navigation in jsdom.
-    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(
+        () => undefined
+    );
 
     return {
         blobs,
@@ -75,7 +84,7 @@ function setupDownloadMocks() {
             (globalThis.URL as any).createObjectURL = originalCreateObjectURL;
             (globalThis.URL as any).revokeObjectURL = originalRevokeObjectURL;
             vi.restoreAllMocks();
-        }
+        },
     };
 }
 
@@ -91,12 +100,17 @@ describe("export helpers", () => {
             ni: "29B",
             normalDay: "Tuesday",
             cycleDays: 28,
-            payments: []
+            payments: [],
         };
 
         const payments: Payment[] = [
             { due: "2026-01-02", paid: "2026-01-02", early: false },
-            { due: "2026-01-30", paid: "2026-01-29", early: true, holidays: ["Holiday"] }
+            {
+                due: "2026-01-30",
+                paid: "2026-01-29",
+                early: true,
+                holidays: ["Holiday"],
+            },
         ];
 
         exportCSV(payments, result, "dd/mm/yyyy");
@@ -117,21 +131,26 @@ describe("export helpers", () => {
             // Standard schedule payment
             { due: "2026-01-02", paid: "2026-01-02", early: false },
             // Early payment (should become an EXDATE + explicit override event)
-            { due: "2026-01-30", paid: "2026-01-29", early: true, holidays: ["Holiday"] }
+            {
+                due: "2026-01-30",
+                paid: "2026-01-29",
+                early: true,
+                holidays: ["Holiday"],
+            },
         ];
 
         const result: PensionResult = {
             ni: "29B",
             normalDay: "Tuesday",
             cycleDays: 28,
-            payments
+            payments,
         };
 
         generateICS(payments, result, {
             csvDateFormat: "dd/mm/yyyy",
             icsEventName: "UK State Pension, Payment",
             icsCategory: "Finance",
-            icsColor: "#22c55e"
+            icsColor: "#22c55e",
         });
 
         expect(dl.blobs.length).toBe(1);

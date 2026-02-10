@@ -1,6 +1,7 @@
 # Component & Module Reference
 
 ## UI components (src/lib/components)
+
 - **AppFooter.svelte** — Footer with links and disclosures.
 - **CalendarMonth.svelte** — Renders a single month’s payment calendar grid.
 - **CalendarView.svelte** — Main calendar view; handles navigation and layouts.
@@ -13,6 +14,7 @@
 - **TopBar.svelte** — App header with title, icon, and action slot.
 
 ## Core logic (src/lib)
+
 - **pensionEngine.ts** — Generates payment schedules and applies holiday adjustments.
 - **fetchBankHolidays.ts** — GOV.UK bank holiday fetcher with fallback data.
 - **bankHolidays.ts** — Types for bank holiday responses and maps.
@@ -20,6 +22,7 @@
 - **services/nagerHolidayService.ts** — Optional public holiday overlay for non-UK calendars.
 
 ## Utilities (src/lib/utils)
+
 - **calendarHelpers.ts** — Calendar layout helpers.
 - **clearAllAppStorage.ts** — Clears app-specific local storage keys.
 - **clipboard.ts** — Clipboard helper with fallback copy support.
@@ -36,18 +39,21 @@
 - **timezoneDetection.ts** — Uses time zone for optional country defaults.
 
 ## Routes (src/routes)
+
 - **+layout.ts** — Fetches UK bank holidays for the app.
 - **+page.svelte** — Main calculator UI and data flow.
 - **help/+page.svelte** — Help page (markdown rendered with dynamic placeholders).
 - **sitemap.xml** — Generated sitemap endpoint.
 
 ## Data flow overview
+
 1. User inputs are persisted to local storage.
 2. `pensionEngine.generatePayments` generates a schedule and flags early payments.
 3. Calendar components render the schedule with export options.
 4. Help content is rendered from markdown with bank holiday metadata injected.
 
 ## External dependencies (at a glance)
+
 - **GOV.UK Bank Holidays API** — Primary source for UK holiday data.
 - **Nager.Date API** — Optional extra holiday overlays for other countries.
 

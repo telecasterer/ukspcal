@@ -78,7 +78,7 @@
 
     const helpMarkdownReplaced = Object.entries(placeholderMap).reduce(
         (acc, [key, value]) => acc.replaceAll(key, value),
-        helpMarkdown,
+        helpMarkdown
     );
 
     // --- 3. Parse markdown into structured sections ---
@@ -110,7 +110,7 @@
             currentSubSection.html = md.renderer.render(
                 subBodyTokens,
                 md.options,
-                {},
+                {}
             );
             if (!currentSection.subSections) currentSection.subSections = [];
             currentSection.subSections.push(currentSubSection);
@@ -130,14 +130,14 @@
             currentSection.html = md.renderer.render(
                 bodyTokens,
                 md.options,
-                {},
+                {}
             );
         } else if (!currentSection.subSections) {
             // No H3s: render all content as html
             currentSection.html = md.renderer.render(
                 bodyTokens,
                 md.options,
-                {},
+                {}
             );
         }
         sections.push(currentSection);

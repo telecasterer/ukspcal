@@ -1,6 +1,9 @@
 <script lang="ts">
     // CalendarMonth.svelte: Renders a single month grid with payment and holiday highlights
-    import { generateCalendarDays, monthName } from "$lib/utils/calendarHelpers";
+    import {
+        generateCalendarDays,
+        monthName,
+    } from "$lib/utils/calendarHelpers";
     import { getFlagSvg } from "$lib/utils/countryFlags";
     import type { Payment } from "$lib/pensionEngine";
 
@@ -15,7 +18,16 @@
         additionalHolidays?: Record<string, string>;
         selectedCountry?: string;
     };
-    let { year, month, showWeekends, showBankHolidays, payments, bankHolidays, additionalHolidays = {}, selectedCountry = "none" }: Props = $props();
+    let {
+        year,
+        month,
+        showWeekends,
+        showBankHolidays,
+        payments,
+        bankHolidays,
+        additionalHolidays = {},
+        selectedCountry = "none",
+    }: Props = $props();
 
     // --- Derived: Map of paid date to Payment ---
     const paymentsByPaid = $derived.by(() => {
@@ -61,7 +73,9 @@
     const calendarDays = $derived(generateCalendarDays(year, month));
 
     // --- Derived: flag svg for selected country ---
-    const flagSvg = $derived.by(() => (selectedCountry !== "none" ? getFlagSvg(selectedCountry) : ""));
+    const flagSvg = $derived.by(() =>
+        selectedCountry !== "none" ? getFlagSvg(selectedCountry) : ""
+    );
 
     /**
      * Compute extra CSS classes for a calendar day cell
@@ -76,29 +90,42 @@
     ): string {
         return [
             !day ? "empty" : "",
-            weekend && showWeekends && day && !payment && !holiday ? "weekend" : "",
+            weekend && showWeekends && day && !payment && !holiday
+                ? "weekend"
+                : "",
             payment && !payment.early ? "payment" : "",
             payment?.early ? "early-payment" : "",
             holiday && !payment ? "holiday" : "",
-            additionalHoliday && !payment && !holiday ? "additional-holiday" : ""
+            additionalHoliday && !payment && !holiday
+                ? "additional-holiday"
+                : "",
         ]
             .filter(Boolean)
             .join(" ");
     }
 </script>
 
-<div class="calendar-month bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+<div
+    class="calendar-month bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm"
+>
     <!-- Month Header -->
-    <div class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-3">
+    <div
+        class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-3"
+    >
         <h4 class="text-center font-bold text-gray-900 dark:text-white">
-            {monthName(month)} {year}
+            {monthName(month)}
+            {year}
         </h4>
     </div>
 
     <!-- Day Headers -->
-    <div class="grid grid-cols-7 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+    <div
+        class="grid grid-cols-7 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
+    >
         {#each ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as day}
-            <div class="p-2 text-center text-xs font-semibold text-gray-700 dark:text-gray-300">
+            <div
+                class="p-2 text-center text-xs font-semibold text-gray-700 dark:text-gray-300"
+            >
                 {day}
             </div>
         {/each}
@@ -108,14 +135,21 @@
     <div class="grid grid-cols-7">
         {#each calendarDays as day}
             {@const payment = day ? getPaymentForDate(day) : null}
-            {@const holiday = day && showBankHolidays ? getBankHolidayForDate(day) : null}
-            {@const additionalHoliday = day ? getAdditionalHolidayForDate(day) : null}
+            {@const holiday =
+                day && showBankHolidays ? getBankHolidayForDate(day) : null}
+            {@const additionalHoliday = day
+                ? getAdditionalHolidayForDate(day)
+                : null}
             {@const weekend = day ? isWeekendDay(day) : false}
 
             <!-- Calendar day cell: highlights payment, early, holiday, weekend -->
             <div
                 class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${getDayExtraClasses(day, weekend, payment, showWeekends, holiday, additionalHoliday)}`}
-                title={holiday && !payment ? holiday : additionalHoliday ? additionalHoliday : undefined}
+                title={holiday && !payment
+                    ? holiday
+                    : additionalHoliday
+                      ? additionalHoliday
+                      : undefined}
             >
                 {#if day}
                     <div class="flex justify-between items-start w-full">
@@ -135,7 +169,9 @@
     </div>
 
     <!-- Month Legend -->
-    <div class="px-3 py-2 text-xs text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 space-y-1">
+    <div
+        class="px-3 py-2 text-xs text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 space-y-1"
+    >
         <div class="flex flex-wrap gap-2 justify-center">
             <span class="inline-flex items-center gap-1">
                 <span class="w-3 h-3 rounded legend-item payment"></span>
@@ -151,7 +187,9 @@
             </span>
             {#if showWeekends}
                 <span class="inline-flex items-center gap-1">
-                    <span class="w-3 h-3 rounded legend-item weekend border border-gray-300"></span>
+                    <span
+                        class="w-3 h-3 rounded legend-item weekend border border-gray-300"
+                    ></span>
                     <span>Weekend</span>
                 </span>
             {/if}

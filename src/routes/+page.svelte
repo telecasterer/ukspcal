@@ -13,7 +13,11 @@
     import ShareButton from "$lib/components/ShareButton.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
     import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
-    import { applyDarkModeClass, persistDarkModeToStorage, readDarkModeFromStorage } from "$lib/utils/darkMode";
+    import {
+        applyDarkModeClass,
+        persistDarkModeToStorage,
+        readDarkModeFromStorage,
+    } from "$lib/utils/darkMode";
     import {
         loadPersistedInputs,
         savePersistedInputs,
@@ -91,7 +95,7 @@
     const currentYear: number = new Date().getFullYear();
     const years: number[] = Array.from(
         { length: 50 },
-        (_, i) => currentYear - 15 + i,
+        (_, i) => currentYear - 15 + i
     );
 
     let startYearSelect: string = $state("");
@@ -136,7 +140,7 @@
         if (!result || result.payments.length === 0 || !hasPassedSpa) return "";
         const todayIso = new Date().toISOString().slice(0, 10);
         const nextPayment = result.payments.find(
-            (payment) => payment.paid >= todayIso,
+            (payment) => payment.paid >= todayIso
         );
         if (!nextPayment) return "";
         try {
@@ -266,7 +270,7 @@
             mq?.removeEventListener?.("change", onMqChange);
             window.removeEventListener(
                 "beforeinstallprompt",
-                onBeforeInstallPrompt,
+                onBeforeInstallPrompt
             );
             window.removeEventListener("appinstalled", onAppInstalled);
         };
@@ -338,7 +342,7 @@
 
         const yearsToFetch = Array.from(
             { length: numberOfYears },
-            (_, i) => startYear + i,
+            (_, i) => startYear + i
         );
 
         // If cache covers all needed years, use it
@@ -355,7 +359,7 @@
                 : yearsToFetch;
             const holidays = await fetchHolidaysForCountryAndYears(
                 country,
-                missingYears,
+                missingYears
             );
             const merged = cached ? { ...cached.data, ...holidays } : holidays;
             const mergedYears = cached
@@ -415,7 +419,7 @@
             startYear,
             endYear,
             cycleDays,
-            bankHolidays,
+            bankHolidays
         );
 
         const minIso = minPaymentIso;
@@ -507,7 +511,13 @@
         />
         {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
             <!-- Install button for PWA or iOS help -->
-            <Button color="blue" size="sm" onclick={handleInstallClick} title="Install app" aria-label="Install app">
+            <Button
+                color="blue"
+                size="sm"
+                onclick={handleInstallClick}
+                title="Install app"
+                aria-label="Install app"
+            >
                 Install
             </Button>
         {/if}
@@ -583,7 +593,9 @@
                 class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
             >
                 <div>
-                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                    <h1
+                        class="text-4xl font-bold text-gray-900 dark:text-white mb-2"
+                    >
                         UK State Pension Payment Calendar
                     </h1>
                     <p class="text-lg text-gray-600 dark:text-gray-300">

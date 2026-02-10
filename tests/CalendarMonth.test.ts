@@ -13,16 +13,22 @@ describe("CalendarMonth", () => {
                 showWeekends: true,
                 showBankHolidays: true,
                 payments: [
-                    { due: "2026-01-05", paid: "2026-01-05", early: false }
+                    { due: "2026-01-05", paid: "2026-01-05", early: false },
                 ],
                 bankHolidays: { "2026-01-01": "New Year" },
                 additionalHolidays: { "2026-01-02": "Extra" },
-                selectedCountry: "FR"
-            }
+                selectedCountry: "FR",
+            },
         });
 
-        expect(container.querySelector(".calendar-day.payment")).toBeInTheDocument();
-        expect(container.querySelector(".calendar-day.holiday")).toBeInTheDocument();
-        expect(container.querySelector(".calendar-day.additional-holiday")).toBeInTheDocument();
+        expect(
+            container.querySelector(".calendar-day.payment")
+        ).toBeInTheDocument();
+        expect(
+            container.querySelector(".calendar-day.holiday")
+        ).toBeInTheDocument();
+        expect(
+            container.querySelector(".calendar-day.additional-holiday")
+        ).toBeInTheDocument();
     });
 });

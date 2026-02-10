@@ -35,7 +35,7 @@ describe("+page persistence", () => {
             csvDateFormat: "dd/mm/yyyy",
             icsEventName: "UK State Pension Payment",
             icsCategory: "Finance",
-            icsColor: "#22c55e"
+            icsColor: "#22c55e",
         };
 
         localStorage.setItem(PERSIST_KEY, JSON.stringify(persisted));
@@ -44,8 +44,8 @@ describe("+page persistence", () => {
 
         render(Page, {
             props: {
-                data: { bankHolidays: {} }
-            }
+                data: { bankHolidays: {} },
+            },
         });
 
         // Let onMount + effects run.
@@ -53,7 +53,9 @@ describe("+page persistence", () => {
         await tick();
 
         // Persistence should not write on mount; only on blur/change commits.
-        const callsForPersistKey = setItemSpy.mock.calls.filter(([key]) => key === PERSIST_KEY);
+        const callsForPersistKey = setItemSpy.mock.calls.filter(
+            ([key]) => key === PERSIST_KEY
+        );
         expect(callsForPersistKey.length).toBe(0);
 
         // And the final value in storage should match persisted inputs.
@@ -73,7 +75,7 @@ describe("+page persistence", () => {
                 dob: "1956-03-15",
                 cycleDays: 999, // invalid
                 csvDateFormat: "not-a-format",
-                icsColor: "not-a-color"
+                icsColor: "not-a-color",
             })
         );
 
@@ -81,8 +83,8 @@ describe("+page persistence", () => {
 
         const { getByLabelText } = render(Page, {
             props: {
-                data: { bankHolidays: {} }
-            }
+                data: { bankHolidays: {} },
+            },
         });
 
         await tick();
@@ -94,7 +96,9 @@ describe("+page persistence", () => {
         await fireEvent.blur(niInput);
         await tick();
 
-        const lastPersistWrite = [...setItemSpy.mock.calls].filter(([key]) => key === PERSIST_KEY).at(-1);
+        const lastPersistWrite = [...setItemSpy.mock.calls]
+            .filter(([key]) => key === PERSIST_KEY)
+            .at(-1);
 
         expect(lastPersistWrite).toBeTruthy();
         const payload = JSON.parse(String(lastPersistWrite![1])) as any;
@@ -103,7 +107,13 @@ describe("+page persistence", () => {
         expect(payload.dob).toBe("1956-03-15");
         // Should fall back to default allowed value.
         expect([7, 14, 28, 91]).toContain(payload.cycleDays);
-        expect(["dd/mm/yyyy", "dd-mmm-yyyy", "yyyy-mm-dd", "mm/dd/yyyy", "ddd, d mmmm yyyy"]).toContain(payload.csvDateFormat);
+        expect([
+            "dd/mm/yyyy",
+            "dd-mmm-yyyy",
+            "yyyy-mm-dd",
+            "mm/dd/yyyy",
+            "ddd, d mmmm yyyy",
+        ]).toContain(payload.csvDateFormat);
         expect(/^#[0-9a-f]{6}$/i.test(payload.icsColor)).toBe(true);
     });
 });

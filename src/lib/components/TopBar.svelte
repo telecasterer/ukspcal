@@ -14,7 +14,9 @@
             class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900"
         >
             <div class="max-w-7xl mx-auto px-4 py-1">
-                <p class="text-xs text-amber-800 dark:text-amber-200 leading-snug">
+                <p
+                    class="text-xs text-amber-800 dark:text-amber-200 leading-snug"
+                >
                     <span class="sm:hidden"
                         >Tip: works best in Safari/Chrome/Edge (use “Open in
                         browser”).</span
@@ -29,7 +31,12 @@
     {/if}
     <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
         <div class="flex items-center gap-2">
-            <img src={iconSrc} alt={iconAlt} class="w-7 h-7" style="margin-bottom:2px;" />
+            <img
+                src={iconSrc}
+                alt={iconAlt}
+                class="w-7 h-7"
+                style="margin-bottom:2px;"
+            />
             <span class="text-2xl font-bold text-blue-600 dark:text-blue-400"
                 >{title}</span
             >

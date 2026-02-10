@@ -1,7 +1,10 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from "vitest";
-import { copyLinkToClipboard, copyTextToClipboard } from "../src/lib/utils/clipboard";
+import {
+    copyLinkToClipboard,
+    copyTextToClipboard,
+} from "../src/lib/utils/clipboard";
 
 describe("clipboard", () => {
     it("uses navigator.clipboard when available", async () => {

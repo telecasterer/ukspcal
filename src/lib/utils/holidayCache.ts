@@ -30,7 +30,9 @@ function isCacheValid(cached: CachedHolidays | null): boolean {
 /**
  * Load holidays from cache
  */
-export function loadHolidaysFromCache(countryCode: string): CachedHolidays | null {
+export function loadHolidaysFromCache(
+    countryCode: string
+): CachedHolidays | null {
     if (typeof window === "undefined" || typeof localStorage === "undefined") {
         return null;
     }

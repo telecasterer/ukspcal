@@ -1,24 +1,24 @@
 <script lang="ts">
     // PensionInputsCard.svelte: Handles user input for pension calculation
-import { Alert, Label, Select, Button, Modal } from "flowbite-svelte";
-import { createEventDispatcher } from "svelte";
+    import { Alert, Label, Select, Button, Modal } from "flowbite-svelte";
+    import { createEventDispatcher } from "svelte";
 
-// Modal state for restore defaults
-let showRestoreModal = $state(false);
-const dispatch = createEventDispatcher();
+    // Modal state for restore defaults
+    let showRestoreModal = $state(false);
+    const dispatch = createEventDispatcher();
 
-function handleRestoreDefaultsClick() {
-    showRestoreModal = true;
-}
+    function handleRestoreDefaultsClick() {
+        showRestoreModal = true;
+    }
 
-function handleRestoreDefaultsConfirm() {
-    showRestoreModal = false;
-    dispatch("restoreDefaults");
-}
+    function handleRestoreDefaultsConfirm() {
+        showRestoreModal = false;
+        dispatch("restoreDefaults");
+    }
 
-function handleRestoreDefaultsCancel() {
-    showRestoreModal = false;
-}
+    function handleRestoreDefaultsCancel() {
+        showRestoreModal = false;
+    }
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
@@ -45,7 +45,7 @@ function handleRestoreDefaultsCancel() {
         bankHolidays,
         onFirstPaymentAfterSpa,
         onPersist,
-        onRecalculate
+        onRecalculate,
     }: Props = $props();
 
     const currentYear: number = new Date().getFullYear();
@@ -70,7 +70,8 @@ function handleRestoreDefaultsCancel() {
     function isoToDateLocal(iso: string): Date | null {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
         const [y, m, d] = iso.split("-").map((p) => Number.parseInt(p, 10));
-        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
+        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d))
+            return null;
         return new Date(y, m - 1, d);
     }
 
@@ -97,7 +98,7 @@ function handleRestoreDefaultsCancel() {
         if (!dob) {
             dob = getDefaultDob();
         }
-        dobDate = dob ? isoToDateLocal(dob) ?? undefined : undefined;
+        dobDate = dob ? (isoToDateLocal(dob) ?? undefined) : undefined;
     });
 
     function applyCycleDays() {
@@ -138,7 +139,7 @@ function handleRestoreDefaultsCancel() {
             weekday: "long",
             year: "numeric",
             month: "long",
-            day: "numeric"
+            day: "numeric",
         });
     });
 
@@ -148,7 +149,7 @@ function handleRestoreDefaultsCancel() {
             weekday: "long",
             year: "numeric",
             month: "long",
-            day: "numeric"
+            day: "numeric",
         });
     }
 
@@ -157,7 +158,13 @@ function handleRestoreDefaultsCancel() {
         if (!ni || !isValidNiCode(ni)) return null;
 
         const spaYear = Number(spa.spaDate.slice(0, 4));
-        return generatePayments(ni.trim(), spaYear, spaYear + 2, cycleDays, bankHolidays);
+        return generatePayments(
+            ni.trim(),
+            spaYear,
+            spaYear + 2,
+            cycleDays,
+            bankHolidays
+        );
     });
 
     const firstPaymentAfterSpa = $derived.by(() => {
@@ -176,7 +183,10 @@ function handleRestoreDefaultsCancel() {
         return spaSchedule.payments[idx + 1] ?? null;
     });
 
-    function daysBetweenIsoUtcInclusive(startIso: string, endIso: string): number {
+    function daysBetweenIsoUtcInclusive(
+        startIso: string,
+        endIso: string
+    ): number {
         const start = new Date(startIso + "T00:00:00Z");
         const end = new Date(endIso + "T00:00:00Z");
         const ms = end.getTime() - start.getTime();
@@ -186,7 +196,10 @@ function handleRestoreDefaultsCancel() {
 
     const comprisingText = $derived.by(() => {
         if (!spa || !firstPaymentAfterSpa) return "";
-        const days = daysBetweenIsoUtcInclusive(spa.spaDate, firstPaymentAfterSpa.due);
+        const days = daysBetweenIsoUtcInclusive(
+            spa.spaDate,
+            firstPaymentAfterSpa.due
+        );
         const weeks = Math.floor(days / 7);
         const rem = days % 7;
         return `Comprising ${weeks} week(s) and ${rem} day(s) pension`;
@@ -216,11 +229,12 @@ function handleRestoreDefaultsCancel() {
         return formatIsoLong(p.paid);
     });
 
-
     let lastFirstPaymentAfterSpaKey = $state<string | null>(null);
 
     $effect.pre(() => {
-        const key = firstPaymentAfterSpa ? `${cycleDays}|${firstPaymentAfterSpa.due}|${firstPaymentAfterSpa.paid}` : null;
+        const key = firstPaymentAfterSpa
+            ? `${cycleDays}|${firstPaymentAfterSpa.due}|${firstPaymentAfterSpa.paid}`
+            : null;
         if (key === lastFirstPaymentAfterSpaKey) return;
         lastFirstPaymentAfterSpaKey = key;
         onFirstPaymentAfterSpa?.(firstPaymentAfterSpa);
@@ -241,46 +255,71 @@ function handleRestoreDefaultsCancel() {
         // Ensure the main schedule still regenerates.
         if (!spa) onRecalculate?.();
     }
-
 </script>
-
-
 
 <div class="p-6 space-y-6">
     <div class="flex items-center justify-between mb-2">
         <div>
             <p class="text-sm text-gray-600 dark:text-gray-300">
-                Enter your NI code and date of birth to generate the payment schedule.
+                Enter your NI code and date of birth to generate the payment
+                schedule.
             </p>
         </div>
         <Button
             color="light"
             size="xs"
             onclick={handleRestoreDefaultsClick}
-            tabindex={-1}>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" 
-            stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-         Restore defaults
+            tabindex={-1}
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+                focusable="false"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                /></svg
+            >
+            Restore defaults
         </Button>
     </div>
 
-    <Modal title="Restore default values?" bind:open={showRestoreModal} size="sm" aria-label="Restore defaults confirmation">
+    <Modal
+        title="Restore default values?"
+        bind:open={showRestoreModal}
+        size="sm"
+        aria-label="Restore defaults confirmation"
+    >
         <div class="space-y-4">
-            <p class="text-sm text-gray-700 dark:text-gray-200">This will reset all inputs to their default settings.</p>
+            <p class="text-sm text-gray-700 dark:text-gray-200">
+                This will reset all inputs to their default settings.
+            </p>
             <div class="flex gap-2 justify-end mt-4">
-                <Button color="light" onclick={handleRestoreDefaultsCancel}>Cancel</Button>
-                <Button color="blue" onclick={handleRestoreDefaultsConfirm}>Restore defaults</Button>
+                <Button color="light" onclick={handleRestoreDefaultsCancel}
+                    >Cancel</Button
+                >
+                <Button color="blue" onclick={handleRestoreDefaultsConfirm}
+                    >Restore defaults</Button
+                >
             </div>
         </div>
     </Modal>
-    <br/>
+    <br />
     <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
         <div class="space-y-5">
             <div class="space-y-3">
                 <!-- NI code input -->
                 <div>
-                    <Label for="ni-code" class="block mb-1 text-sm">NI code (last 3 characters of NI number)</Label>
+                    <Label for="ni-code" class="block mb-1 text-sm"
+                        >NI code (last 3 characters of NI number)</Label
+                    >
                     <input
                         id="ni-code"
                         type="text"
@@ -306,35 +345,49 @@ function handleRestoreDefaultsCancel() {
                         }}
                     />
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        The last 3 characters of your National Insurance number (2 digits + letter A–D), e.g. 22D.
+                        The last 3 characters of your National Insurance number
+                        (2 digits + letter A–D), e.g. 22D.
                     </p>
                     {#if niDraft.trim() && !isValidNiCode(niDraft)}
-                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Format: 2 digits then A–D (e.g. 22D).</p>
+                        <p
+                            class="text-xs text-amber-700 dark:text-amber-300 mt-1"
+                        >
+                            Format: 2 digits then A–D (e.g. 22D).
+                        </p>
                     {/if}
                 </div>
 
                 <!-- Date of birth input -->
                 <div>
-                    <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
+                    <Label for="dob" class="block mb-1 text-sm"
+                        >Date of birth</Label
+                    >
                     <input
                         type="date"
                         id="dob"
                         name="dob"
                         bind:value={dob}
                         min="1900-01-01"
-                        max="{new Date().toISOString().split('T')[0]}"
+                        max={new Date().toISOString().split("T")[0]}
                         required
                         onchange={() => onPersist?.()}
                         class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                     {#if !dob}
-                        <p class="text-xs text-amber-700 dark:text-amber-300 mt-1">Required to calculate your State Pension age and calendar start.</p>
+                        <p
+                            class="text-xs text-amber-700 dark:text-amber-300 mt-1"
+                        >
+                            Required to calculate your State Pension age and
+                            calendar start.
+                        </p>
                     {/if}
                 </div>
 
                 <!-- Payment frequency select -->
                 <div>
-                    <Label for="cycle-days" class="block mb-1 text-sm">Payment Frequency</Label>
+                    <Label for="cycle-days" class="block mb-1 text-sm"
+                        >Payment Frequency</Label
+                    >
                     <Select
                         id="cycle-days"
                         bind:value={cycleDaysSelect}
@@ -354,8 +407,12 @@ function handleRestoreDefaultsCancel() {
 
                 <!-- Error alert -->
                 {#if error}
-                    <Alert color="red" class="dark:bg-red-900 dark:text-red-200 text-sm">
-                        <span class="font-medium">Error:</span> {error}
+                    <Alert
+                        color="red"
+                        class="dark:bg-red-900 dark:text-red-200 text-sm"
+                    >
+                        <span class="font-medium">Error:</span>
+                        {error}
                     </Alert>
                 {/if}
             </div>
@@ -364,44 +421,71 @@ function handleRestoreDefaultsCancel() {
         <div class="space-y-3">
             <!-- SPA calculation and payment preview -->
             {#if dob && !spa}
-                <Alert color="red" class="text-sm">Please enter a valid date.</Alert>
+                <Alert color="red" class="text-sm"
+                    >Please enter a valid date.</Alert
+                >
             {/if}
 
             {#if spa}
-                <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4">
+                <div
+                    class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4"
+                >
                     <!-- Pre-2016 SPA warning -->
                     {#if showPre2016SpaWarning}
                         <div
                             role="alert"
                             class="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100"
                         >
-                            This calculator assumes your State Pension age (SPA) is on or after <strong>6 April 2016</strong>.
-                            Your SPA appears to be earlier than that, so results may be inaccurate.
+                            This calculator assumes your State Pension age (SPA)
+                            is on or after <strong>6 April 2016</strong>. Your
+                            SPA appears to be earlier than that, so results may
+                            be inaccurate.
                         </div>
                     {/if}
-                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                    <div
+                        class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                    >
                         You reach State Pension age (SPA) on
                     </div>
-                    <div class="mt-1 text-lg sm:text-xl font-bold text-gray-900 dark:text-white">{spaDateFormatted}</div>
+                    <div
+                        class="mt-1 text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
+                    >
+                        {spaDateFormatted}
+                    </div>
                     {#if spa.source !== "fixed"}
-                        <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                            Based on an age of {spa.spaAgeYears}{#if spa.spaAgeMonths}y {spa.spaAgeMonths}m{/if}.
+                        <div
+                            class="mt-1 text-sm text-gray-600 dark:text-gray-300"
+                        >
+                            Based on an age of {spa.spaAgeYears}{#if spa.spaAgeMonths}y
+                                {spa.spaAgeMonths}m{/if}.
                         </div>
                     {/if}
 
                     <!-- First payment after SPA -->
                     {#if firstPaymentAfterSpa}
-                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                        <div
+                            class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+                        >
+                            <div
+                                class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                            >
                                 First payment after reaching pension age
                             </div>
-                            <div class="mt-1 text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                            <div
+                                class="mt-1 text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
+                            >
                                 {firstPaymentDueFormatted}
                             </div>
-                            <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">{comprisingText}</div>
+                            <div
+                                class="mt-1 text-sm text-gray-600 dark:text-gray-300"
+                            >
+                                {comprisingText}
+                            </div>
 
                             {#if firstPaymentAfterSpa.early && firstPaymentAfterSpa.paid !== firstPaymentAfterSpa.due}
-                                <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                <div
+                                    class="mt-1 text-sm text-gray-600 dark:text-gray-300"
+                                >
                                     Paid early on {firstPaymentPaidFormatted}.
                                 </div>
                             {/if}
@@ -409,14 +493,20 @@ function handleRestoreDefaultsCancel() {
                             <!-- Second payment after SPA -->
                             {#if secondPaymentAfterSpa}
                                 <div class="mt-3">
-                                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                                    <div
+                                        class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                                    >
                                         Second payment
                                     </div>
-                                    <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                                    <div
+                                        class="mt-1 text-sm font-semibold text-gray-900 dark:text-white"
+                                    >
                                         {secondPaymentDueFormatted}
                                     </div>
                                     {#if secondPaymentAfterSpa.early && secondPaymentAfterSpa.paid !== secondPaymentAfterSpa.due}
-                                        <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                        <div
+                                            class="mt-1 text-sm text-gray-600 dark:text-gray-300"
+                                        >
                                             Paid early on {secondPaymentPaidFormatted}.
                                         </div>
                                     {/if}
@@ -424,11 +514,13 @@ function handleRestoreDefaultsCancel() {
                             {/if}
                         </div>
                     {:else if ni}
-                        <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                            Enter a valid NI code to estimate your first payment date.
+                        <div
+                            class="mt-4 text-xs text-gray-500 dark:text-gray-400"
+                        >
+                            Enter a valid NI code to estimate your first payment
+                            date.
                         </div>
                     {/if}
-
                 </div>
             {/if}
         </div>

@@ -1,0 +1,7 @@
+node_modules
+.svelte-kit
+.vercel
+dev-dist
+static
+build
+coverage

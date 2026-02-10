@@ -15,7 +15,7 @@ function renderCard(overrides: Partial<Parameters<typeof render>[1]> = {}) {
         cycleDays: 28,
         error: "",
         bankHolidays: {},
-        ...((overrides as any).props ?? {})
+        ...((overrides as any).props ?? {}),
     };
 
     return render(PensionInputsCard, { ...(overrides as any), props });
@@ -42,7 +42,9 @@ describe("PensionInputsCard", () => {
     it("commits NI and focuses DoB on Enter", async () => {
         const { getByLabelText } = renderCard();
         const niInput = getByLabelText(/NI code/i) as HTMLInputElement;
-        const dobInput = document.getElementById("dob") as HTMLInputElement | null;
+        const dobInput = document.getElementById(
+            "dob"
+        ) as HTMLInputElement | null;
         expect(dobInput).toBeTruthy();
 
         await fireEvent.focus(niInput);
@@ -65,7 +67,9 @@ describe("PensionInputsCard", () => {
     });
 
     it("shows invalid-date alert when dob is present but invalid", () => {
-        const { getByText } = renderCard({ props: { dob: "not-a-date" } } as any);
+        const { getByText } = renderCard({
+            props: { dob: "not-a-date" },
+        } as any);
         expect(getByText(/Please enter a valid date/i)).toBeInTheDocument();
     });
 
@@ -73,11 +77,13 @@ describe("PensionInputsCard", () => {
         const { getByRole } = renderCard({
             props: {
                 ni: "29B",
-                dob: "1950-01-01"
-            }
+                dob: "1950-01-01",
+            },
         } as any);
 
-        expect(getByRole("alert")).toHaveTextContent(/on or after\s+6 April 2016/i);
+        expect(getByRole("alert")).toHaveTextContent(
+            /on or after\s+6 April 2016/i
+        );
     });
 
     it("calls onFirstPaymentAfterSpa when it can compute the first payment", async () => {
@@ -90,8 +96,8 @@ describe("PensionInputsCard", () => {
                 startYear: 2026,
                 numberOfYears: 2,
                 cycleDays: 28,
-                onFirstPaymentAfterSpa
-            }
+                onFirstPaymentAfterSpa,
+            },
         } as any);
 
         // Let reactive effects run.

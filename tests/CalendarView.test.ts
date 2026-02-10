@@ -5,7 +5,7 @@ import { fireEvent, render } from "@testing-library/svelte";
 import type { DateFormat } from "../src/lib/utils/dateFormatting";
 
 vi.mock("../src/lib/utils/inAppBrowser", () => ({
-    detectFacebookInAppBrowserFromWindow: vi.fn()
+    detectFacebookInAppBrowserFromWindow: vi.fn(),
 }));
 
 import CalendarView from "../src/lib/components/CalendarView.svelte";
@@ -16,11 +16,11 @@ const baseProps = {
         ni: "00A",
         normalDay: "Monday",
         cycleDays: 28,
-        payments: []
+        payments: [],
     },
     payments: [
         { due: "2026-01-05", paid: "2026-01-05", early: false },
-        { due: "2026-02-02", paid: "2026-02-02", early: false }
+        { due: "2026-02-02", paid: "2026-02-02", early: false },
     ],
     bankHolidays: {},
     showWeekends: true,
@@ -40,7 +40,7 @@ const baseProps = {
     selectedCountry: "none",
     additionalHolidays: {},
     onCountryChange: () => undefined,
-    detectedCountry: "none"
+    detectedCountry: "none",
 };
 
 describe("CalendarView", () => {
@@ -56,7 +56,9 @@ describe("CalendarView", () => {
     it("opens print unsupported modal for in-app browsers", async () => {
         const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
         detectMock.mockReturnValue(true);
-        const { getByText, findByText } = render(CalendarView, { props: baseProps });
+        const { getByText, findByText } = render(CalendarView, {
+            props: baseProps,
+        });
         await fireEvent.click(getByText("🖨️ Print"));
         expect(await findByText("Printing not available")).toBeInTheDocument();
     });

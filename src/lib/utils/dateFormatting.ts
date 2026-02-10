@@ -1,4 +1,3 @@
-
 /**
  * Date formatting utilities for CSV export and display
  */
@@ -21,7 +20,9 @@ export function formatDateForCSV(dateStr: string, format: DateFormat): string {
     const day = date.getUTCDate().toString().padStart(2, "0");
     const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
     const year = date.getUTCFullYear();
-    const monthName = date.toLocaleDateString("en-GB", { month: "short" }).toUpperCase();
+    const monthName = date
+        .toLocaleDateString("en-GB", { month: "short" })
+        .toUpperCase();
     const dayName = date.toLocaleDateString("en-GB", { weekday: "short" });
     const fullMonthName = date.toLocaleDateString("en-GB", { month: "long" });
     switch (format) {

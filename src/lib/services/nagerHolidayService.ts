@@ -4,15 +4,15 @@
  */
 
 export type NagerHoliday = {
-    date: string;        // YYYY-MM-DD
-    localName: string;   // Holiday name in local language
-    name: string;        // Holiday name in English
+    date: string; // YYYY-MM-DD
+    localName: string; // Holiday name in local language
+    name: string; // Holiday name in English
     countryCode: string; // e.g., "FR"
     fixed: boolean;
     global: boolean;
     counties?: string[] | null;
     launchYear?: number | null;
-    type: string;        // "Public", "Bank", "Observance", etc.
+    type: string; // "Public", "Bank", "Observance", etc.
 };
 
 /**
@@ -36,7 +36,10 @@ export async function fetchHolidaysForCountryAndYear(
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Error fetching holidays for ${countryCode} ${year}:`, error);
+        console.error(
+            `Error fetching holidays for ${countryCode} ${year}:`,
+            error
+        );
         return [];
     }
 }

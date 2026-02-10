@@ -1,7 +1,10 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
-import { loadIcsEventTime, saveIcsEventTime } from "../src/lib/utils/icsEventTimePersistence";
+import {
+    loadIcsEventTime,
+    saveIcsEventTime,
+} from "../src/lib/utils/icsEventTimePersistence";
 
 describe("icsEventTimePersistence", () => {
     it("returns default when nothing saved", () => {

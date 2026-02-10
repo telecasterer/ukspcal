@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render } from "@testing-library/svelte";
 
 vi.mock("../src/lib/utils/clipboard", () => ({
-    copyLinkToClipboard: vi.fn().mockResolvedValue(true)
+    copyLinkToClipboard: vi.fn().mockResolvedValue(true),
 }));
 
 import ShareButton from "../src/lib/components/ShareButton.svelte";

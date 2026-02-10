@@ -2,9 +2,9 @@
 
 // --- Types ---
 export type Payment = {
-    due: string;         // YYYY-MM-DD (UTC scheduled date)
-    paid: string;        // YYYY-MM-DD (UTC actual payment date)
-    early: boolean;      // True if paid early due to holiday
+    due: string; // YYYY-MM-DD (UTC scheduled date)
+    paid: string; // YYYY-MM-DD (UTC actual payment date)
+    early: boolean; // True if paid early due to holiday
     holidays?: string[]; // Names of holidays affecting this payment
 };
 
@@ -92,8 +92,6 @@ function fortnightlyBaseDueDate(ni: string): Date {
     return addDaysUTC(anchor, weekdayOffsetDays);
 }
 
-
-
 /**
  * Calculate offset in days from the base NI code
  */
@@ -101,16 +99,13 @@ function niOffsetDays(ni: string): number {
     const base = parseNI(BASE_NI);
     const target = parseNI(ni);
 
-    const rowOffset =
-        rowFromDigits(target.digits) - rowFromDigits(base.digits);
+    const rowOffset = rowFromDigits(target.digits) - rowFromDigits(base.digits);
 
     const colOffset =
         (target.letter.charCodeAt(0) - base.letter.charCodeAt(0)) * 7;
 
     return rowOffset + colOffset;
 }
-
-
 
 /**
  * Adjust payment date for weekends and bank holidays (move earlier)
@@ -135,11 +130,9 @@ function adjustForNonWorkingDays(
     return { date: d, early, holidays };
 }
 
-
 /* ------------------------------------------------------------
    MAIN ENGINE
 ------------------------------------------------------------ */
-
 
 /**
  * Generate a pension payment schedule for the given NI code and date range
@@ -155,9 +148,10 @@ export function generatePayments(
         throw new Error(`Invalid cycleDays: ${cycleDays}`);
     }
     // Base due date depends on cycle rules.
-    let d = cycleDays === 14
-        ? fortnightlyBaseDueDate(ni)
-        : addDaysUTC(BASE_DATE, niOffsetDays(ni));
+    let d =
+        cycleDays === 14
+            ? fortnightlyBaseDueDate(ni)
+            : addDaysUTC(BASE_DATE, niOffsetDays(ni));
     const startBoundary = new Date(Date.UTC(startYear, 0, 1));
     // 2️⃣ Rewind until before the start boundary
     while (d >= startBoundary) {
@@ -174,24 +168,25 @@ export function generatePayments(
             due: formatISO(d),
             paid: formatISO(adjusted.date),
             early: adjusted.early,
-            holidays: adjusted.holidays
+            holidays: adjusted.holidays,
         });
         d = addDaysUTC(d, cycleDays);
     }
     // Derive the "normal" payment weekday for this NI/cycle.
-    const normalDayBase = cycleDays === 14
-        ? fortnightlyBaseDueDate(ni)
-        : addDaysUTC(BASE_DATE, niOffsetDays(ni));
+    const normalDayBase =
+        cycleDays === 14
+            ? fortnightlyBaseDueDate(ni)
+            : addDaysUTC(BASE_DATE, niOffsetDays(ni));
 
     const normalDay = normalDayBase.toLocaleDateString("en-GB", {
         weekday: "long",
-        timeZone: "UTC"
+        timeZone: "UTC",
     });
 
     return {
         ni,
         normalDay,
         cycleDays,
-        payments
+        payments,
     };
 }

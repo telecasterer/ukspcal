@@ -17,16 +17,17 @@
 ## QA checklist (focus: top bar layout + calendar UI)
 
 1. Top bar actions
-   - Verify buttons do not overlap the title on narrow screens.
-   - Confirm Help/Share/Install/Dark Mode buttons are still usable.
+    - Verify buttons do not overlap the title on narrow screens.
+    - Confirm Help/Share/Install/Dark Mode buttons are still usable.
 2. Share action
-   - Share opens native share (if available) or copies link.
+    - Share opens native share (if available) or copies link.
 3. Calendar highlights
-   - Payment/early/holiday/additional holiday cells render without heavy borders/rings.
+    - Payment/early/holiday/additional holiday cells render without heavy borders/rings.
 4. Clear-all storage
-   - Ensure reset clears inputs, ICS settings, and holiday cache.
+    - Ensure reset clears inputs, ICS settings, and holiday cache.
 
 If any step fails specifically in Messenger/Chrome but not Safari, capture:
+
 - iOS version
 - App (Safari vs Chrome vs Messenger)
 - Exact tap sequence

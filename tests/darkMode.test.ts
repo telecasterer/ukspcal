@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
     applyDarkModeClass,
     persistDarkModeToStorage,
-    readDarkModeFromStorage
+    readDarkModeFromStorage,
 } from "../src/lib/utils/darkMode";
 
 describe("darkMode", () => {

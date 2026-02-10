@@ -16,11 +16,11 @@ describe("fetchUKBankHolidays", () => {
                                 title: "New Year's Day",
                                 date: "2026-01-01",
                                 notes: "",
-                                bunting: true
-                            }
-                        ]
-                    }
-                })
+                                bunting: true,
+                            },
+                        ],
+                    },
+                }),
             } as any;
         });
 

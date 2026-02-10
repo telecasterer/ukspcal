@@ -1,4 +1,3 @@
-
 # UK State Pension Calendar
 
 SvelteKit web app for calculating UK State Pension age and payment dates, with calendar exports and print-ready views.
@@ -6,6 +5,7 @@ SvelteKit web app for calculating UK State Pension age and payment dates, with c
 [![unit test status](https://github.com/telecasterer/ukspcal/actions/workflows/test.yml/badge.svg)](https://github.com/telecasterer/ukspcal/actions/workflows/test.yml)
 
 ## Features
+
 - Calculates State Pension age and payment schedules.
 - Supports 7/14/28/91-day payment cycles.
 - Adjusts for UK bank holidays and weekends.
@@ -16,6 +16,7 @@ SvelteKit web app for calculating UK State Pension age and payment dates, with c
 - Privacy-first: all calculations run locally in the browser.
 
 ## Documentation
+
 - User guide: doc/user-guide.md
 - Developer guide: doc/developer-guide.md
 - Component reference: doc/components.md

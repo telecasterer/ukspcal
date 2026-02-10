@@ -7,7 +7,9 @@ describe("formatDateForCSV", () => {
     });
 
     it("formats dd-mmm-yyyy", () => {
-        expect(formatDateForCSV("2026-01-02", "dd-mmm-yyyy")).toBe("02-JAN-2026");
+        expect(formatDateForCSV("2026-01-02", "dd-mmm-yyyy")).toBe(
+            "02-JAN-2026"
+        );
     });
 
     it("formats yyyy-mm-dd", () => {
@@ -20,6 +22,8 @@ describe("formatDateForCSV", () => {
 
     it("formats ddd, d mmmm yyyy", () => {
         // 2026-01-02 is a Friday.
-        expect(formatDateForCSV("2026-01-02", "ddd, d mmmm yyyy")).toBe("Fri, 2 January 2026");
+        expect(formatDateForCSV("2026-01-02", "ddd, d mmmm yyyy")).toBe(
+            "Fri, 2 January 2026"
+        );
     });
 });

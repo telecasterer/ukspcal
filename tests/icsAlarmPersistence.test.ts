@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
     defaultIcsAlarmSettings,
     loadIcsAlarmSettings,
-    saveIcsAlarmSettings
+    saveIcsAlarmSettings,
 } from "../src/lib/utils/icsAlarmPersistence";
 
 describe("icsAlarmPersistence", () => {

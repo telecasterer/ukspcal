@@ -12,8 +12,7 @@ Know someone approaching retirement who might find this useful? {{handleCopyLink
 
 - **Your data stays on your device.** Nothing you enter is sent to a server or shared with third parties.
 - **Settings are saved locally** in your browser’s storage, not in the cloud or on the application server.
-- **To remove saved data:** Click *Restore defaults* on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
-
+- **To remove saved data:** Click _Restore defaults_ on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
 
 ## Using the App
 
@@ -44,11 +43,11 @@ Know someone approaching retirement who might find this useful? {{handleCopyLink
 
 - Uses your NI suffix letter (A–D) as a phase (which week in the 4-week pattern).
 - The last two digits of your NI code determine your payment weekday:
-  - 00–19: Monday
-  - 20–39: Tuesday
-  - 40–59: Wednesday
-  - 60–79: Thursday
-  - 80–99: Friday
+    - 00–19: Monday
+    - 20–39: Tuesday
+    - 40–59: Wednesday
+    - 60–79: Thursday
+    - 80–99: Friday
 - Phase (A–D) shifts the schedule by one week per letter.
 - Payments repeat every 28 days. Bank-holiday payments are paid early (previous working day).
 
@@ -77,11 +76,10 @@ Know someone approaching retirement who might find this useful? {{handleCopyLink
 
 When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calendars:
 
-  - All your *normal payment* dates are exported as a single **recurring event**. This event repeats according to your chosen **Payment frequency** (e.g. every 28 days, 14 days, etc.).
-  - If a payment would fall on a bank holiday, it is moved to the previous working day as an *early payment*. Each *early payment* is exported as a separate **single event**, so you will see these as individual entries in your calendar.
-  - This approach ensures your calendar app shows your regular payment pattern, but also highlights any early payments due to bank holidays.
-  - **Payment Reminders** You can set up calendar reminders for your payment days. Choose how many days in advance you want to be notified. Reminders are included in exported calendar files (ICS) for easy import into your calendar app.
-
+- All your _normal payment_ dates are exported as a single **recurring event**. This event repeats according to your chosen **Payment frequency** (e.g. every 28 days, 14 days, etc.).
+- If a payment would fall on a bank holiday, it is moved to the previous working day as an _early payment_. Each _early payment_ is exported as a separate **single event**, so you will see these as individual entries in your calendar.
+- This approach ensures your calendar app shows your regular payment pattern, but also highlights any early payments due to bank holidays.
+- **Payment Reminders** You can set up calendar reminders for your payment days. Choose how many days in advance you want to be notified. Reminders are included in exported calendar files (ICS) for easy import into your calendar app.
 
 ### Installing as an App
 
@@ -93,9 +91,7 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
 
 This app uses the official UK government source for bank holiday dates (https://www.gov.uk/bank-holidays). The published data typically covers up to 2 years ahead from today. If you select a date range beyond the latest available bank holiday, the app will still work, but future bank holidays may not be included until the government updates their data.
 
-
 **Latest official UK bank holiday currently available:** {{LATEST_BANK_HOLIDAY}}
-
 
 ## Troubleshooting
 
@@ -115,7 +111,6 @@ This app uses the official UK government source for bank holiday dates (https://
 
 - Click **Restore defaults** on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
 
-
 ## About State Pension Age
 
 - The app uses the latest available government policy to calculate SPA.
@@ -133,13 +128,12 @@ All dates and calculations are based on publicly available information (such as 
 
 Found a bug or have a suggestion? [Send us your feedback](https://tally.so/r/q4Vbq2) - we'd love to hear from you.
 
-## Version information ##
+## Version information
 
 |                 |                           |
-|-----------------|---------------------------|
+| --------------- | ------------------------- |
 | **Developer**   | Paul Robins               |
-| **Version**     | {{BUILDINFO_VERSION}}     |  
-| **Commit**      | {{BUILDINFO_COMMIT}}      | 
-| **Commit date** | {{BUILDINFO_COMMIT_DATE}} | 
+| **Version**     | {{BUILDINFO_VERSION}}     |
+| **Commit**      | {{BUILDINFO_COMMIT}}      |
+| **Commit date** | {{BUILDINFO_COMMIT_DATE}} |
 | **Build date**  | {{BUILDINFO_BUILD_TIME}}  |
-
