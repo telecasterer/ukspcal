@@ -120,6 +120,9 @@ describe("export helpers", () => {
 
         expect(text.startsWith("Date,Day,Status,Notes\n")).toBe(true);
         expect(text).toContain('"02/01/2026"');
+        // Notes should include holiday name for early payments
+        // payment due 2026-01-30 paid 2026-01-29 -> 1 day early
+        expect(text).toMatch(/Early \(1 day early due to Holiday\)/);
 
         dl.restore();
     });

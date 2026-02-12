@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { generatePayments } from "../src/lib/pensionEngine";
-import type { BankHolidayMap } from "../src/lib/bankHolidays";
 
 /* ------------------------------------------------------------
    MOCK BANK HOLIDAYS (known real dates)
 ------------------------------------------------------------ */
-const bankHolidays: BankHolidayMap = {
+const bankHolidays: Record<string, string> = {
     "2026-01-05": "New Year (substitute)", // Monday
     "2026-04-03": "Good Friday",
     "2026-04-06": "Easter Monday",

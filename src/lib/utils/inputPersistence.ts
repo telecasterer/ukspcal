@@ -11,13 +11,13 @@ export type PersistedInputs = {
     startYear: number;
     numberOfYears: number;
     cycleDays: number;
-    showWeekends: boolean;
     showBankHolidays: boolean;
     csvDateFormat: DateFormat;
     icsEventName: string;
     icsCategory: string;
     icsColor: string;
     selectedCountry: string; // Country code for additional holidays (e.g., 'FR', 'US', 'none')
+    ukRegion?: string; // UK region code for bank holiday filtering (e.g. 'GB-ENG')
 };
 
 /**
@@ -116,8 +116,6 @@ export function parsePersistedInputsObject(
     const cd = toInt(parsed.cycleDays);
     if (cd !== null && options.allowedCycleDays.has(cd)) out.cycleDays = cd;
 
-    const sw = toBool(parsed.showWeekends);
-    if (sw !== null) out.showWeekends = sw;
     const sbh = toBool(parsed.showBankHolidays);
     if (sbh !== null) out.showBankHolidays = sbh;
 
@@ -137,6 +135,8 @@ export function parsePersistedInputsObject(
 
     if (typeof parsed.selectedCountry === "string")
         out.selectedCountry = parsed.selectedCountry;
+
+    if (typeof parsed.ukRegion === "string") out.ukRegion = parsed.ukRegion;
 
     return out;
 }

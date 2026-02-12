@@ -23,7 +23,6 @@ const baseProps = {
         { due: "2026-02-02", paid: "2026-02-02", early: false },
     ],
     bankHolidays: {},
-    showWeekends: true,
     showBankHolidays: true,
     currentMonth: 0,
     currentYear: 2026,

@@ -5,7 +5,7 @@
 
     // Modal state for restore defaults
     let showRestoreModal = $state(false);
-    const dispatch = createEventDispatcher();
+    // dispatch is already declared at the top
 
     function handleRestoreDefaultsClick() {
         showRestoreModal = true;
@@ -23,6 +23,7 @@
     import { generatePayments, type Payment } from "$lib/pensionEngine";
 
     // --- Props ---
+
     type Props = {
         ni: string;
         dob: string;
@@ -31,6 +32,7 @@
         cycleDays: number;
         error: string;
         bankHolidays: Record<string, string>;
+        ukRegion: string;
         onFirstPaymentAfterSpa?: (payment: Payment | null) => void;
         onPersist?: () => void;
         onRecalculate?: () => void;
@@ -43,10 +45,12 @@
         cycleDays = $bindable(),
         error = $bindable(),
         bankHolidays,
+        ukRegion = $bindable(),
         onFirstPaymentAfterSpa,
         onPersist,
         onRecalculate,
     }: Props = $props();
+    const dispatch: (event: string, detail?: any) => void = createEventDispatcher();
 
     const currentYear: number = new Date().getFullYear();
 
@@ -383,6 +387,25 @@
                     {/if}
                 </div>
 
+
+                <!-- UK Region select -->
+                <div>
+                    <Label for="uk-region" class="block mb-1 text-sm">UK Region</Label>
+                    <Select
+                        id="uk-region"
+                        bind:value={ukRegion}
+                        onchange={() => dispatch("ukRegionChange", ukRegion)}
+                        class="w-full sm:max-w-[16rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                        <option value="GB-ENG+GB-WLS">England & Wales (default)</option>
+                        <option value="GB-SCT">Scotland</option>
+                        <option value="GB-NIR">Northern Ireland</option>
+                    </Select>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Used to fetch the correct UK bank holidays for your region.
+                    </p>
+                </div>
+
                 <!-- Payment frequency select -->
                 <div>
                     <Label for="cycle-days" class="block mb-1 text-sm"
@@ -526,3 +549,4 @@
         </div>
     </div>
 </div>
+

@@ -11,7 +11,6 @@
     type Props = {
         year: number;
         month: number;
-        showWeekends: boolean;
         showBankHolidays: boolean;
         payments: Payment[];
         bankHolidays: Record<string, string>;
@@ -21,7 +20,6 @@
     let {
         year,
         month,
-        showWeekends,
         showBankHolidays,
         payments,
         bankHolidays,
@@ -84,15 +82,12 @@
         day: number | null,
         weekend: boolean,
         payment: Payment | null,
-        showWeekends: boolean,
         holiday: string | null,
         additionalHoliday: string | null
     ): string {
         return [
             !day ? "empty" : "",
-            weekend && showWeekends && day && !payment && !holiday
-                ? "weekend"
-                : "",
+            weekend && day && !payment && !holiday ? "weekend" : "",
             payment && !payment.early ? "payment" : "",
             payment?.early ? "early-payment" : "",
             holiday && !payment ? "holiday" : "",
@@ -135,8 +130,7 @@
     <div class="grid grid-cols-7">
         {#each calendarDays as day}
             {@const payment = day ? getPaymentForDate(day) : null}
-            {@const holiday =
-                day && showBankHolidays ? getBankHolidayForDate(day) : null}
+            {@const holiday = day ? getBankHolidayForDate(day) : null}
             {@const additionalHoliday = day
                 ? getAdditionalHolidayForDate(day)
                 : null}
@@ -144,7 +138,7 @@
 
             <!-- Calendar day cell: highlights payment, early, holiday, weekend -->
             <div
-                class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${getDayExtraClasses(day, weekend, payment, showWeekends, holiday, additionalHoliday)}`}
+                class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${getDayExtraClasses(day, weekend, payment, holiday, additionalHoliday)}`}
                 title={holiday && !payment
                     ? holiday
                     : additionalHoliday
@@ -185,14 +179,12 @@
                 <span class="w-3 h-3 rounded legend-item holiday"></span>
                 <span>UK-Holiday</span>
             </span>
-            {#if showWeekends}
-                <span class="inline-flex items-center gap-1">
-                    <span
-                        class="w-3 h-3 rounded legend-item weekend border border-gray-300"
-                    ></span>
-                    <span>Weekend</span>
-                </span>
-            {/if}
+            <span class="inline-flex items-center gap-1">
+                <span
+                    class="w-3 h-3 rounded legend-item weekend border border-gray-300"
+                ></span>
+                <span>Weekend</span>
+            </span>
             {#if selectedCountry !== "none"}
                 <span class="inline-flex items-center gap-1">
                     {#if flagSvg}

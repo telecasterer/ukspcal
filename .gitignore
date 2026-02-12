@@ -37,3 +37,5 @@ README.html
 src/routes/help/help.html
 coverage/
 src/routes/help/help.old.md
+todo.md
+.github/copilot-instructions.md

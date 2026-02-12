@@ -25,7 +25,7 @@
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { onMount } from "svelte";
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
-    import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
+
     import { goto } from "$app/navigation";
     import {
         loadHolidaysFromCache,
@@ -43,7 +43,6 @@
         startYear = new Date().getFullYear();
         numberOfYears = 5;
         cycleDays = 28;
-        showWeekends = true;
         showBankHolidays = true;
         csvDateFormat = "dd/mm/yyyy";
         icsEventName = "UK State Pension Payment";
@@ -80,7 +79,6 @@
     let startYear: number = $state(new Date().getFullYear());
     let numberOfYears: number = $state(5);
     let cycleDays: number = $state<number>(28);
-    let showWeekends: boolean = $state(true);
     let showBankHolidays: boolean = $state(true);
     let csvDateFormat: DateFormat = $state<DateFormat>("dd/mm/yyyy");
     let icsEventName: string = $state("UK State Pension Payment");
@@ -88,6 +86,7 @@
     let icsColor: string = $state("#22c55e");
     let dob: string = $state("");
     let detectedCountry: string = detectCountryFromTimezone();
+    let ukRegion: string = $state("GB-ENG+GB-WLS"); // England & Wales default (combined)
     let selectedCountry: string = $state("none");
     let additionalHolidays: Record<string, string> = $state({});
     let isLoadingAdditionalHolidays: boolean = $state(false);
@@ -177,13 +176,13 @@
             startYear: Number(startYear),
             numberOfYears: Number(numberOfYears),
             cycleDays: Number(cycleDays),
-            showWeekends,
             showBankHolidays,
             csvDateFormat,
             icsEventName,
             icsCategory,
             icsColor,
             selectedCountry,
+            ukRegion,
         };
         // Ignore storage quota / private mode errors.
         savePersistedInputs(localStorage, PERSIST_KEY, payload);
@@ -250,8 +249,6 @@
             }
             if (persisted.cycleDays !== undefined)
                 cycleDays = persisted.cycleDays;
-            if (persisted.showWeekends !== undefined)
-                showWeekends = persisted.showWeekends;
             if (persisted.showBankHolidays !== undefined)
                 showBankHolidays = persisted.showBankHolidays;
             if (persisted.csvDateFormat !== undefined)
@@ -263,6 +260,7 @@
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
             if (persisted.selectedCountry !== undefined)
                 selectedCountry = persisted.selectedCountry;
+            if (persisted.ukRegion !== undefined) ukRegion = persisted.ukRegion;
         } catch {
             // Ignore invalid/corrupt stored values.
         } finally {
@@ -281,8 +279,35 @@
 
     // Share handled by ShareButton component
 
-    let { data } = $props();
-    let bankHolidays = $derived(data.bankHolidays);
+    import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
+
+    type PageProps = {
+        bankHolidays?: Record<string, string>;
+    };
+    const { bankHolidays: initialBankHolidays = {} }: PageProps = $props();
+    let bankHolidays: Record<string, string> = $state({});
+
+    $effect.pre(() => {
+        bankHolidays = initialBankHolidays;
+    });
+
+    // Fetch UK holidays for the selected region and year range
+    $effect.pre(() => {
+        if (!ukRegion || !hasLoadedPersistedInputs) return;
+        const years = Array.from({ length: numberOfYears }, (_, i) => startYear + i);
+        (async () => {
+            // Always use countryCode GB for UK, and pass region code for filtering
+            bankHolidays = await fetchHolidaysForCountryAndYears("GB", years, ukRegion);
+        })();
+    });
+
+    // Persist ukRegion when it changes (after initial load)
+    $effect.pre(() => {
+        const _uk = ukRegion; // depend on ukRegion
+        if (!hasLoadedPersistedInputs) return;
+        if (!hasUserCommittedInputs) return;
+        persistInputs();
+    });
 
     // Reactively compute the latest bank holiday date and year (runes mode)
     let lastBankHolidayIso = $derived.by(() => {
@@ -644,6 +669,7 @@
                         bind:cycleDays
                         bind:error
                         {bankHolidays}
+                        bind:ukRegion
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
                         onRecalculate={generate}
@@ -693,7 +719,6 @@
                             {result}
                             payments={result.payments}
                             {bankHolidays}
-                            bind:showWeekends
                             bind:showBankHolidays
                             bind:currentMonth={currentCalendarMonth}
                             bind:currentYear={currentCalendarYear}

@@ -129,6 +129,15 @@
 
     .calendar-day.additional-holiday {
     }
+
+    /* Subtle shading for non-working weekend days (screen only) */
+    .calendar-day.weekend {
+        @apply bg-gray-50 dark:bg-gray-700;
+    }
+
+    .legend-item.weekend {
+        @apply border border-gray-300 dark:border-gray-600;
+    }
 }
 
 /* Help markdown heading size overrides */

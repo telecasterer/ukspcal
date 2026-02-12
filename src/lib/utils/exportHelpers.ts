@@ -87,14 +87,31 @@ function foldICSLine(line: string, maxOctets = 75): string[] {
 function getPaymentStatus(payment: Payment, result: PensionResult): string {
     if (!payment.early) return "On time";
 
-    const paymentDate = new Date(payment.paid + "T00:00:00Z");
-    const daysEarly =
-        result.cycleDays -
-        (paymentDate.getUTCDate() % result.cycleDays || result.cycleDays);
+    // Compute days early as difference between scheduled due date and actual paid date.
+    const dueDate = new Date(payment.due + "T00:00:00Z");
+    const paidDate = new Date(payment.paid + "T00:00:00Z");
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const daysEarly = Math.round((dueDate.getTime() - paidDate.getTime()) / msPerDay);
 
-    if (paymentDate.getUTCDay() === 0) return "Early (Sunday)";
-    if (paymentDate.getUTCDay() === 6) return "Early (Saturday)";
-    return `Early (Holiday, ${daysEarly}d)`;
+    // If holiday names are available on the payment, return a friendly phrase
+    // like "(3 days early due to Christmas Day)". Otherwise, fall back to
+    // weekend-aware or generic phrasing.
+    const holidayNames = payment.holidays && payment.holidays.length
+        ? payment.holidays.join(", ")
+        : null;
+    const plural = daysEarly === 1 ? "day" : "days";
+    if (holidayNames) {
+        return `Early (${daysEarly} ${plural} early due to ${holidayNames})`;
+    }
+
+    // If the due date itself falls on a weekend, indicate that.
+    const dueDow = dueDate.getUTCDay();
+    if (dueDow === 0)
+        return `Early (${daysEarly} ${plural} early due to Sunday)`;
+    if (dueDow === 6)
+        return `Early (${daysEarly} ${plural} early due to Saturday)`;
+
+    return `Early (${daysEarly} ${plural} early)`;
 }
 
 /**

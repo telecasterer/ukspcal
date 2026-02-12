@@ -10,7 +10,6 @@ describe("CalendarMonth", () => {
             props: {
                 year: 2026,
                 month: 0,
-                showWeekends: true,
                 showBankHolidays: true,
                 payments: [
                     { due: "2026-01-05", paid: "2026-01-05", early: false },

@@ -40,13 +40,12 @@
 
     // --- Constants ---
     const pageSize = 6; // Number of months to show at once
-    const navStep = 3; // How many months to jump on navigation
+    const navStep = 6; // How many months to jump on navigation
 
     // --- Props ---
     export let result: PensionResult;
     export let payments: Payment[];
     export let bankHolidays: Record<string, string>;
-    export let showWeekends: boolean;
     export let showBankHolidays: boolean;
     export let currentMonth: number;
     export let currentYear: number;
@@ -197,6 +196,8 @@
     let exportMenuOpen = false;
     let csvModalOpen = false;
     let icsModalOpen = false;
+
+    
 
     let bottomNavEl: HTMLDivElement | null = null;
 
@@ -376,7 +377,7 @@
                     </div>
                 </div>
 
-                <!-- Export/Print buttons -->
+                                <!-- Export/Print buttons -->
                 <div class="flex flex-col items-center sm:items-end gap-1">
                     <div class="flex items-center gap-2">
                         <!-- Export menu -->
@@ -403,6 +404,7 @@
                                 onclick={openIcsModal}
                                 >Add to calendar (ICS)</DropdownItem
                             >
+                            
                         </Dropdown>
 
                         <!-- Print button -->
@@ -488,15 +490,11 @@
                 </div>
             </div>
 
+            
+
             <!-- Weekends and Holidays filters -->
             <div class="flex flex-wrap gap-4 items-center">
-                <Label class="flex items-center gap-2 cursor-pointer text-sm">
-                    <FlowbiteCheckbox
-                        bind:checked={showWeekends}
-                        onchange={() => onPersist?.()}
-                    />
-                    <span>Weekends</span>
-                </Label>
+                <!-- Weekends are always shown (pale grey background) -->
                 <Label class="flex items-center gap-2 cursor-pointer text-sm">
                     <FlowbiteCheckbox
                         bind:checked={showBankHolidays}
@@ -765,7 +763,6 @@
                 <CalendarMonth
                     year={monthData.year}
                     month={monthData.month}
-                    {showWeekends}
                     {showBankHolidays}
                     {payments}
                     {bankHolidays}
@@ -785,7 +782,6 @@
                 <CalendarMonth
                     year={monthData.year}
                     month={monthData.month}
-                    {showWeekends}
                     {showBankHolidays}
                     {payments}
                     {bankHolidays}

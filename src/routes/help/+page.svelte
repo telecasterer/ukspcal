@@ -48,14 +48,8 @@
      * 3. Parse the markdown into structured sections and subsections for rendering.
      */
 
-    // --- 1. Extract latest bank holiday from layout data ---
-    export let data: { bankHolidays: Record<string, string> };
-    const bankHolidays = data?.bankHolidays || {};
-    // Get the latest bank holiday ISO date and name (or fallback)
-    const lastBankHolidayIso = Object.keys(bankHolidays).sort().pop();
-    const latestBankHolidayString = lastBankHolidayIso
-        ? `${new Date(lastBankHolidayIso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} (${bankHolidays[lastBankHolidayIso]})`
-        : "not available";
+    // --- 1. Layout data (no per-help placeholders required) ---
+    // The help markdown no longer uses a dynamic latest-bank-holiday placeholder.
 
     // --- 2. Import markdown and replace placeholder ---
     import MarkdownIt from "markdown-it";
@@ -71,7 +65,6 @@
 
     // Replace placeholders in the markdown with dynamic values
     const placeholderMap: Record<string, string> = {
-        "{{LATEST_BANK_HOLIDAY}}": latestBankHolidayString,
         "{{BUILDINFO_VERSION}}": buildInfo.version,
         "{{BUILDINFO_COMMIT}}": buildInfo.commit,
         "{{BUILDINFO_COMMIT_DATE}}": buildInfoFormatted.commitDate,

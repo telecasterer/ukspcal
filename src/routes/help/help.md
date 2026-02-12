@@ -89,9 +89,7 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
 
 ## UK Bank Holiday Data
 
-This app uses the official UK government source for bank holiday dates (https://www.gov.uk/bank-holidays). The published data typically covers up to 2 years ahead from today. If you select a date range beyond the latest available bank holiday, the app will still work, but future bank holidays may not be included until the government updates their data.
-
-**Latest official UK bank holiday currently available:** {{LATEST_BANK_HOLIDAY}}
+The app uses public holiday data to decide when payments move earlier. Choose the UK region that applies to you — the region selected will determine which UK bank holidays apply and can affect early payment dates. Holiday data is cached and coverage may vary by year.
 
 ## Troubleshooting
 

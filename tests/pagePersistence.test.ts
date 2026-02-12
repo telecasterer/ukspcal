@@ -30,7 +30,6 @@ describe("+page persistence", () => {
             startYear: 2026,
             numberOfYears: 2,
             cycleDays: 28,
-            showWeekends: false,
             showBankHolidays: true,
             csvDateFormat: "dd/mm/yyyy",
             icsEventName: "UK State Pension Payment",
@@ -43,8 +42,9 @@ describe("+page persistence", () => {
         const setItemSpy = getSetItemSpy();
 
         render(Page, {
+            // @ts-ignore
             props: {
-                data: { bankHolidays: {} },
+                bankHolidays: {},
             },
         });
 
@@ -64,7 +64,7 @@ describe("+page persistence", () => {
         const finalParsed = JSON.parse(finalRaw!) as any;
         expect(finalParsed.ni).toBe("29B");
         expect(finalParsed.dob).toBe("1956-03-15");
-        expect(finalParsed.showWeekends).toBe(false);
+        // showWeekends has been removed from persisted inputs
     });
 
     it("ignores invalid persisted values and writes a sane payload on commit", async () => {
@@ -83,7 +83,7 @@ describe("+page persistence", () => {
 
         const { getByLabelText } = render(Page, {
             props: {
-                data: { bankHolidays: {} },
+                bankHolidays: {} as unknown as Record<string, string>,
             },
         });
 
@@ -115,5 +115,55 @@ describe("+page persistence", () => {
             "ddd, d mmmm yyyy",
         ]).toContain(payload.csvDateFormat);
         expect(/^#[0-9a-f]{6}$/i.test(payload.icsColor)).toBe(true);
+    });
+
+    it("persists ukRegion when user has committed inputs and changes region", async () => {
+        const setItemSpy = getSetItemSpy();
+
+        const { getByLabelText } = render(Page, {
+            props: {
+                bankHolidays: {} as unknown as Record<string, string>,
+            },
+        });
+
+        await tick();
+        await tick();
+
+        // Commit once (simulate user committing NI) so that subsequent
+        // ukRegion changes are persisted by the page logic.
+        const niInput = getByLabelText(/NI code/i);
+        await fireEvent.focus(niInput);
+        await fireEvent.blur(niInput);
+        await tick();
+
+        const regionSelect = getByLabelText(/UK Region/i) as HTMLSelectElement;
+        await fireEvent.change(regionSelect, { target: { value: "GB-SCT" } });
+        await tick();
+
+        const lastPersistWrite = [...setItemSpy.mock.calls]
+            .filter(([key]) => key === PERSIST_KEY)
+            .at(-1);
+
+        expect(lastPersistWrite).toBeTruthy();
+        const payload = JSON.parse(String(lastPersistWrite![1])) as any;
+        expect(payload.ukRegion).toBe("GB-SCT");
+    });
+
+    it("restores ukRegion from persisted inputs on load", async () => {
+        // Put only ukRegion into persisted storage and ensure the page
+        // restores it on mount.
+        localStorage.setItem(PERSIST_KEY, JSON.stringify({ ukRegion: "GB-NIR" }));
+
+        const { getByLabelText } = render(Page, {
+            props: {
+                bankHolidays: {} as unknown as Record<string, string>,
+            },
+        });
+
+        await tick();
+        await tick();
+
+        const regionSelect = getByLabelText(/UK Region/i) as HTMLSelectElement;
+        expect(regionSelect.value).toBe("GB-NIR");
     });
 });

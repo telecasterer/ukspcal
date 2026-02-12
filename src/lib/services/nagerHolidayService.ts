@@ -47,9 +47,14 @@ export async function fetchHolidaysForCountryAndYear(
 /**
  * Fetch public holidays for a given country across multiple years
  */
+/**
+ * Fetch public holidays for a given country and region across multiple years
+ * For UK, regionCode should be one of: GB-ENG, GB-SCT, GB-NIR
+ */
 export async function fetchHolidaysForCountryAndYears(
     countryCode: string,
-    years: number[]
+    years: number[],
+    regionCode?: string | string[]
 ): Promise<Record<string, string>> {
     const holidays: Record<string, string> = {};
 
@@ -59,7 +64,48 @@ export async function fetchHolidaysForCountryAndYears(
 
     for (const yearHolidays of results) {
         for (const holiday of yearHolidays) {
-            holidays[holiday.date] = holiday.name;
+            // For UK, filter by region/county if specified
+            if (countryCode === "GB" && regionCode) {
+                // Support passing a single region code, an array of region codes,
+                // or a "+"-separated string like "GB-ENG+GB-WLS" to indicate
+                // combined regions (England & Wales).
+                const regionCodes: string[] = Array.isArray(regionCode)
+                    ? regionCode
+                    : String(regionCode).split("+").map((s) => s.trim()).filter(Boolean);
+
+                // Map common GB region codes to the county codes used by Nager.Date
+                const regionMap: Record<string, string> = {
+                    "GB-ENG": "ENG",
+                    "GB-WLS": "WLS",
+                    "GB-SCT": "SCT",
+                    "GB-NIR": "NIR",
+                };
+
+                const appliesToRegion = (): boolean => {
+                    // No counties means the holiday is national — include for all regions
+                    if (!holiday.counties) return true;
+                    if (!Array.isArray(holiday.counties)) return false;
+
+                    for (const c of holiday.counties) {
+                        if (!c) continue;
+                        const upper = String(c).toUpperCase();
+                        for (const rc of regionCodes) {
+                            const mapped = regionMap[rc] || rc.replace(/^GB-/, "");
+                            const code = String(mapped).toUpperCase();
+                            if (upper === code) return true;
+                            if (upper === `GB-${code}`) return true;
+                            if (upper.endsWith(code)) return true;
+                        }
+                    }
+                    return false;
+                };
+
+                if (appliesToRegion()) {
+                    holidays[holiday.date] = holiday.name;
+                }
+            } else {
+                holidays[holiday.date] = holiday.name;
+            }
         }
     }
 
