@@ -387,25 +387,6 @@
                     {/if}
                 </div>
 
-
-                <!-- UK Region select -->
-                <div>
-                    <Label for="uk-region" class="block mb-1 text-sm">UK Region</Label>
-                    <Select
-                        id="uk-region"
-                        bind:value={ukRegion}
-                        onchange={() => dispatch("ukRegionChange", ukRegion)}
-                        class="w-full sm:max-w-[16rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    >
-                        <option value="GB-ENG+GB-WLS">England & Wales (default)</option>
-                        <option value="GB-SCT">Scotland</option>
-                        <option value="GB-NIR">Northern Ireland</option>
-                    </Select>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Used to fetch the correct UK bank holidays for your region.
-                    </p>
-                </div>
-
                 <!-- Payment frequency select -->
                 <div>
                     <Label for="cycle-days" class="block mb-1 text-sm"
@@ -425,6 +406,24 @@
                     </Select>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Payment frequency is normally every 28 days.
+                    </p>
+                </div>
+
+                 <!-- UK Region select -->
+                <div>
+                    <Label for="uk-region" class="block mb-1 text-sm">UK Region</Label>
+                    <Select
+                        id="uk-region"
+                        bind:value={ukRegion}
+                        onchange={() => dispatch("ukRegionChange", ukRegion)}
+                        class="w-full sm:max-w-[16rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                        <option value="GB-ENG+GB-WLS">England & Wales (default)</option>
+                        <option value="GB-SCT">Scotland</option>
+                        <option value="GB-NIR">Northern Ireland</option>
+                    </Select>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Used to fetch the correct UK bank holidays for your region.
                     </p>
                 </div>
 

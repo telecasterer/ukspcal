@@ -6,7 +6,8 @@
 4. Export your calendar as CSV (spreadsheet) or ICS (calendar app), or print it for your records.
 5. (Optional, recommended) Install the app.
 
-Know someone approaching retirement who might find this useful? {{handleCopyLink}}
+- Know someone approaching retirement who might find this useful? 
+- Use the **Share** button in the toolbar above to send them the link.
 
 ## Data Privacy
 
