@@ -146,17 +146,18 @@
                       : undefined}
             >
                 {#if day}
-                    <div class="flex justify-between items-start w-full">
-                        <div class="text-sm font-semibold">{day}</div>
-                        {#if additionalHoliday && !payment && flagSvg}
-                            <img
-                                src={flagSvg}
-                                alt={`${selectedCountry} flag`}
-                                class="w-4 h-4"
-                                title={additionalHoliday}
-                            />
-                        {/if}
+                    <div class="flex items-start">
+                        <div class="text-sm font-semibold min-w-[1.25rem] flex-shrink-0">{day}</div>
                     </div>
+                    {#if additionalHoliday && !payment && flagSvg}
+                        <img
+                            src={flagSvg}
+                            alt={`${selectedCountry} flag`}
+                            class="absolute top-1 right-1 pointer-events-none"
+                            title={additionalHoliday}
+                            style="width:clamp(0.8rem,25%,1.6rem); height:auto;"
+                        />
+                    {/if}
                 {/if}
             </div>
         {/each}
