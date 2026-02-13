@@ -1,7 +1,6 @@
 <script lang="ts">
     // PensionInputsCard.svelte: Handles user input for pension calculation
     import { Alert, Label, Select, Button, Modal } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
 
     // Modal state for restore defaults
     let showRestoreModal = $state(false);
@@ -13,7 +12,7 @@
 
     function handleRestoreDefaultsConfirm() {
         showRestoreModal = false;
-        dispatch("restoreDefaults");
+        onRestoreDefaults?.();
     }
 
     function handleRestoreDefaultsCancel() {
@@ -32,7 +31,7 @@
         cycleDays: number;
         error: string;
         bankHolidays: Record<string, string>;
-        ukRegion: string;
+        onRestoreDefaults?: () => void;
         onFirstPaymentAfterSpa?: (payment: Payment | null) => void;
         onPersist?: () => void;
         onRecalculate?: () => void;
@@ -45,12 +44,11 @@
         cycleDays = $bindable(),
         error = $bindable(),
         bankHolidays,
-        ukRegion = $bindable(),
+        onRestoreDefaults,
         onFirstPaymentAfterSpa,
         onPersist,
         onRecalculate,
     }: Props = $props();
-    const dispatch: (event: string, detail?: any) => void = createEventDispatcher();
 
     const currentYear: number = new Date().getFullYear();
 
@@ -409,23 +407,7 @@
                     </p>
                 </div>
 
-                 <!-- UK Region select -->
-                <div>
-                    <Label for="uk-region" class="block mb-1 text-sm">UK Region</Label>
-                    <Select
-                        id="uk-region"
-                        bind:value={ukRegion}
-                        onchange={() => dispatch("ukRegionChange", ukRegion)}
-                        class="w-full sm:max-w-[16rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    >
-                        <option value="GB-ENG+GB-WLS">England & Wales (default)</option>
-                        <option value="GB-SCT">Scotland</option>
-                        <option value="GB-NIR">Northern Ireland</option>
-                    </Select>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Used to fetch the correct UK bank holidays for your region.
-                    </p>
-                </div>
+                
 
                 <!-- Error alert -->
                 {#if error}

@@ -38,24 +38,24 @@
      * Get payment for a given day of this month (if any)
      */
     function getPaymentForDate(day: number): Payment | null {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        return paymentsByPaid.get(dateStr) ?? null;
+        const iso = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+        return paymentsByPaid.get(iso) ?? null;
     }
 
     /**
      * Get bank holiday name for a given day (if any)
      */
     function getBankHolidayForDate(day: number): string | null {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        return bankHolidays[dateStr] || null;
+        const iso = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+        return bankHolidays[iso] || null;
     }
 
     /**
      * Get additional country holiday name for a given day (if any)
      */
     function getAdditionalHolidayForDate(day: number): string | null {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        return additionalHolidays[dateStr] || null;
+        const iso = new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+        return additionalHolidays[iso] || null;
     }
 
     /**
@@ -153,9 +153,9 @@
                         <img
                             src={flagSvg}
                             alt={`${selectedCountry} flag`}
-                            class="absolute top-1 right-1 pointer-events-none"
+                            class="absolute top-1 right-1 pointer-events-none border border-gray-200"
                             title={additionalHoliday}
-                            style="width:clamp(0.8rem,25%,1.6rem); height:auto;"
+                            style="width:clamp(1rem,30%,1.8rem); height:auto;"
                         />
                     {/if}
                 {/if}
@@ -192,7 +192,7 @@
                         <img
                             src={flagSvg}
                             alt={`${selectedCountry} flag`}
-                            class="w-4 h-4"
+                            class="w-4 h-4 border border-gray-200"
                         />
                     {/if}
                     <span>{selectedCountry}-Holiday</span>

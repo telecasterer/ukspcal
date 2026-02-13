@@ -109,5 +109,7 @@ export async function fetchHolidaysForCountryAndYears(
         }
     }
 
+    // Production: do not log matched holiday counts here.
+
     return holidays;
 }

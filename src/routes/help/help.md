@@ -31,7 +31,7 @@
 
 - **Weekends:** Toggle weekend days highlight on/off (weekends are shown in a light gray).
 - **UK Holidays:** Toggle UK bank holidays on/off (shown with a blue background and white text). These are the official UK bank holidays that affect payment dates—if your payment date falls on a UK bank holiday, it will be paid on the previous working day.
-- **Additional holidays:** Optionally display public holidays from another country alongside UK holidays for reference. Currently supports France, Germany, Spain, Italy, Netherlands, Belgium, Austria, Portugal, Ireland, Sweden, Denmark, Norway, Switzerland, United States, Canada, Australia, New Zealand, and Japan. These are marked with a flag 🇫🇷 (respective country emoji) icon on calendar days. **Important:** These additional country holidays are shown for information only and do not affect when the UK issues your payment. However, they may affect when your receiving bank credits the funds to your account, so they are useful for reference if you are receiving payments in another country.
+- **Additional holidays:** Optionally display public holidays from another country/region alongside UK holidays for reference. Currently supports France, Germany, Spain, Italy, Netherlands, Belgium, Austria, Portugal, Ireland, Sweden, Denmark, Norway, Switzerland, United States, Canada, Australia, New Zealand, Japan, Scotland, and Northern Ireland. These are marked with a flag 🇫🇷 (respective country/region) icon on calendar days. **Important:** These additional country holidays are shown for information only and do not affect when the DWP issues your payment. However, they may affect when your receiving bank credits the funds to your account, so they are useful for reference if you are receiving payments in another country.
 
 ### Payment Frequency
 
@@ -90,7 +90,7 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
 
 ## UK Bank Holiday Data
 
-The app uses public holiday data to decide when payments move earlier. Choose the UK region that applies to you — the region selected will determine which UK bank holidays apply and can affect early payment dates. Holiday data is cached and coverage may vary by year.
+The app uses public holiday data to decide when payments move earlier. By default the app uses England & Wales bank holidays for early-payment calculations. Scotland and Northern Ireland are available as additional reference overlays in the additional countries selector. 
 
 ## Troubleshooting
 
@@ -117,7 +117,7 @@ The app uses public holiday data to decide when payments move earlier. Choose th
 
 ## Disclaimer
 
-This tool is an unofficial calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK**.
+This tool is an unofficial calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV\.UK**.
 
 All dates and calculations are based on publicly available information (such as published pension schedules, the State Pension age timetable, and UK bank holiday lists) and may change at any time.
 

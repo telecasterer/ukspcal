@@ -117,44 +117,15 @@ describe("+page persistence", () => {
         expect(/^#[0-9a-f]{6}$/i.test(payload.icsColor)).toBe(true);
     });
 
-    it("persists ukRegion when user has committed inputs and changes region", async () => {
-        const setItemSpy = getSetItemSpy();
-
-        const { getByLabelText } = render(Page, {
-            props: {
-                bankHolidays: {} as unknown as Record<string, string>,
-            },
-        });
-
-        await tick();
-        await tick();
-
-        // Commit once (simulate user committing NI) so that subsequent
-        // ukRegion changes are persisted by the page logic.
-        const niInput = getByLabelText(/NI code/i);
-        await fireEvent.focus(niInput);
-        await fireEvent.blur(niInput);
-        await tick();
-
-        const regionSelect = getByLabelText(/UK Region/i) as HTMLSelectElement;
-        await fireEvent.change(regionSelect, { target: { value: "GB-SCT" } });
-        await tick();
-
-        const lastPersistWrite = [...setItemSpy.mock.calls]
-            .filter(([key]) => key === PERSIST_KEY)
-            .at(-1);
-
-        expect(lastPersistWrite).toBeTruthy();
-        const payload = JSON.parse(String(lastPersistWrite![1])) as any;
-        expect(payload.ukRegion).toBe("GB-SCT");
-    });
+    // The UK region selector has been removed from the input form; ukRegion
+    // remains a page-level default (England & Wales) and is persisted on
+    // input commits. There is no UI element to change it.
 
     it("restores ukRegion from persisted inputs on load", async () => {
         // Put only ukRegion into persisted storage and ensure the page
         // restores it on mount.
         localStorage.setItem(PERSIST_KEY, JSON.stringify({ ukRegion: "GB-NIR" }));
-
-        const { getByLabelText } = render(Page, {
+        const { queryByLabelText } = render(Page, {
             props: {
                 bankHolidays: {} as unknown as Record<string, string>,
             },
@@ -163,7 +134,8 @@ describe("+page persistence", () => {
         await tick();
         await tick();
 
-        const regionSelect = getByLabelText(/UK Region/i) as HTMLSelectElement;
-        expect(regionSelect.value).toBe("GB-NIR");
+        // There should be no UK Region select in the UI anymore.
+        const regionSelect = queryByLabelText(/UK Region/i);
+        expect(regionSelect).toBeNull();
     });
 });

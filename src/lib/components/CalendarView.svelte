@@ -537,7 +537,7 @@
                                 onCountryChange?.(selectedCountry);
                                 onPersist?.();
                             }}
-                            class="w-24"
+                            class="w-40"
                             classes={{
                                 select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
                             }}
@@ -560,6 +560,8 @@
                             <option value="AU">Australia</option>
                             <option value="NZ">New Zealand</option>
                             <option value="JP">Japan</option>
+                            <option value="GB-SCT">Scotland</option>
+                            <option value="GB-NIR">Northern Ireland</option>
                         </Select>
                     {/if}
                 </div>

@@ -16,6 +16,8 @@ import caFlag from "flag-icons/flags/1x1/ca.svg";
 import auFlag from "flag-icons/flags/1x1/au.svg";
 import nzFlag from "flag-icons/flags/1x1/nz.svg";
 import jpFlag from "flag-icons/flags/1x1/jp.svg";
+import gbSct from "./flags/gb-sct.svg";
+import gbNir from "./flags/gb-nir.svg";
 
 /**
  * Country code to flag SVG mapping
@@ -39,6 +41,8 @@ export const countryCodeToFlagSvg: Record<string, string> = {
     AU: auFlag,
     NZ: nzFlag,
     JP: jpFlag,
+    "GB-SCT": gbSct,
+    "GB-NIR": gbNir,
 };
 
 /**

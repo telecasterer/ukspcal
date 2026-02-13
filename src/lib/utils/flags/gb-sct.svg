@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="flag-sct">
+  <!-- Scotland (Saltire) — flag-icons style: flat fields, crisp geometry -->
+  <rect width="512" height="512" fill="#005EB8"/>
+  <!-- Diagonal band top-left -> bottom-right -->
+  <polygon fill="#FFFFFF" points="0,0 64,0 512,448 512,512 448,512 0,64"/>
+  <!-- Diagonal band top-right -> bottom-left -->
+  <polygon fill="#FFFFFF" points="512,0 512,64 64,512 0,512 0,448 448,0"/>
+</svg>

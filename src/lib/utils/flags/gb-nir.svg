@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="flag-nir">
+  <!-- Northern Ireland (St Patrick's saltire) — flag-icons style geometry -->
+  <rect width="512" height="512" fill="#FFFFFF"/>
+  <!-- Diagonal band top-left -> bottom-right -->
+  <polygon fill="#C8102E" points="0,0 56,0 512,456 512,512 456,512 0,56"/>
+  <!-- Diagonal band top-right -> bottom-left -->
+  <polygon fill="#C8102E" points="512,0 512,56 56,512 0,512 0,456 456,0"/>
+</svg>

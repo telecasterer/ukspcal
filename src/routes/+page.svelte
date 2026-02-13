@@ -91,6 +91,7 @@
     let additionalHolidays: Record<string, string> = $state({});
     let isLoadingAdditionalHolidays: boolean = $state(false);
     let lastAdditionalHolidaysKey: string = $state("");
+    
 
     const currentYear: number = new Date().getFullYear();
     const years: number[] = Array.from(
@@ -365,8 +366,26 @@
             return;
         }
 
+        // For regional UK overlays (GB-SCT, GB-NIR) use countryCode "GB"
+        // and pass the region code to the holiday service. Keep the cache
+        // key as the selected value (e.g., "GB-SCT") so overlays are cached
+        // separately.
+        const isGbRegion = typeof country === "string" && country.startsWith("GB-");
+        const cacheKey = country;
+
         // Try to load from cache first
-        const cached = loadHolidaysFromCache(country);
+        let cached = loadHolidaysFromCache(cacheKey);
+        // If a cache entry exists but its `data` is empty (e.g. stale or malformed
+        // save), invalidate it so we fetch fresh data. This addresses cases where
+        // localStorage contains a years list but no holiday keys.
+        try {
+            if (cached && Object.keys(cached.data || {}).length === 0) {
+                if (typeof window !== 'undefined') localStorage.removeItem(`holiday_cache_${cacheKey}`);
+                cached = null;
+            }
+        } catch {
+            // ignore inspection errors
+        }
 
         const yearsToFetch = Array.from(
             { length: numberOfYears },
@@ -381,21 +400,34 @@
 
         // Fetch from API (only missing years if cache exists)
         isLoadingAdditionalHolidays = true;
+        const missingYears = cached
+            ? yearsToFetch.filter((y) => !cached.years.includes(y))
+            : yearsToFetch;
         try {
-            const missingYears = cached
-                ? yearsToFetch.filter((y) => !cached.years.includes(y))
-                : yearsToFetch;
-            const holidays = await fetchHolidaysForCountryAndYears(
-                country,
-                missingYears
-            );
+            let holidays: Record<string, string> = {};
+            if (isGbRegion) {
+                // country is like "GB-SCT"; fetch with countryCode "GB" and region
+                const regionCode = country; // e.g., "GB-SCT"
+                holidays = await fetchHolidaysForCountryAndYears(
+                    "GB",
+                    missingYears,
+                    regionCode
+                );
+                // fetched GB region holidays
+            } else {
+                holidays = await fetchHolidaysForCountryAndYears(
+                    country,
+                    missingYears
+                );
+                // fetched country holidays
+            }
             const merged = cached ? { ...cached.data, ...holidays } : holidays;
             const mergedYears = cached
                 ? [...new Set([...cached.years, ...missingYears])]
                 : yearsToFetch;
 
             additionalHolidays = merged;
-            saveHolidaysToCache(country, merged, mergedYears);
+            saveHolidaysToCache(cacheKey, merged, mergedYears);
         } catch (error) {
             console.error(`Error fetching holidays for ${country}:`, error);
             additionalHolidays = {};
@@ -669,11 +701,11 @@
                         bind:cycleDays
                         bind:error
                         {bankHolidays}
-                        bind:ukRegion
+                        onRestoreDefaults={handleResetAll}
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
                         onRecalculate={generate}
-                        on:restoreDefaults={handleResetAll}
+                        
                     />
                 </div>
 
@@ -715,6 +747,7 @@
                         size="xl"
                         class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 calendar-print-wrapper"
                     >
+                        
                         <CalendarView
                             {result}
                             payments={result.payments}

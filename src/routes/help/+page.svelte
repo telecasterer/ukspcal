@@ -196,7 +196,6 @@
     <!-- Main content area: full-width single section, no card or rounded corners -->
     <main
         class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
-        role="main"
     >
         <!-- Main help content rendered as accordion sections (full width) -->
         <Accordion class="w-full">
