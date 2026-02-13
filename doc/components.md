@@ -8,6 +8,7 @@
 - **FloatingFeedbackButton.svelte** — Floating feedback launcher.
 - **IcsAlarmDialog.svelte** — Modal to configure ICS alarm settings.
 - **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options.
+	- Note: `PensionInputsCard.svelte` uses Flowbite-Svelte `Select` components and exposes a bindable `ukRegion` prop; the selected region is persisted to local storage.
 - **SummaryCard.svelte** — Summary panel (first payment, pension age, normal weekday).
 - **SummaryCardContent.svelte** — Shared markup for summary content (used by SummaryCard).
 - **ShareButton.svelte** — Share/copy action button with optional size.
@@ -16,10 +17,11 @@
 ## Core logic (src/lib)
 
 - **pensionEngine.ts** — Generates payment schedules and applies holiday adjustments.
-- **fetchBankHolidays.ts** — GOV.UK bank holiday fetcher with fallback data.
+- **fetchBankHolidays.ts** — (unused) placeholder for alternate holiday fetchers.
 - **bankHolidays.ts** — Types for bank holiday responses and maps.
 - **buildInfo.ts** — Build metadata used in the UI.
 - **services/nagerHolidayService.ts** — Optional public holiday overlay for non-UK calendars.
+	- `nagerHolidayService.ts` supports filtering by GB region codes and accepts combined region codes (e.g., `GB-ENG+GB-WLS`) so England & Wales holidays can be applied together.
 
 ## Utilities (src/lib/utils)
 
@@ -40,7 +42,7 @@
 
 ## Routes (src/routes)
 
-- **+layout.ts** — Fetches UK bank holidays for the app.
+- **+layout.ts** — Exposes holiday data for the app (sourced via Nager.Date service).
 - **+page.svelte** — Main calculator UI and data flow.
 - **help/+page.svelte** — Help page (markdown rendered with dynamic placeholders).
 - **sitemap.xml** — Generated sitemap endpoint.
@@ -54,7 +56,6 @@
 
 ## External dependencies (at a glance)
 
-- **GOV.UK Bank Holidays API** — Primary source for UK holiday data.
-- **Nager.Date API** — Optional extra holiday overlays for other countries.
+- **Nager.Date API** — Primary source for holiday overlays and region-specific data used by the app.
 
 See code comments and types for details on data formats and edge cases.

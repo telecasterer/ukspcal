@@ -54,13 +54,7 @@
     // --- 2. Import markdown and replace placeholder ---
     import MarkdownIt from "markdown-it";
     import helpMarkdown from "./help.md?raw";
-    import {
-        Accordion,
-        AccordionItem,
-        Button,
-        Footer,
-        FooterIcon,
-    } from "flowbite-svelte";
+    import { Accordion, AccordionItem, Button, Footer, FooterIcon } from "flowbite-svelte";
     import { buildInfo, buildInfoFormatted } from "$lib/buildInfo";
 
     // Replace placeholders in the markdown with dynamic values
@@ -102,11 +96,7 @@
      */
     function pushSubSection(): void {
         if (currentSubSection && currentSection) {
-            currentSubSection.html = md.renderer.render(
-                subBodyTokens,
-                md.options,
-                {}
-            );
+            currentSubSection.html = md.renderer.render(subBodyTokens, md.options, {});
             if (!currentSection.subSections) currentSection.subSections = [];
             currentSection.subSections.push(currentSubSection);
             currentSubSection = null;
@@ -122,18 +112,10 @@
         if (!currentSection) return;
         // If there were any H3s, render content before first H3 as html
         if (currentSection.subSections && bodyTokens.length > 0) {
-            currentSection.html = md.renderer.render(
-                bodyTokens,
-                md.options,
-                {}
-            );
+            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
         } else if (!currentSection.subSections) {
             // No H3s: render all content as html
-            currentSection.html = md.renderer.render(
-                bodyTokens,
-                md.options,
-                {}
-            );
+            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
         }
         sections.push(currentSection);
         currentSection = null;
@@ -151,34 +133,20 @@
             pushSection();
             const inline = allTokens[i + 1];
             currentSection = {
-                title:
-                    inline && inline.type === "inline"
-                        ? inline.content.trim()
-                        : "Section",
+                title: inline && inline.type === "inline" ? inline.content.trim() : "Section",
             };
             // Skip over the h2 (heading_open, inline, heading_close).
-            while (
-                i < allTokens.length &&
-                allTokens[i].type !== "heading_close"
-            )
-                i++;
+            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
             continue;
         } else if (token.type === "heading_open" && token.tag === "h3") {
             pushSubSection();
             const inline = allTokens[i + 1];
             currentSubSection = {
-                title:
-                    inline && inline.type === "inline"
-                        ? inline.content.trim()
-                        : "Subsection",
+                title: inline && inline.type === "inline" ? inline.content.trim() : "Subsection",
                 html: "",
             };
             // Skip over the h3 (heading_open, inline, heading_close).
-            while (
-                i < allTokens.length &&
-                allTokens[i].type !== "heading_close"
-            )
-                i++;
+            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
             continue;
         }
         if (currentSubSection) {
@@ -225,66 +193,61 @@
             </Button>
         </svelte:fragment>
     </TopBar>
-    <!-- Main content area -->
-    <div
+    <!-- Main content area: full-width single section, no card or rounded corners -->
+    <main
         class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+        role="main"
     >
-        <div class="max-w-4xl mx-auto space-y-6">
-            <!-- Main help content rendered as accordion sections -->
-            <div
-                class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
-            >
-                <Accordion class="w-full">
-                    {#each sections as section, i}
-                        <AccordionItem
-                            classes={{
-                                content: "bg-white dark:bg-gray-900/30",
-                            }}
-                        >
-                            {#snippet header()}
-                                <span>{section.title}</span>
-                            {/snippet}
-                            {#if section.subSections}
-                                {#if section.html !== undefined}
-                                    <div
-                                        class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none mb-2"
-                                    >
-                                        {@html section.html}
-                                    </div>
-                                {/if}
-                                <!-- Render H3 subsections as nested accordions -->
-                                <Accordion class="w-full ml-2">
-                                    {#each section.subSections as sub, j}
-                                        <AccordionItem
-                                            classes={{
-                                                content:
-                                                    "bg-white dark:bg-gray-900/30",
-                                            }}
-                                        >
-                                            {#snippet header()}
-                                                <span>{sub.title}</span>
-                                            {/snippet}
-                                            <div
-                                                class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
-                                            >
-                                                {@html sub.html}
-                                            </div>
-                                        </AccordionItem>
-                                    {/each}
-                                </Accordion>
-                            {:else if section.html !== undefined}
-                                <div
-                                    class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
+        <!-- Main help content rendered as accordion sections (full width) -->
+        <Accordion class="w-full">
+            {#each sections as section, i}
+                <AccordionItem
+                    classes={{
+                        // inactive: "bg-white dark:bg-gray-800",
+                        content: "bg-white dark:bg-gray-900/30",
+                    }}
+                >
+                    {#snippet header()}
+                        <span>{section.title}</span>
+                    {/snippet}
+                    {#if section.subSections}
+                        {#if section.html !== undefined}
+                            <div
+                                class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none mb-2"
+                            >
+                                {@html section.html}
+                            </div>
+                        {/if}
+                        <!-- Render H3 subsections as nested accordions -->
+                        <Accordion class="w-full ml-2">
+                            {#each section.subSections as sub, j}
+                                <AccordionItem
+                                    classes={{
+                                        content: "bg-white dark:bg-gray-900/30",
+                                    }}
                                 >
-                                    {@html section.html}
-                                </div>
-                            {/if}
-                        </AccordionItem>
-                    {/each}
-                </Accordion>
-            </div>
-        </div>
-    </div>
+                                    {#snippet header()}
+                                        <span>{sub.title}</span>
+                                    {/snippet}
+                                    <div
+                                        class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
+                                    >
+                                        {@html sub.html}
+                                    </div>
+                                </AccordionItem>
+                            {/each}
+                        </Accordion>
+                    {:else if section.html !== undefined}
+                        <div
+                            class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
+                        >
+                            {@html section.html}
+                        </div>
+                    {/if}
+                </AccordionItem>
+            {/each}
+        </Accordion>
+    </main>
 
     <!-- Footer -->
     <AppFooter />

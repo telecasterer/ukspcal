@@ -9,8 +9,7 @@
 ## Environments & configuration
 
 - No sensitive environment variables are required.
-- Bank holiday data is fetched at runtime from GOV.UK.
-- Optional extra holiday data can be pulled from Nager.Date.
+ - Bank holiday and regional overlays are fetched from Nager.Date via `src/lib/services/nagerHolidayService.ts`.
 
 ## Release checklist
 
@@ -28,7 +27,7 @@
 
 ## Holiday data updates
 
-- GOV.UK holiday data is fetched on each load; no manual updates needed.
+- Holiday data is fetched from Nager.Date; no manual updates needed.
 - If holiday rules change, update `src/lib/pensionEngine.ts` and tests accordingly.
 - For non-UK holidays, update `src/lib/services/nagerHolidayService.ts` or caching logic.
 
