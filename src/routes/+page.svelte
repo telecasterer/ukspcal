@@ -183,7 +183,6 @@
             icsCategory,
             icsColor,
             selectedCountry,
-            ukRegion,
         };
         // Ignore storage quota / private mode errors.
         savePersistedInputs(localStorage, PERSIST_KEY, payload);
@@ -236,6 +235,41 @@
         });
 
         try {
+            // Migration: remove legacy `ukRegion` from persisted inputs so
+            // it cannot override the default England & Wales canonical region.
+            try {
+                const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(PERSIST_KEY) : null;
+                const migrationFlagKey = 'ukspcal.region_migration.v1';
+
+                // Run one-time migration unconditionally (if not already run):
+                // clear per-region holiday caches and show a one-time notice.
+                try {
+                    const migrated = typeof localStorage !== 'undefined' ? localStorage.getItem(migrationFlagKey) : null;
+                    if (!migrated && typeof localStorage !== 'undefined') {
+                        localStorage.removeItem('holiday_cache_GB-SCT');
+                        localStorage.removeItem('holiday_cache_GB-NIR');
+                        localStorage.setItem(migrationFlagKey, '1');
+                    }
+                } catch {
+                    // ignore cache clear errors
+                }
+
+                // If there are persisted inputs, remove legacy `ukRegion` key.
+                if (raw) {
+                    try {
+                        const parsed = JSON.parse(raw) as Record<string, unknown> | null;
+                        if (parsed && typeof parsed === 'object' && Object.prototype.hasOwnProperty.call(parsed, 'ukRegion')) {
+                            delete parsed.ukRegion;
+                            // write back the cleaned payload
+                            savePersistedInputs(localStorage, PERSIST_KEY, parsed);
+                        }
+                    } catch {
+                        // ignore malformed JSON; loadPersistedInputs will handle gracefully
+                    }
+                }
+            } catch {
+                // ignore storage access errors
+            }
             const persisted = loadPersistedInputs(localStorage, PERSIST_KEY, {
                 allowedCycleDays: ALLOWED_CYCLE_DAYS,
                 allowedDateFormats: ALLOWED_DATE_FORMATS,
@@ -261,7 +295,6 @@
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
             if (persisted.selectedCountry !== undefined)
                 selectedCountry = persisted.selectedCountry;
-            if (persisted.ukRegion !== undefined) ukRegion = persisted.ukRegion;
         } catch {
             // Ignore invalid/corrupt stored values.
         } finally {
@@ -302,13 +335,10 @@
         })();
     });
 
-    // Persist ukRegion when it changes (after initial load)
-    $effect.pre(() => {
-        const _uk = ukRegion; // depend on ukRegion
-        if (!hasLoadedPersistedInputs) return;
-        if (!hasUserCommittedInputs) return;
-        persistInputs();
-    });
+    // Note: `ukRegion` is intentionally NOT persisted or restored.
+    // The app defaults to England & Wales (`GB-ENG+GB-WLS`) for all
+    // payment/early-payment calculations regardless of any prior
+    // saved value.
 
     // Reactively compute the latest bank holiday date and year (runes mode)
     let lastBankHolidayIso = $derived.by(() => {
@@ -656,6 +686,7 @@
     class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
 >
     <div class="max-w-7xl mx-auto">
+        
         <!-- Header section -->
         <div class="mb-8">
             <div

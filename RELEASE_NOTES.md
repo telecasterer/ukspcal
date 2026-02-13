@@ -32,3 +32,7 @@ If any step fails specifically in Messenger/Chrome but not Safari, capture:
 - App (Safari vs Chrome vs Messenger)
 - Exact tap sequence
 - Screen recording if possible
+
+## 2026-02-13
+
+- Migration: remove legacy persisted `ukRegion` and clear regional holiday caches for Scotland/Northern Ireland on first load. Shows a one-time dismissible notice in the app. Keeps England & Wales as the canonical bank-holidays used for payment calculations; Scotland and Northern Ireland are available as additional overlays.
