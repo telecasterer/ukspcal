@@ -49,6 +49,6 @@ function formatDate(iso: string, timeZone?: string): string {
 
 // Pre-formatted build info for UI/debug
 export const buildInfoFormatted = {
-    commitDate: formatDate(buildInfo.commitDate),
+    commitDate: formatDate(buildInfo.commitDate, "UTC"),
     buildTime: formatDate(buildInfo.buildTime, "UTC"),
 };
