@@ -1,19 +1,7 @@
 <script lang="ts">
     // CalendarView.svelte: Renders the multi-month calendar, export, and print controls
-    import {
-        Button,
-        Dropdown,
-        DropdownItem,
-        Label,
-        Modal,
-        Input,
-        Select,
-    } from "flowbite-svelte";
-    import {
-        monthName,
-        previousMonth,
-        nextMonth,
-    } from "$lib/utils/calendarHelpers";
+    import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
+    import { monthName, previousMonth, nextMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
     import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
     import type { Payment } from "$lib/pensionEngine";
@@ -25,15 +13,9 @@
         saveIcsAlarmSettings as saveIcsReminderSettings,
         type IcsAlarmSettings as IcsReminderSettings,
     } from "$lib/utils/icsAlarmPersistence";
-    import {
-        loadIcsEventTime,
-        saveIcsEventTime,
-    } from "$lib/utils/icsEventTimePersistence";
+    import { loadIcsEventTime, saveIcsEventTime } from "$lib/utils/icsEventTimePersistence";
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
-    import {
-        DATE_FORMAT_OPTIONS,
-        type DateFormat,
-    } from "$lib/utils/dateFormatting";
+    import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
     import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
     import { capturePosthog } from "$lib/utils/posthog";
     import { onMount, tick } from "svelte";
@@ -172,9 +154,7 @@
             rangeLabel = "";
         } else {
             const first = new Date(payments[0].paid + "T00:00:00Z");
-            const last = new Date(
-                payments[payments.length - 1].paid + "T00:00:00Z"
-            );
+            const last = new Date(payments[payments.length - 1].paid + "T00:00:00Z");
             const fmt = (d: Date) =>
                 d.toLocaleDateString("en-GB", {
                     month: "short",
@@ -196,8 +176,6 @@
     let exportMenuOpen = false;
     let csvModalOpen = false;
     let icsModalOpen = false;
-
-    
 
     let bottomNavEl: HTMLDivElement | null = null;
 
@@ -276,10 +254,7 @@
 
     function handleNextMonth() {
         if (focusedIndex !== -1 && focusedIndex < allMonths.length - 1) {
-            const targetIndex = Math.min(
-                allMonths.length - 1,
-                focusedIndex + navStep
-            );
+            const targetIndex = Math.min(allMonths.length - 1, focusedIndex + navStep);
             const next = allMonths[targetIndex];
             currentMonth = next.month;
             currentYear = next.year;
@@ -309,14 +284,10 @@
         if (payments.length === 0) return [];
 
         const first = new Date(payments[0].paid + "T00:00:00Z");
-        const last = new Date(
-            payments[payments.length - 1].paid + "T00:00:00Z"
-        );
+        const last = new Date(payments[payments.length - 1].paid + "T00:00:00Z");
 
         const months: Array<{ month: number; year: number }> = [];
-        let current = new Date(
-            Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1)
-        );
+        let current = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1));
 
         while (current <= last) {
             months.push({
@@ -361,13 +332,9 @@
         <div
             class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
         >
-            <div
-                class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between"
-            >
+            <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
                 <div class="text-center sm:text-left">
-                    <h3
-                        class="text-lg font-semibold text-gray-900 dark:text-white mb-1"
-                    >
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                         Payment calendar
                     </h3>
                     <div class="text-sm text-gray-600 dark:text-gray-300">
@@ -377,7 +344,7 @@
                     </div>
                 </div>
 
-                                <!-- Export/Print buttons -->
+                <!-- Export/Print buttons -->
                 <div class="flex flex-col items-center sm:items-end gap-1">
                     <div class="flex items-center gap-2">
                         <!-- Export menu -->
@@ -396,15 +363,12 @@
                         >
                             <DropdownItem
                                 class="text-gray-700 dark:text-gray-100"
-                                onclick={openCsvModal}
-                                >Download spreadsheet (CSV)</DropdownItem
+                                onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem
                             >
                             <DropdownItem
                                 class="text-gray-700 dark:text-gray-100"
-                                onclick={openIcsModal}
-                                >Add to calendar (ICS)</DropdownItem
+                                onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem
                             >
-                            
                         </Dropdown>
 
                         <!-- Print button -->
@@ -490,8 +454,6 @@
                 </div>
             </div>
 
-            
-
             <!-- Weekends and Holidays filters -->
             <div class="flex flex-wrap gap-4 items-center">
                 <!-- Weekends are always shown (pale grey background) -->
@@ -503,21 +465,14 @@
                     <span>UK Holidays</span>
                 </Label>
                 <div class="flex items-center gap-2">
-                    <Label
-                        class="flex items-center gap-2 cursor-pointer text-sm"
-                    >
+                    <Label class="flex items-center gap-2 cursor-pointer text-sm">
                         <FlowbiteCheckbox
                             checked={selectedCountry !== "none"}
                             onchange={(e: Event) => {
                                 const target = e.target as HTMLInputElement;
-                                if (
-                                    target.checked &&
-                                    selectedCountry === "none"
-                                ) {
+                                if (target.checked && selectedCountry === "none") {
                                     const countryToUse =
-                                        detectedCountry !== "none"
-                                            ? detectedCountry
-                                            : "FR";
+                                        detectedCountry !== "none" ? detectedCountry : "FR";
                                     selectedCountry = countryToUse;
                                     onCountryChange?.(countryToUse);
                                 } else if (!target.checked) {
@@ -542,6 +497,8 @@
                                 select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
                             }}
                         >
+                            <option value="GB-SCT">Scotland</option>
+                            <option value="GB-NIR">Northern Ireland</option>
                             <option value="FR">France</option>
                             <option value="DE">Germany</option>
                             <option value="ES">Spain</option>
@@ -560,8 +517,6 @@
                             <option value="AU">Australia</option>
                             <option value="NZ">New Zealand</option>
                             <option value="JP">Japan</option>
-                            <option value="GB-SCT">Scotland</option>
-                            <option value="GB-NIR">Northern Ireland</option>
                         </Select>
                     {/if}
                 </div>
@@ -597,8 +552,7 @@
                     onclick={handleNextMonth}
                     color="light"
                     class="px-3 py-2"
-                    disabled={focusedIndex === -1 ||
-                        focusedIndex >= allMonths.length - 1}
+                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
                 >
                     Next →
                 </Button>
@@ -607,16 +561,10 @@
     </div>
 
     <!-- --- CSV Export Modal --- -->
-    <Modal
-        title="Download spreadsheet (CSV)"
-        bind:open={csvModalOpen}
-        size="md"
-    >
+    <Modal title="Download spreadsheet (CSV)" bind:open={csvModalOpen} size="md">
         <div class="space-y-4">
             <div>
-                <Label for="csv-format" class="block mb-2 text-sm"
-                    >Date format</Label
-                >
+                <Label for="csv-format" class="block mb-2 text-sm">Date format</Label>
                 <Select
                     id="csv-format"
                     bind:value={csvDateFormat}
@@ -633,12 +581,8 @@
             </div>
 
             <div class="flex gap-2 justify-end">
-                <Button color="light" onclick={() => (csvModalOpen = false)}
-                    >Cancel</Button
-                >
-                <Button color="blue" onclick={handleExportCsv}
-                    >Download CSV</Button
-                >
+                <Button color="light" onclick={() => (csvModalOpen = false)}>Cancel</Button>
+                <Button color="blue" onclick={handleExportCsv}>Download CSV</Button>
             </div>
         </div>
     </Modal>
@@ -647,9 +591,7 @@
     <Modal title="Add to calendar (ICS)" bind:open={icsModalOpen} size="md">
         <div class="space-y-4">
             <div>
-                <Label for="ics-name" class="block mb-2 text-sm"
-                    >Event name</Label
-                >
+                <Label for="ics-name" class="block mb-2 text-sm">Event name</Label>
                 <Input
                     id="ics-name"
                     bind:value={icsEventNameDraft}
@@ -665,9 +607,7 @@
                 />
             </div>
             <div>
-                <Label for="ics-category" class="block mb-2 text-sm"
-                    >Category</Label
-                >
+                <Label for="ics-category" class="block mb-2 text-sm">Category</Label>
                 <Input
                     id="ics-category"
                     bind:value={icsCategoryDraft}
@@ -686,9 +626,7 @@
                 </p>
             </div>
             <div>
-                <Label for="ics-event-time" class="block mb-2 text-sm"
-                    >Event time</Label
-                >
+                <Label for="ics-event-time" class="block mb-2 text-sm">Event time</Label>
                 <Input
                     id="ics-event-time"
                     type="time"
@@ -722,28 +660,21 @@
                     />
                 </div>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Best-effort: Apple Calendar may use this; Google Calendar
-                    often ignores event colour from ICS imports.
+                    Best-effort: Apple Calendar may use this; Google Calendar often ignores event
+                    colour from ICS imports.
                 </p>
             </div>
             <div>
-                <Button color="light" onclick={openReminderDialog}
-                    >Reminder settings</Button
-                >
+                <Button color="light" onclick={openReminderDialog}>Reminder settings</Button>
                 {#if reminderSettings.alarmEnabled}
-                    <span
-                        class="ml-2 text-xs text-green-600 dark:text-green-400"
+                    <span class="ml-2 text-xs text-green-600 dark:text-green-400"
                         >Reminder: {reminderSettings.daysBefore} day(s) before</span
                     >
                 {/if}
             </div>
             <div class="flex gap-2 justify-end">
-                <Button color="light" onclick={() => (icsModalOpen = false)}
-                    >Cancel</Button
-                >
-                <Button color="blue" onclick={handleExportIcs}
-                    >Download ICS</Button
-                >
+                <Button color="light" onclick={() => (icsModalOpen = false)}>Cancel</Button>
+                <Button color="blue" onclick={handleExportIcs}>Download ICS</Button>
             </div>
         </div>
     </Modal>
@@ -822,10 +753,7 @@
                     onclick={handleNextMonthFromBottom}
                     color="light"
                     class="px-3 py-2"
-                    disabled={
-                        focusedIndex === -1 ||
-                        focusedIndex >= allMonths.length - 1
-                    }
+                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
                 >
                     Next →
                 </Button>
@@ -834,28 +762,17 @@
     </div>
 
     <!-- --- Print Unsupported Modal (Facebook in-app browser) --- -->
-    <Modal
-        title="Printing not available"
-        bind:open={printUnsupportedOpen}
-        size="md"
-    >
+    <Modal title="Printing not available" bind:open={printUnsupportedOpen} size="md">
         <div class="space-y-3">
             <p class="text-sm text-gray-700 dark:text-gray-200">
-                The Facebook/Messenger in-app browser often blocks the system
-                print dialog.
+                The Facebook/Messenger in-app browser often blocks the system print dialog.
             </p>
             <p class="text-sm text-gray-700 dark:text-gray-200">
-                For printing, open this page in Safari/Chrome ("Open in
-                browser") and try again.
+                For printing, open this page in Safari/Chrome ("Open in browser") and try again.
             </p>
             <div class="flex items-center gap-2 justify-end">
-                <Button color="light" onclick={() => copyLinkToClipboard()}
-                    >Copy link</Button
-                >
-                <Button
-                    color="blue"
-                    onclick={() => (printUnsupportedOpen = false)}>OK</Button
-                >
+                <Button color="light" onclick={() => copyLinkToClipboard()}>Copy link</Button>
+                <Button color="blue" onclick={() => (printUnsupportedOpen = false)}>OK</Button>
             </div>
             {#if copyLinkStatus}
                 <p class="text-xs text-gray-500 dark:text-gray-400">

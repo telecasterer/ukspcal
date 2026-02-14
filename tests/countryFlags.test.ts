@@ -26,6 +26,8 @@ describe("countryFlags", () => {
                 "AU",
                 "NZ",
                 "JP",
+                "GB-SCT",
+                "GB-NIR",
             ];
 
             for (const country of expectedCountries) {
@@ -46,6 +48,8 @@ describe("countryFlags", () => {
             expect(countryCodeToFlagSvg["US"]).toContain("us");
             expect(countryCodeToFlagSvg["JP"]).toContain("jp");
             expect(countryCodeToFlagSvg["GB"]).toBeUndefined(); // Should not exist if not in supported list
+            expect(countryCodeToFlagSvg["GB-SCT"]).toBeDefined();
+            expect(countryCodeToFlagSvg["GB-NIR"]).toBeDefined();
         });
     });
 
@@ -88,6 +92,8 @@ describe("countryFlags", () => {
                 "AU",
                 "NZ",
                 "JP",
+                "GB-SCT",
+                "GB-NIR",
             ];
 
             for (const country of supportedCountries) {
