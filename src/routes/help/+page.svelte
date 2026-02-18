@@ -54,7 +54,7 @@
     // --- 2. Import markdown and replace placeholder ---
     import MarkdownIt from "markdown-it";
     import helpMarkdown from "./help.md?raw";
-    import { Accordion, AccordionItem, Button, Footer, FooterIcon } from "flowbite-svelte";
+    import { Button } from "flowbite-svelte";
     import { buildInfo, buildInfoFormatted } from "$lib/buildInfo";
 
     // Replace placeholders in the markdown with dynamic values
@@ -158,6 +158,8 @@
     // Ensure the last section is included
     pushSubSection();
     pushSection();
+
+    // No JS-driven animation: rely on native <details> behaviour
 </script>
 
 <div class="flex flex-col min-h-screen">
@@ -197,55 +199,53 @@
     <main
         class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <!-- Main help content rendered as accordion sections (full width) -->
-        <Accordion class="w-full">
-            {#each sections as section, i}
-                <AccordionItem
-                    classes={{
-                        // inactive: "bg-white dark:bg-gray-800",
-                        content: "bg-white dark:bg-gray-900/30",
-                    }}
-                >
-                    {#snippet header()}
-                        <span>{section.title}</span>
-                    {/snippet}
-                    {#if section.subSections}
+        <!-- Main help content: all top-level items grouped in a single bordered container -->
+        <div class="w-full">
+            <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-4 space-y-2 help-top-container">
+                {#each sections as section}
+                    <details class="custom-details group">
+                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                            <span>{section.title}</span>
+                            <span class="chev" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                        </summary>
+
                         {#if section.html !== undefined}
-                            <div
-                                class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none mb-2"
-                            >
-                                {@html section.html}
+                            <div class="details-content">
+                                <div class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none px-3 pb-2">
+                                    {@html section.html}
+                                </div>
                             </div>
                         {/if}
-                        <!-- Render H3 subsections as nested accordions -->
-                        <Accordion class="w-full ml-2">
-                            {#each section.subSections as sub, j}
-                                <AccordionItem
-                                    classes={{
-                                        content: "bg-white dark:bg-gray-900/30",
-                                    }}
-                                >
-                                    {#snippet header()}
-                                        <span>{sub.title}</span>
-                                    {/snippet}
-                                    <div
-                                        class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
-                                    >
-                                        {@html sub.html}
-                                    </div>
-                                </AccordionItem>
-                            {/each}
-                        </Accordion>
-                    {:else if section.html !== undefined}
-                        <div
-                            class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none"
-                        >
-                            {@html section.html}
-                        </div>
-                    {/if}
-                </AccordionItem>
-            {/each}
-        </Accordion>
+
+                        {#if section.subSections}
+                            <div class="px-3 pb-2 space-y-1">
+                                {#each section.subSections as sub}
+                                    <details class="custom-details group ml-4">
+                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                                <span>{sub.title}</span>
+                                                <span class="chev" aria-hidden="true">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                </span>
+                                            </summary>
+                                            <div class="details-content">
+                                                <div class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none px-2 pb-1">
+                                                    {@html sub.html}
+                                                </div>
+                                            </div>
+                                    </details>
+                                {/each}
+                            </div>
+                        {/if}
+                    </details>
+                {/each}
+            </div>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -267,5 +267,42 @@
     /* Make hash navigation land nicely below the header area */
     .prose :global(h3) {
         scroll-margin-top: 4rem;
+    }
+
+    /* Custom details/summary styling with animated chevron */
+    .custom-summary {
+        cursor: pointer;
+    }
+    .custom-summary:hover { background-color: rgba(0,0,0,0.03); }
+    :global(.dark) .custom-summary:hover { background-color: rgba(255,255,255,0.03); }
+    .custom-summary .chev {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(0deg);
+        transition: none;
+        color: inherit;
+    }
+    details[open] > .custom-summary .chev {
+        transform: rotate(180deg);
+    }
+    /* Hide default marker */
+    summary::-webkit-details-marker { display: none; }
+    summary::marker { display: none; }
+
+    /* Reduce vertical spacing for grouped container */
+    .help-top-container > details + details { margin-top: 0.25rem; }
+
+    /* Make subsection summaries visually match H2 summaries */
+    .custom-details .custom-summary { gap: 0.5rem; }
+
+    /* No animation: use native details/summary behaviour */
+    .details-content {
+        display: block;
+        max-height: none;
+        opacity: 1;
+        transform: none;
+        overflow: visible;
+        transition: none;
     }
 </style>
