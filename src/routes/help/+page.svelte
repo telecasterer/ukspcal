@@ -204,7 +204,7 @@
             <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-4 space-y-2 help-top-container">
                 {#each sections as section}
                     <details class="custom-details group">
-                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
                             <span>{section.title}</span>
                             <span class="chev" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -225,7 +225,7 @@
                             <div class="px-3 pb-2 space-y-1">
                                 {#each section.subSections as sub}
                                     <details class="custom-details group ml-4">
-                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm text-gray-900 dark:text-gray-100">
                                                 <span>{sub.title}</span>
                                                 <span class="chev" aria-hidden="true">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -272,15 +272,19 @@
     /* Custom details/summary styling with animated chevron */
     .custom-summary {
         cursor: pointer;
+        transition: background-color 160ms ease, border-radius 160ms ease;
     }
     .custom-summary:hover { background-color: rgba(0,0,0,0.03); }
     :global(.dark) .custom-summary:hover { background-color: rgba(255,255,255,0.03); }
+    /* Keep open summaries visually consistent with hover state */
+    details[open] > .custom-summary { background-color: rgba(0,0,0,0.03); }
+    :global(.dark) details[open] > .custom-summary { background-color: rgba(255,255,255,0.03); }
     .custom-summary .chev {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         transform: rotate(0deg);
-        transition: none;
+        transition: transform 160ms ease;
         color: inherit;
     }
     details[open] > .custom-summary .chev {
@@ -295,6 +299,14 @@
 
     /* Make subsection summaries visually match H2 summaries */
     .custom-details .custom-summary { gap: 0.5rem; }
+
+    /* Rounded corners for summary 'title' panels */
+    .custom-summary { border-radius: 0.5rem; }
+    /* Slightly smaller radius for nested subsections */
+    .custom-details .custom-summary { border-radius: 0.375rem; }
+    /* Ensure open summaries keep rounded background */
+    details[open] > .custom-summary { border-radius: 0.5rem; }
+    :global(.dark) details[open] > .custom-summary { border-radius: 0.5rem; }
 
     /* No animation: use native details/summary behaviour */
     .details-content {

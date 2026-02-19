@@ -133,16 +133,8 @@
 </div>
 
 <style>
-    /* hide default marker and animate our chevron with smoother easing */
-    summary::-webkit-details-marker { display: none; }
-    summary::marker { display: none; }
-    .custom-summary { transition: none; }
-    .custom-summary:hover { background-color: rgba(0,0,0,0.03); }
-    :global(.dark) .custom-summary:hover { background-color: rgba(255,255,255,0.03); }
-    .custom-summary .chev { transition: none; }
-    .custom-details[open] > .custom-summary .chev { transform: rotate(180deg); }
-
-    /* No animation: native details/summary behaviour */
+    /* Shared details/summary styling is defined in src/app.css */
+    /* No animation: native details/summary behaviour for content */
     .details-content {
         display: block;
         max-height: none;
