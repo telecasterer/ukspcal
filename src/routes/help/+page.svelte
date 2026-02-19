@@ -204,7 +204,7 @@
             <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-4 space-y-2 help-top-container">
                 {#each sections as section}
                     <details class="custom-details group">
-                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
                             <span>{section.title}</span>
                             <span class="chev" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -225,7 +225,7 @@
                             <div class="px-3 pb-2 space-y-1">
                                 {#each section.subSections as sub}
                                     <details class="custom-details group ml-4">
-                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
                                                 <span>{sub.title}</span>
                                                 <span class="chev" aria-hidden="true">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
