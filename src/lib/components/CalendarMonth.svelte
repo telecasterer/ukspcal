@@ -130,7 +130,7 @@
     <div class="grid grid-cols-7">
         {#each calendarDays as day}
             {@const payment = day ? getPaymentForDate(day) : null}
-            {@const holiday = day ? getBankHolidayForDate(day) : null}
+            {@const holiday = day && showBankHolidays ? getBankHolidayForDate(day) : null}
             {@const additionalHoliday = day
                 ? getAdditionalHolidayForDate(day)
                 : null}
@@ -176,10 +176,12 @@
                 <span class="w-3 h-3 rounded legend-item early-payment"></span>
                 <span>Early</span>
             </span>
-            <span class="inline-flex items-center gap-1">
-                <span class="w-3 h-3 rounded legend-item holiday"></span>
-                <span>UK-Holiday</span>
-            </span>
+            {#if showBankHolidays}
+                <span class="inline-flex items-center gap-1">
+                    <span class="w-3 h-3 rounded legend-item holiday"></span>
+                    <span>UK-Holiday</span>
+                </span>
+            {/if}
             <span class="inline-flex items-center gap-1">
                 <span
                     class="w-3 h-3 rounded legend-item weekend border border-gray-300"
