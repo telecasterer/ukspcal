@@ -130,7 +130,7 @@
     <div class="grid grid-cols-7">
         {#each calendarDays as day}
             {@const payment = day ? getPaymentForDate(day) : null}
-            {@const holiday = day && showBankHolidays ? getBankHolidayForDate(day) : null}
+            {@const holiday = day ? (showBankHolidays ? getBankHolidayForDate(day) : null) : null}
             {@const additionalHoliday = day
                 ? getAdditionalHolidayForDate(day)
                 : null}

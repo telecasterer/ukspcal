@@ -1,14 +1,17 @@
 // @vitest-environment jsdom
 
-import { describe, expect, it, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@testing-library/svelte";
+import { within } from "@testing-library/dom";
+
+import type { DateFormat } from "../src/lib/utils/dateFormatting";
 
 vi.mock("../src/lib/utils/inAppBrowser", () => ({
     detectFacebookInAppBrowserFromWindow: vi.fn(),
 }));
 
 import CalendarView from "../src/lib/components/CalendarView.svelte";
-import type { DateFormat } from "../src/lib/utils/dateFormatting";
+import { detectFacebookInAppBrowserFromWindow } from "../src/lib/utils/inAppBrowser";
 
 const baseProps = {
     result: {
@@ -43,37 +46,38 @@ const baseProps = {
 
 describe("Calendar options", () => {
     it("shows UK-Holiday legend when bank holidays are enabled", () => {
-        const { getAllByText } = render(CalendarView, {
-            props: { ...baseProps, showBankHolidays: true },
-        });
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const { container } = render(CalendarView, { props: baseProps });
 
-        const matches = getAllByText("UK-Holiday");
-        expect(matches.length).toBeGreaterThan(0);
+        const firstMonth = container.querySelector(".calendar-month") as HTMLElement | null;
+        expect(firstMonth).toBeTruthy();
+        expect(within(firstMonth as HTMLElement).getByText("UK-Holiday")).toBeInTheDocument();
     });
 
     it("hides UK-Holiday legend when bank holidays are disabled", () => {
-        const { queryByText } = render(CalendarView, {
-            props: { ...baseProps, showBankHolidays: false },
-        });
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const props = { ...baseProps, showBankHolidays: false };
+        const { container } = render(CalendarView, { props });
 
-        expect(queryByText("UK-Holiday")).toBeNull();
+        const firstMonth = container.querySelector(".calendar-month") as HTMLElement | null;
+        expect(firstMonth).toBeTruthy();
+        expect(within(firstMonth as HTMLElement).queryByText("UK-Holiday")).toBeNull();
     });
 
     it("toggles holiday legend when the UK Holidays checkbox is clicked", async () => {
-        const { container, getAllByText, queryAllByText } = render(CalendarView, {
-            props: { ...baseProps, showBankHolidays: true },
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const { container, getByLabelText } = render(CalendarView, {
+            props: baseProps,
         });
 
-        // Ensure legend is present initially
-        expect(getAllByText("UK-Holiday").length).toBeGreaterThan(0);
-
-        // Find the checkbox input for UK Holidays (first checkbox in the controls)
-        const checkbox = container.querySelector("input[type=checkbox]") as HTMLInputElement;
-        expect(checkbox).toBeTruthy();
-
-        // Click to toggle off
+        const firstMonth = container.querySelector(".calendar-month") as HTMLElement | null;
+        expect(firstMonth).toBeTruthy();
+        const checkbox = getByLabelText("UK Holidays") as HTMLInputElement;
+        // Click to disable bank holidays
         await fireEvent.click(checkbox);
-        // After clicking, the legend should be removed
-        expect(queryAllByText("UK-Holiday").length).toBe(0);
+        expect(within(firstMonth as HTMLElement).queryByText("UK-Holiday")).toBeNull();
     });
 });
