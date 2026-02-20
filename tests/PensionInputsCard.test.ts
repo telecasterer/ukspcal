@@ -59,6 +59,14 @@ describe("PensionInputsCard", () => {
         expect(document.activeElement).toBe(dobInput);
     });
 
+    it("keeps Restore defaults keyboard focusable", () => {
+        const { getByRole } = renderCard();
+        const restoreButton = getByRole("button", {
+            name: /Restore defaults/i,
+        });
+        expect(restoreButton).not.toHaveAttribute("tabindex", "-1");
+    });
+
     it("sets default DOB to Jan 1 of (current year - 66) when empty", () => {
         const { getByDisplayValue } = renderCard();
         const currentYear = new Date().getFullYear();

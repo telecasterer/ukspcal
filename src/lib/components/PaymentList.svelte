@@ -14,13 +14,13 @@
                         {formatDateForCSV(p.paid, DATE_FORMAT_LONG)}
                     </div>
                     {#if p.early}
-                        <div class="text-xs text-orange-600 dark:text-orange-300">
+                        <div class="text-xs min-[390px]:text-sm text-orange-600 dark:text-orange-300">
                             Early (due {formatDateForCSV(p.due, DATE_FORMAT_SHORT)})
                         </div>
                     {/if}
                 </div>
                 {#if p.holidays && p.holidays.length}
-                    <div class="text-xs text-gray-500 dark:text-gray-400 ml-4 text-right">
+                    <div class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 ml-4 text-right">
                         {p.holidays.join(', ')}
                     </div>
                 {/if}

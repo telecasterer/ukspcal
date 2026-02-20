@@ -11,16 +11,27 @@ describe("AppFooter", () => {
         expect(footer).toBeInTheDocument();
     });
 
-    it("displays sources attribution text", () => {
-        const { getByText } = render(AppFooter);
-        expect(
-            getByText(/Sources: GOV.UK State Pension age guidance/i)
-        ).toBeInTheDocument();
+    it("does not render official sources section in footer", () => {
+        const { queryByText } = render(AppFooter);
+        expect(queryByText("Official sources")).toBeNull();
     });
 
-    it("includes bank holiday information in sources", () => {
-        const { getByText } = render(AppFooter);
-        expect(getByText(/bank holiday lists/i)).toBeInTheDocument();
+    it("does not include official source links in footer", () => {
+        const { container } = render(AppFooter);
+        expect(
+            container.querySelector('a[href="https://www.gov.uk/state-pension-age"]')
+        ).toBeNull();
+        expect(
+            container.querySelector(
+                'a[href="https://www.gov.uk/government/publications/state-pension-age-timetable/state-pension-age-timetable"]'
+            )
+        ).toBeNull();
+        expect(
+            container.querySelector('a[href="https://www.gov.uk/bank-holidays"]')
+        ).toBeNull();
+        expect(
+            container.querySelector('a[href="https://date.nager.at"]')
+        ).toBeNull();
     });
 
     it("has a feedback link", () => {

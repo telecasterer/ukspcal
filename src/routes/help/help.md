@@ -1,125 +1,115 @@
 ## Quick Start
 
-1. Enter your National Insurance (NI) code suffix (the last 3 characters of your National Insurance number, e.g. **35C**) and your date of birth.
-2. Choose your payment cycle and date range.
-3. View your personalised State Pension payment calendar.
-4. Export your calendar as CSV (spreadsheet) or ICS (calendar app), or print it for your records.
+1. Enter your National Insurance (NI) code suffix (the last 3 characters of your NI number, for example **35C**) and your date of birth.
+2. Choose your payment cycle and the calendar year range you want to generate.
+3. Review your personalised State Pension payment calendar.
+4. Export as CSV/ICS or print the calendar if you want to keep a copy.
 5. (Optional, recommended) Install the app.
 
-- Know someone approaching retirement age who might find this useful?
-- Use the **Share** button in the toolbar above to send them the link.
+- Want to share the app with someone else?
+- Use the **Share** button in the top toolbar.
+
+## What This App Does
+
+- Calculates your State Pension Age (SPA) date from your date of birth.
+- Builds a payment schedule from your NI suffix and selected cycle.
+- Adjusts payments that fall on UK bank holidays to the previous working day.
+- Lets you export, print, share, and install the app for easier repeat use.
+
+The tool is designed to help you plan ahead and keep your likely payment dates in one place.
 
 ## Data Privacy
 
-- **Your data stays on your device.** Nothing you enter is sent to a server or shared with third parties.
-- **Settings are saved locally** in your browser’s storage, not in the cloud or on the application server.
-- **To remove saved data:** Click _Restore defaults_ on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
+- **Your data stays on your device.** Nothing you enter is sent to a server.
+- **Settings are saved locally** in your browser storage so the app remembers your choices next time.
+- To remove saved data, use **Restore defaults** in the input form.
 
 ## Using the App
 
 ### Inputs
 
-- **NI code:** Enter the last 3 characters (2 digits and a letter, e.g., **22D**) of your National Insurance number.
-- **Date of birth:** Used to calculate your State Pension Age (SPA) and set your calendar start.
+- **NI code suffix:** Enter the last 3 characters (2 digits and a letter, for example **22D**).
+- **Date of birth:** Used to calculate your SPA and estimate your first payment date.
+- **Payment frequency:** Choose 28-day (default), 7-day, 14-day, or 91-day cycles.
 
-### Calendar Date Range
+### Calendar Range and Navigation
 
-- By defalt the calendar view will start with month of your first pension payment after reaching SPA.
-- You can select how many years of the calendar you want to view, print, export.
+- By default, the calendar starts from your first payment month after SPA.
+- Choose how many years to include in the generated schedule.
+- Use the **Previous/Next** controls above or below the calendar grid to move through month blocks.
 
 ### Calendar Display Options
 
-- **UK Holidays:** Toggle UK bank holidays on/off (shown with a blue background and white text). These are the official UK bank holidays that affect payment dates — if your payment date falls on a UK bank holiday, it will be paid on the previous working day.
-- **Additional holidays:** Optionally display public holidays from another country/region alongside UK holidays for reference. Currently supports France, Germany, Spain, Italy, Netherlands, Belgium, Austria, Portugal, Ireland, Sweden, Denmark, Norway, Switzerland, United States, Canada, Australia, New Zealand, Japan, Scotland, and Northern Ireland. These are marked with a flag 🇫🇷 (respective country/region) icon on calendar days.
-  - **Important:** These additional country holidays are shown for information only and do not affect when the DWP issues your payment. However, they may affect when your receiving bank credits the funds to your account, so they are useful for reference if you are receiving payments in another country.
+- **UK holidays:** Show or hide UK bank holidays used for early-payment adjustments.
+- **Additional holidays:** Optionally show another country/region’s holidays for reference.
+  - These additional holidays are informational only and do not change DWP payment dates.
+  - They can still be useful if your bank account is outside the UK and local holidays may affect when funds appear.
 
-### Payment Frequency
+### Exporting and Printing
 
-- Choose from 28-day (default), 7-day, 14-day, or 91-day cycles.
-- See below for details on how each cycle is calculated.
+- Use **Export** to download:
+  - **CSV** for spreadsheet apps.
+  - **ICS** for calendar apps (Apple, Google, Outlook, etc.).
+- Use **Print** for a paper/PDF version of the calendar.
 
-**Note:** Most users do not need to read the detailed rules below. The app will automatically calculate your payment dates based on your NI code and chosen cycle. The following sections are for those who want to understand the calculation logic.
+When exporting ICS:
 
-#### 28-day (4-week) Cycle
+- Regular payments are exported as a recurring event.
+- Early payments (due to bank holidays) are exported as individual events.
+- Optional reminders can be included.
 
-- Uses your NI suffix letter (A–D) as a phase (which week in the 4-week pattern).
-- The last two digits of your NI code determine your payment weekday:
-  - 00–19: Monday
-  - 20–39: Tuesday
-  - 40–59: Wednesday
-  - 60–79: Thursday
-  - 80–99: Friday
-- Phase (A–D) shifts the schedule by one week per letter.
-- Payments repeat every 28 days. Bank-holiday payments are paid early (previous working day).
-
-#### 7-day (Weekly) Cycle
-
-- Same NI-based weekday/phase mapping as the 28-day schedule, but repeats every 7 days.
-- Payments repeat every 7 days, with bank-holiday payments paid early.
-
-#### 14-day (Fortnightly) Cycle
-
-- Payments run on a two-week rhythm (Week 1 / Week 2).
-- Week 1 vs Week 2 is based on the parity (odd/even) of the final digit of the NI number: even → Week 1, odd → Week 2.
-- The NI suffix letter (A–D) is ignored for this cycle.
-- Payments repeat every 14 days. Bank-holiday payments are paid early.
-
-#### 91-day (13-week) Cycle
-
-- Used for some overseas payments.
-- Same NI-based weekday/phase mapping as the 28-day schedule, but repeats every 91 days.
-- The suffix letter (A–D) affects the phase.
-- Payments repeat every 91 days, with bank-holiday payments paid early.
-
-### Exporting Data
-
-- Click **Export** to download your payment calendar as a CSV (spreadsheet) or ICS (calendar)file. Files are generated on your device and never uploaded.
-
-When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calendars:
-
-- All your _normal payment_ dates are exported as a single **recurring event**. This event repeats according to your chosen **Payment frequency** (e.g. every 28 days, 14 days, etc.).
-- If a payment would fall on a bank holiday, it is moved to the previous working day as an _early payment_. Each _early payment_ is exported as a separate **single event**, so you will see these as individual entries in your calendar.
-- This approach ensures your calendar app shows your regular payment pattern, but also highlights any early payments due to bank holidays.
-- **Payment Reminders** You can set up calendar reminders for your payment days. Choose how many days in advance you want to be notified. Reminders are included in exported calendar files (ICS) for easy import into your calendar app.
+This keeps your imported calendar both compact and accurate for early-payment exceptions.
 
 ### Installing as an App
 
-- Click the **Install** button or use your browser’s “Add to Home Screen”/“Install App” feature.
+- Use the **Install** button when available, or your browser’s **Add to Home Screen / Install App** option.
 - ![Example](/help/images/install.png)
-- Once installed, the app updates automatically.
+- Once installed, all app updates are applied automatically.
 
-## UK Bank Holiday Data
+## UK Holiday Data
 
-The app uses public holiday data to decide when payments move earlier. By default the app uses England & Wales bank holidays for early-payment calculations. Scotland and Northern Ireland are available as additional reference holidays in the additional countries selector.
+The app uses public holiday data to determine early-payment adjustments.
 
-## Troubleshooting
-
-### In-app browser issues
-
-- Some features like printing and exporting may not work in Facebook, Messenger, or other in-app browsers. For best results, install the app or open in a standard browser like Chrome, Safari, Firefox or Edge.
-
-### How to clear saved data
-
-- Click **Restore defaults** on the right hand side of the Input form. All saved values and choices will be removed and reset to the application defaults.
+England & Wales is the default UK holiday set for calculation purposes. Scotland and Northern Ireland are available in additional holidays for reference display.
 
 ## About State Pension Age
 
-- The app uses the latest available government policy to calculate SPA.
-- If your SPA is before 6 April 2016, results may be inaccurate (a warning will be shown).
+- The SPA calculation follows published UK government policy.
+- If your SPA is before **6 April 2016**, results may be less reliable and a warning is shown.
+
+## Troubleshooting
+
+### In-App Browser Issues
+
+- Printing and exporting may fail in Facebook/Messenger or other in-app browsers.
+- For best results, open in Safari/Chrome/Edge/Firefox or install the app.
+- If install/print options are missing, use your app/browser menu and choose an option such as **Open in browser**.
 
 ## Disclaimer
 
-This tool is an unofficial calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV\.UK**.
+This is an unofficial calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK**.
 
-All dates and calculations are based on publicly available information (such as published pension schedules, the State Pension age timetable, and UK bank holiday lists) and may change at any time.
+Dates and calculations use publicly available information and may change over time.
 
-**No warranty is provided.** Use at your own risk, and always check official sources if you need a definitive answer.
+**No warranty is provided.** Use at your own risk and verify with official sources when you need a definitive answer.
+
+## Official Sources
+
+- [GOV.UK State Pension age guidance](https://www.gov.uk/state-pension-age)
+- [State Pension age timetable](https://www.gov.uk/government/publications/state-pension-age-timetable/state-pension-age-timetable)
+- [UK bank holidays](https://www.gov.uk/bank-holidays)
+- [Nager.Date worldwide public holidays](https://date.nager.at)
 
 ## Feedback & Support
 
-Found a bug or have a suggestion? [Send us your feedback](https://tally.so/r/q4Vbq2) - we'd love to hear from you.
+Found a bug or have a suggestion? [Send feedback](https://tally.so/r/q4Vbq2).
 
-## Version information
+Useful details to include:
+- Which device/browser you were using.
+- What you expected to happen.
+- What actually happened.
+
+## Version Information
 
 |                 |                           |
 | --------------- | ------------------------- |

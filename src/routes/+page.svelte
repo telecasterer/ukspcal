@@ -4,7 +4,7 @@
         type Payment,
         type PensionResult,
     } from "$lib/pensionEngine";
-    import { Button, Card, Label, Select } from "flowbite-svelte";
+    import { Button, Card } from "flowbite-svelte";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
@@ -48,6 +48,9 @@
         icsEventName = "UK State Pension Payment";
         icsCategory = "Finance";
         icsColor = "#22c55e";
+        additionalHolidays = {};
+        isLoadingAdditionalHolidays = false;
+        additionalHolidaysError = "";
         // Optionally reset dark mode
         // darkMode = false;
         result = null;
@@ -90,8 +93,11 @@
     let selectedCountry: string = $state("none");
     let additionalHolidays: Record<string, string> = $state({});
     let isLoadingAdditionalHolidays: boolean = $state(false);
+    let additionalHolidaysError: string = $state("");
     let lastAdditionalHolidaysKey: string = $state("");
-    
+    let ukHolidaysRequestSeq = 0;
+    let additionalHolidaysRequestSeq = 0;
+
 
     const currentYear: number = new Date().getFullYear();
     const years: number[] = Array.from(
@@ -165,6 +171,13 @@
     let showInstallHelpModal: boolean = $state(false);
     let showIosInstallHelp: boolean = $state(false);
     let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
+    let hasCapturedInstallAccepted: boolean = $state(false);
+
+    function captureInstallAcceptedOnce() {
+        if (hasCapturedInstallAccepted) return;
+        hasCapturedInstallAccepted = true;
+        capturePosthog("install_prompt_accepted");
+    }
 
     // --- Input persistence logic ---
     function persistInputs(): void {
@@ -215,6 +228,7 @@
             e.preventDefault?.();
             deferredInstallPrompt = e as BeforeInstallPromptEvent;
             canInstallPwa = true;
+            hasCapturedInstallAccepted = false;
             capturePosthog("install_prompt_shown");
         };
 
@@ -222,7 +236,7 @@
             deferredInstallPrompt = null;
             canInstallPwa = false;
             computeStandalone();
-            capturePosthog("install_prompt_accepted");
+            captureInstallAcceptedOnce();
         };
 
         window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
@@ -329,9 +343,12 @@
     $effect.pre(() => {
         if (!ukRegion || !hasLoadedPersistedInputs) return;
         const years = Array.from({ length: numberOfYears }, (_, i) => startYear + i);
+        const requestId = ++ukHolidaysRequestSeq;
         (async () => {
             // Always use countryCode GB for UK, and pass region code for filtering
-            bankHolidays = await fetchHolidaysForCountryAndYears("GB", years, ukRegion);
+            const holidays = await fetchHolidaysForCountryAndYears("GB", years, ukRegion);
+            if (requestId !== ukHolidaysRequestSeq) return;
+            bankHolidays = holidays;
         })();
     });
 
@@ -339,17 +356,6 @@
     // The app defaults to England & Wales (`GB-ENG+GB-WLS`) for all
     // payment/early-payment calculations regardless of any prior
     // saved value.
-
-    // Reactively compute the latest bank holiday date and year (runes mode)
-    let lastBankHolidayIso = $derived.by(() => {
-        const hols = bankHolidays;
-        const keys = Object.keys(hols);
-        return keys.sort().pop();
-    });
-    let lastBankHolidayYear = $derived.by(() => {
-        const iso = lastBankHolidayIso;
-        return iso ? Number(iso.slice(0, 4)) : null;
-    });
 
     let error = $state("");
 
@@ -371,7 +377,7 @@
         if (Number.isFinite(n)) {
             startYear = n;
             persistInputs();
-            generate();
+            generate("range_start_year");
         }
     }
 
@@ -380,7 +386,7 @@
         if (Number.isFinite(n) && n > 0 && n <= 50) {
             numberOfYears = n;
             persistInputs();
-            generate();
+            generate("range_duration");
         }
     }
 
@@ -390,11 +396,15 @@
     async function handleCountryChange(country: string) {
         selectedCountry = country;
         persistInputs();
+        additionalHolidaysError = "";
 
         if (country === "none") {
+            additionalHolidaysRequestSeq += 1;
+            isLoadingAdditionalHolidays = false;
             additionalHolidays = {};
             return;
         }
+        const requestId = ++additionalHolidaysRequestSeq;
 
         // For regional UK overlays (GB-SCT, GB-NIR) use countryCode "GB"
         // and pass the region code to the holiday service. Keep the cache
@@ -424,6 +434,8 @@
 
         // If cache covers all needed years, use it
         if (cached && yearsToFetch.every((y) => cached.years.includes(y))) {
+            if (requestId !== additionalHolidaysRequestSeq) return;
+            isLoadingAdditionalHolidays = false;
             additionalHolidays = cached.data;
             return;
         }
@@ -456,12 +468,17 @@
                 ? [...new Set([...cached.years, ...missingYears])]
                 : yearsToFetch;
 
+            if (requestId !== additionalHolidaysRequestSeq) return;
             additionalHolidays = merged;
             saveHolidaysToCache(cacheKey, merged, mergedYears);
         } catch (error) {
+            if (requestId !== additionalHolidaysRequestSeq) return;
             console.error(`Error fetching holidays for ${country}:`, error);
             additionalHolidays = {};
+            additionalHolidaysError =
+                "Couldn't load additional holidays right now. Try again.";
         } finally {
+            if (requestId !== additionalHolidaysRequestSeq) return;
             isLoadingAdditionalHolidays = false;
         }
     }
@@ -470,7 +487,10 @@
     $effect.pre(() => {
         if (!hasLoadedPersistedInputs) return;
         if (selectedCountry === "none") {
+            additionalHolidaysRequestSeq += 1;
+            isLoadingAdditionalHolidays = false;
             additionalHolidays = {};
+            additionalHolidaysError = "";
             lastAdditionalHolidaysKey = "";
             return;
         }
@@ -493,13 +513,17 @@
     // from input components (see `persistInputs()`), to avoid per-keystroke writes.
 
     // Generate pension schedule
-    function generate() {
+    function generate(source: string = "auto") {
         error = "";
 
         if (!/^\d{2}[A-D]$/i.test(ni)) {
             error =
                 "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
             result = null;
+            capturePosthog("schedule_generate_validation_failed", {
+                source,
+                reason: "invalid_ni",
+            });
             return;
         }
 
@@ -519,6 +543,13 @@
             : generated.payments;
 
         result = { ...generated, payments: filteredPayments };
+        capturePosthog("schedule_generated", {
+            source,
+            cycle_days: cycleDays,
+            start_year: startYear,
+            number_of_years: numberOfYears,
+            payments_count: result.payments.length,
+        });
 
         // Reset calendar to a requested focus date (if set), otherwise first payment.
         if (result && result.payments.length > 0) {
@@ -549,7 +580,7 @@
         startYear = start;
 
         pendingCalendarFocusIso = payment.paid;
-        generate();
+        generate("spa_auto_focus");
 
         // This handler runs as a consequence of user commits (NI/DOB/cycle changes).
         // Persist the auto-adjusted year range so the UI comes back the same next time.
@@ -561,6 +592,12 @@
     }
 
     async function handleInstallClick() {
+        capturePosthog("install_click", {
+            can_install_pwa: canInstallPwa,
+            show_ios_help: showIosInstallHelp,
+            is_standalone: isStandalone,
+            in_app_browser: isFacebookInAppBrowser,
+        });
         if (isFacebookInAppBrowser) return;
         if (isStandalone) return;
 
@@ -570,7 +607,7 @@
             try {
                 const choice = await deferredInstallPrompt.userChoice;
                 if (choice.outcome === "accepted") {
-                    capturePosthog("install_prompt_accepted");
+                    captureInstallAcceptedOnce();
                 } else {
                     capturePosthog("install_prompt_dismissed");
                 }
@@ -592,6 +629,10 @@
         capturePosthog("help_opened");
         goto("/help");
     }
+
+    function handleInputsRecalculate() {
+        generate("inputs_commit");
+    }
 </script>
 
 <!-- --- Navigation Bar --- -->
@@ -599,20 +640,20 @@
     <svelte:fragment slot="actions">
         <Button
             color="light"
-            size="sm"
+            size="xs"
             onclick={handleHelpClick}
         >
             Help
         </Button>
         <ShareButton
             shareText="Calculate your State Pension Age and payment calendar, including bank holiday adjustments."
-            size="sm"
+            size="xs"
         />
         {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
             <!-- Install button for PWA or iOS help -->
             <Button
                 color="blue"
-                size="sm"
+                size="xs"
                 onclick={handleInstallClick}
                 title="Install app"
                 aria-label="Install app"
@@ -623,16 +664,38 @@
         <!-- Dark mode toggle button -->
         <Button
             color="light"
-            size="sm"
+            size="xs"
             onclick={() => {
                 darkMode = !darkMode;
             }}
             title="Toggle dark mode"
+            aria-label="Toggle dark mode"
         >
             {#if darkMode}
-                ☀️
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    class="h-4 w-4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                </svg>
             {:else}
-                🌙
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    class="h-4 w-4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
             {/if}
         </Button>
     </svelte:fragment>
@@ -662,7 +725,17 @@
                         class="px-2 py-1 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                         aria-label="Close"
                     >
-                        ✕
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            class="h-4 w-4"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            aria-hidden="true"
+                        >
+                            <path d="M18 6 6 18M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
                 <p
@@ -683,31 +756,28 @@
 
 <!-- --- Main Content --- -->
 <div
-    class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
+    class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:to-gray-900 min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
 >
     <div class="max-w-7xl mx-auto">
-        
         <!-- Header section -->
-        <div class="mb-8">
+        <div class="mb-6 sm:mb-8">
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
             >
                 <div>
                     <h1
-                        class="text-4xl font-bold text-gray-900 dark:text-white mb-2"
+hen                         class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-2"
                     >
                         UK State Pension Payment Calendar
                     </h1>
-                    <p class="text-lg text-gray-600 dark:text-gray-300">
-                        Calculate your pension payment schedule based on your NI
-                        code.
+                    <p class="text-base sm:text-lg text-gray-700 dark:text-gray-300">
+                        Check your expected payment dates using your NI code and date of birth.
                     </p>
                     <p class="text-sm text-gray-600 dark:text-gray-300">
-                        Also calculates your State Pension Age and lets you
-                        print or export the calendar to your own device.
+                        We also estimate your State Pension age and let you print or export your calendar.
                     </p>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                        Privacy: Nothing you enter is sent to a server or shared with third parties.
+                        Privacy: your details stay on this device and are not sent to a server.
                     </p>
                 </div>
             </div>
@@ -716,7 +786,7 @@
         <!-- Inputs + Summary (single cohesive card) -->
         <Card
             size="xl"
-            class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 mb-8 input-section"
+            class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 mb-6 sm:mb-8 input-section"
         >
             <div
                 class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700"
@@ -734,7 +804,7 @@
                         onRestoreDefaults={handleResetAll}
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
-                        onRecalculate={generate}
+                        onRecalculate={handleInputsRecalculate}
                         
                     />
                 </div>
@@ -797,6 +867,8 @@
                             onPersist={persistInputs}
                             bind:selectedCountry
                             {additionalHolidays}
+                            {isLoadingAdditionalHolidays}
+                            {additionalHolidaysError}
                             onCountryChange={handleCountryChange}
                             {detectedCountry}
                         />

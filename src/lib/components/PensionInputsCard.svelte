@@ -263,15 +263,13 @@
     <div class="flex items-center justify-between mb-2">
         <div>
             <p class="text-sm text-gray-600 dark:text-gray-300">
-                Enter your NI code and date of birth to generate the payment
-                schedule.
+                Enter your NI code and date of birth to see your expected payment dates.
             </p>
         </div>
         <Button
             color="light"
             size="xs"
             onclick={handleRestoreDefaultsClick}
-            tabindex={-1}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -313,7 +311,6 @@
             </div>
         </div>
     </Modal>
-    <br />
     <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
         <div class="space-y-5">
             <div class="space-y-3">
@@ -346,13 +343,13 @@
                             commitNi();
                         }}
                     />
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        The last 3 characters of your National Insurance number
-                        (2 digits + letter A–D), e.g. 22D.
+                    <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Use the last 3 characters of your National Insurance number
+                        (2 digits and a letter A–D), for example 22D.
                     </p>
                     {#if niDraft.trim() && !isValidNiCode(niDraft)}
                         <p
-                            class="text-xs text-amber-700 dark:text-amber-300 mt-1"
+                            class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300 mt-1"
                         >
                             Format: 2 digits then A–D (e.g. 22D).
                         </p>
@@ -377,7 +374,7 @@
                     />
                     {#if !dob}
                         <p
-                            class="text-xs text-amber-700 dark:text-amber-300 mt-1"
+                            class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300 mt-1"
                         >
                             Required to calculate your State Pension age and
                             calendar start.
@@ -402,7 +399,7 @@
                         <option value="28">28 days (default)</option>
                         <option value="91">13 weeks</option>
                     </Select>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Payment frequency is normally every 28 days.
                     </p>
                 </div>
@@ -432,7 +429,7 @@
 
             {#if spa}
                 <div
-                    class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4"
+                    class="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50/90 dark:bg-gray-900/30 p-4"
                 >
                     <!-- Pre-2016 SPA warning -->
                     {#if showPre2016SpaWarning}
@@ -447,7 +444,7 @@
                         </div>
                     {/if}
                     <div
-                        class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-200"
                     >
                         You reach State Pension age (SPA) on
                     </div>
@@ -458,7 +455,7 @@
                     </div>
                     {#if spa.source !== "fixed"}
                         <div
-                            class="mt-1 text-sm text-gray-600 dark:text-gray-300"
+                            class="mt-1 text-sm text-gray-600 dark:text-gray-200"
                         >
                             Based on an age of {spa.spaAgeYears}{#if spa.spaAgeMonths}y
                                 {spa.spaAgeMonths}m{/if}.
@@ -471,7 +468,7 @@
                             class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
                         >
                             <div
-                                class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                                class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-200"
                             >
                                 First payment after reaching pension age
                             </div>
@@ -480,25 +477,25 @@
                             >
                                 {firstPaymentDueFormatted}
                             </div>
-                            <div
-                                class="mt-1 text-sm text-gray-600 dark:text-gray-300"
-                            >
-                                {comprisingText}
-                            </div>
+                                <div
+                                    class="mt-1 text-sm text-gray-600 dark:text-gray-200"
+                                >
+                                    {comprisingText}
+                                </div>
 
                             {#if firstPaymentAfterSpa.early && firstPaymentAfterSpa.paid !== firstPaymentAfterSpa.due}
-                                <div
-                                    class="mt-1 text-sm text-gray-600 dark:text-gray-300"
-                                >
-                                    Paid early on {firstPaymentPaidFormatted}.
-                                </div>
+                                        <div
+                                            class="mt-1 text-sm text-gray-600 dark:text-gray-200"
+                                        >
+                                            Paid early on {firstPaymentPaidFormatted}.
+                                        </div>
                             {/if}
 
                             <!-- Second payment after SPA -->
                             {#if secondPaymentAfterSpa}
                                 <div class="mt-3">
                                     <div
-                                        class="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-200"
                                     >
                                         Second payment
                                     </div>
@@ -509,7 +506,7 @@
                                     </div>
                                     {#if secondPaymentAfterSpa.early && secondPaymentAfterSpa.paid !== secondPaymentAfterSpa.due}
                                         <div
-                                            class="mt-1 text-sm text-gray-600 dark:text-gray-300"
+                                            class="mt-1 text-sm text-gray-600 dark:text-gray-200"
                                         >
                                             Paid early on {secondPaymentPaidFormatted}.
                                         </div>
@@ -519,7 +516,7 @@
                         </div>
                     {:else if ni}
                         <div
-                            class="mt-4 text-xs text-gray-500 dark:text-gray-400"
+                            class="mt-4 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400"
                         >
                             Enter a valid NI code to estimate your first payment
                             date.
@@ -530,4 +527,3 @@
         </div>
     </div>
 </div>
-

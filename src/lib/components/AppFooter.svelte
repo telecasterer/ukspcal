@@ -7,20 +7,17 @@
     class="rounded-none border-t border-gray-200 dark:border-gray-700 shadow-none p-3 md:p-3"
 >
     <div
-        class="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+        class="w-full max-w-7xl mx-auto flex flex-col gap-3"
     >
-        <div class="text-xs text-gray-500 dark:text-gray-400">
-            Sources: GOV.UK State Pension age guidance, the published State
-            Pension age timetable, and UK bank holiday lists.
-        </div>
-
-        <div class="flex items-center gap-4">
+        <div
+            class="flex flex-col min-[390px]:flex-row min-[390px]:items-center gap-2 min-[390px]:gap-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/70 px-2 py-1.5 self-start"
+        >
             <!-- Feedback link -->
             <a
                 href="https://tally.so/r/q4Vbq2"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-xs text-gray-500 hover:underline dark:text-gray-400"
+                class="text-sm text-gray-700 hover:underline dark:text-gray-200"
             >
                 Send Feedback
             </a>
@@ -50,7 +47,7 @@
                     href="https://github.com/telecasterer/ukspcal"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-xs text-gray-500 hover:underline dark:text-gray-400"
+                    class="text-sm text-gray-700 hover:underline dark:text-gray-200"
                 >
                     View on GitHub
                 </a>

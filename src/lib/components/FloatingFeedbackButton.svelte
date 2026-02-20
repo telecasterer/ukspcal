@@ -12,7 +12,7 @@
     rel="noopener noreferrer"
     aria-label="Send feedback"
     onclick={handleFeedbackClick}
-    class="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out hover:scale-110"
+    class="fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white shadow-lg hover:shadow-xl transition-colors duration-200 ease-in-out"
     title="Send feedback"
 >
     <svg

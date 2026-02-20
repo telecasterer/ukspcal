@@ -5,7 +5,7 @@
         persistDarkModeToStorage,
         readDarkModeFromStorage,
     } from "$lib/utils/darkMode";
-    import { onMount, tick } from "svelte";
+    import { onMount } from "svelte";
     import AppFooter from "$lib/components/AppFooter.svelte";
     import TopBar from "$lib/components/TopBar.svelte";
     import ShareButton from "$lib/components/ShareButton.svelte";
@@ -168,42 +168,87 @@
         <svelte:fragment slot="actions">
             <Button
                 color="light"
-                size="sm"
+                size="xs"
                 onclick={() => {
                     goto("/");
                 }}
             >
-                ← Back
+                <span class="inline-flex items-center gap-1.5">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                    <span>Back</span>
+                </span>
             </Button>
             <ShareButton
                 shareText="Calculate your State Pension Age and payment calendar."
-                size="sm"
+                size="xs"
             />
             <Button
                 color="light"
-                size="sm"
+                size="xs"
                 onclick={() => {
                     darkMode = !darkMode;
                 }}
                 title="Toggle dark mode"
+                aria-label="Toggle dark mode"
             >
                 {#if darkMode}
-                    ☀️
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                    </svg>
                 {:else}
-                    🌙
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-4 w-4"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
                 {/if}
             </Button>
         </svelte:fragment>
     </TopBar>
     <!-- Main content area: full-width single section, no card or rounded corners -->
     <main
-        class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+        class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <!-- Main help content: all top-level items grouped in a single bordered container -->
         <div class="w-full">
-            <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-4 space-y-2 help-top-container">
-                {#each sections as section}
-                    <details class="custom-details group">
+            <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-5 sm:p-6 space-y-2 help-top-container">
+                <header class="mb-3 sm:mb-4">
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Help & guidance
+                    </h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                        Expand a section below for setup steps, privacy details, and troubleshooting.
+                    </p>
+                </header>
+                {#each sections as section, i}
+                    <details
+                        class="custom-details group"
+                        open={i === 0}
+                    >
                         <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
                             <span>{section.title}</span>
                             <span class="chev" aria-hidden="true">

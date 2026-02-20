@@ -42,9 +42,12 @@
                 <FlowbiteCheckbox bind:checked={localReminderEnabled} />
                 <span>Enable reminder for payment days</span>
             </Label>
+            <p class="mt-1 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-300">
+                Reminders are included in exported calendar files.
+            </p>
         </div>
         <div class="flex gap-2 items-center">
-            <Label for="days-before" class="text-sm">Days before event</Label>
+            <Label for="days-before" class="text-sm text-gray-700 dark:text-gray-200">Days before event</Label>
             <Input
                 id="days-before"
                 type="number"

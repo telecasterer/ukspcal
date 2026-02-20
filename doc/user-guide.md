@@ -30,6 +30,7 @@ The app supports:
 - The calculator uses public holiday data from Nager.Date for regional holiday overlays.
 - If a payment date falls on a weekend or bank holiday, it moves earlier.
 - You can optionally overlay additional public holidays for another country using Nager.Date. The UK region selection (`ukRegion`) affects which regional bank holidays are applied — the app supports combined region codes (e.g., England & Wales uses `GB-ENG+GB-WLS`).
+- When additional holiday data is loading, the calendar options panel shows a loading status. If the fetch fails, an inline warning is shown and you can try again.
 
 ## Sharing
 
@@ -44,6 +45,7 @@ The app supports:
 ## Accessibility & display tips
 
 - The app supports dark mode and print-friendly layouts.
+- Calendar day cells are keyboard-focusable and include descriptive labels for payment and holiday states.
 - If the app is opened inside an in-app browser (e.g. Facebook), you may see limited export/print support—open in Safari/Chrome/Edge for best results.
 
 ## Install as an app (PWA)

@@ -1,7 +1,7 @@
 <script lang="ts">
     // CalendarView.svelte: Renders the multi-month calendar, export, and print controls
     import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
-    import { monthName, previousMonth, nextMonth } from "$lib/utils/calendarHelpers";
+    import { previousMonth, nextMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
     import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
     import type { Payment } from "$lib/pensionEngine";
@@ -43,6 +43,8 @@
     export let applyNumberOfYears: () => void;
     export let selectedCountry: string;
     export let additionalHolidays: Record<string, string>;
+    export let isLoadingAdditionalHolidays: boolean = false;
+    export let additionalHolidaysError: string = "";
     export let onCountryChange: ((country: string) => void) | undefined;
     export let detectedCountry: string = "none";
 
@@ -148,26 +150,12 @@
     $: if (!isEditingIcsCategory) icsCategoryDraft = icsCategory;
     $: if (!isEditingIcsColorText) icsColorDraft = icsColor;
 
-    let rangeLabel = "";
-    $: {
-        if (!payments?.length) {
-            rangeLabel = "";
-        } else {
-            const first = new Date(payments[0].paid + "T00:00:00Z");
-            const last = new Date(payments[payments.length - 1].paid + "T00:00:00Z");
-            const fmt = (d: Date) =>
-                d.toLocaleDateString("en-GB", {
-                    month: "short",
-                    year: "numeric",
-                });
-            rangeLabel = `${fmt(first)} - ${fmt(last)}`;
-        }
-    }
-
     let allMonths: Array<{ month: number; year: number }> = [];
     let focusedIndex = -1;
     let visibleMonths: Array<{ month: number; year: number }> = [];
     let visibleRangeLabel = "";
+    let fullRangeLabel = "";
+    let canJumpToToday = false;
     const shortMonthName = (month: number) =>
         new Date(2000, month, 1).toLocaleDateString("en-GB", {
             month: "short",
@@ -176,19 +164,7 @@
     let exportMenuOpen = false;
     let csvModalOpen = false;
     let icsModalOpen = false;
-
-    let bottomNavEl: HTMLDivElement | null = null;
-
-    async function keepBottomNavInView() {
-        const prevBottom = bottomNavEl?.getBoundingClientRect().bottom;
-        await tick();
-        requestAnimationFrame(() => {
-            if (!bottomNavEl || prevBottom === undefined) return;
-            const nextBottom = bottomNavEl.getBoundingClientRect().bottom;
-            const delta = nextBottom - prevBottom;
-            if (delta !== 0) window.scrollBy(0, delta);
-        });
-    }
+    let screenGridEl: HTMLDivElement | null = null;
 
     function openCsvModal() {
         exportMenuOpen = false;
@@ -267,16 +243,6 @@
         currentYear = newMonth.year;
     }
 
-    async function handlePreviousMonthFromBottom() {
-        handlePreviousMonth();
-        await keepBottomNavInView();
-    }
-
-    async function handleNextMonthFromBottom() {
-        handleNextMonth();
-        await keepBottomNavInView();
-    }
-
     /**
      * Get all months from first to last payment
      */
@@ -324,90 +290,158 @@
                     : `${fmt(first)} – ${fmt(last)}`;
         }
     }
+    $: {
+        if (!allMonths.length) {
+            fullRangeLabel = "";
+        } else {
+            const first = allMonths[0];
+            const last = allMonths[allMonths.length - 1];
+            const fmt = (m: { month: number; year: number }) =>
+                `${shortMonthName(m.month)} ${m.year}`;
+            fullRangeLabel =
+                first.month === last.month && first.year === last.year
+                    ? fmt(first)
+                    : `${fmt(first)} – ${fmt(last)}`;
+        }
+    }
+    $: {
+        const now = new Date();
+        const todayMonth = now.getUTCMonth();
+        const todayYear = now.getUTCFullYear();
+        canJumpToToday = allMonths.some(
+            (m) => m.month === todayMonth && m.year === todayYear
+        );
+    }
+
+    function handleJumpToToday() {
+        if (!canJumpToToday) return;
+        const now = new Date();
+        const todayMonth = now.getUTCMonth();
+        const todayYear = now.getUTCFullYear();
+        currentMonth = todayMonth;
+        currentYear = todayYear;
+        capturePosthog("calendar_jump_today", {
+            month: todayMonth + 1,
+            year: todayYear,
+        });
+        void scrollTodayMonthIntoView(todayMonth, todayYear);
+    }
+
+    async function scrollTodayMonthIntoView(month: number, year: number): Promise<void> {
+        await tick();
+        requestAnimationFrame(() => {
+            const key = `${year}-${month}`;
+            const monthNode = screenGridEl?.querySelector<HTMLElement>(
+                `[data-month-key="${key}"]`
+            );
+            if (!monthNode) return;
+
+            const rect = monthNode.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            const fullyVisible = rect.top >= 0 && rect.bottom <= viewportHeight;
+            if (fullyVisible) return;
+
+            monthNode.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "nearest",
+            });
+        });
+    }
 </script>
 
-<div class="space-y-2">
-    <!-- --- Header: Title and Export/Print --- -->
+<div class="space-y-3">
     <div class="w-full calendar-controls">
         <div
-            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3 space-y-3"
         >
-            <div class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div class="text-center sm:text-left">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                         Payment calendar
                     </h3>
-                    <div class="text-sm text-gray-600 dark:text-gray-300">
-                        Viewing {monthName(currentMonth)}
-                        {currentYear} · {payments.length} payments{#if rangeLabel}
-                            · {rangeLabel}{/if}
-                    </div>
+                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                        {payments.length} payments · {fullRangeLabel}
+                    </p>
                 </div>
-
-                <!-- Export/Print buttons -->
-                <div class="flex flex-col items-center sm:items-end gap-1">
-                    <div class="flex items-center gap-2">
-                        <!-- Export menu -->
-                        <Button
-                            id="export-menu"
-                            color="light"
-                            class="px-3 py-2 text-sm"
-                            title="Export"
-                        >
-                            ⬇️ Export
-                        </Button>
-                        <Dropdown
-                            triggeredBy="#export-menu"
-                            bind:isOpen={exportMenuOpen}
-                            class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
-                        >
-                            <DropdownItem
-                                class="text-gray-700 dark:text-gray-100"
-                                onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem
+                <div class="flex flex-wrap items-center gap-2">
+                    <Button
+                        id="export-menu"
+                        color="light"
+                        class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        title="Export"
+                        aria-label="Export"
+                    >
+                        <span class="inline-flex items-center gap-1.5">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                class="h-4 w-4"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
                             >
-                            <DropdownItem
-                                class="text-gray-700 dark:text-gray-100"
-                                onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem
-                            >
-                        </Dropdown>
-
-                        <!-- Print button -->
-                        <Button
-                            onclick={handlePrint}
-                            color="light"
-                            class="px-3 py-2 text-sm"
-                            title="Print calendar"
+                                <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2h16v-2" />
+                            </svg>
+                            <span>Export</span>
+                        </span>
+                    </Button>
+                    <Dropdown
+                        triggeredBy="#export-menu"
+                        bind:isOpen={exportMenuOpen}
+                        class="z-50 border border-gray-200 dark:border-gray-600 dark:!bg-gray-600"
+                    >
+                        <DropdownItem
+                            class="text-gray-700 dark:text-gray-100"
+                            onclick={openCsvModal}>Download spreadsheet (CSV)</DropdownItem
                         >
-                            🖨️ Print
-                        </Button>
-                    </div>
+                        <DropdownItem
+                            class="text-gray-700 dark:text-gray-100"
+                            onclick={openIcsModal}>Add to calendar (ICS)</DropdownItem
+                        >
+                    </Dropdown>
+                    <Button
+                        onclick={handlePrint}
+                        color="light"
+                        class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        title="Print calendar"
+                        aria-label="Print calendar"
+                    >
+                        <span class="inline-flex items-center gap-1.5">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                class="h-4 w-4"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                aria-hidden="true"
+                            >
+                                <path d="M6 9V3h12v6M6 18h12v3H6zM6 14H5a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1" />
+                            </svg>
+                            <span>Print</span>
+                        </span>
+                    </Button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- --- View Range and Display Filters --- -->
-    <div class="w-full calendar-controls">
-        <div
-            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-2"
-        >
-            <!-- View Range Controls -->
-            <div class="grid grid-cols-3 gap-1 items-start">
+            <div class="flex flex-wrap items-end gap-3">
                 <div>
                     <Label
                         for="start-year"
-                        class="block mb-1 text-xs text-gray-700 dark:text-gray-300"
+                        class="block mb-1 text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
                     >
-                        Start Year
+                        Start year
                     </Label>
                     <Select
                         id="start-year"
                         bind:value={startYearSelect}
                         oninput={applyStartYear}
                         onchange={applyStartYear}
-                        class="w-20"
+                        class="w-24"
                         classes={{
-                            select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                            select: "text-xs min-[390px]:text-sm !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
                         }}
                     >
                         {#each years as year}
@@ -415,57 +449,40 @@
                         {/each}
                     </Select>
                 </div>
-
                 <div>
                     <Label
                         for="number-of-years"
-                        class="block mb-1 text-xs text-gray-700 dark:text-gray-300"
+                        class="block mb-1 text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
                     >
-                        Duration (years)
+                        Duration
                     </Label>
                     <Select
                         id="number-of-years"
                         bind:value={numberOfYearsInput}
                         oninput={applyNumberOfYears}
                         onchange={applyNumberOfYears}
-                        class="w-20"
+                        class="w-24"
                         classes={{
-                            select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                            select: "text-xs min-[390px]:text-sm !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
                         }}
                     >
                         {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
-                            <option value={String(y)}>{y}</option>
+                            <option value={String(y)}>{y} years</option>
                         {/each}
                     </Select>
                 </div>
-
-                <div>
-                    <Label
-                        for="payments-count"
-                        class="block mb-1 text-xs text-gray-700 dark:text-gray-300"
-                    >
-                        Payments
-                    </Label>
-                    <div
-                        class="px-2.5 h-8 flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-semibold text-gray-900 dark:text-white w-20"
-                    >
-                        {payments.length}
-                    </div>
-                </div>
             </div>
 
-            <!-- Weekends and Holidays filters -->
             <div class="flex flex-wrap gap-4 items-center">
-                <!-- Weekends are always shown (pale grey background) -->
-                <Label class="flex items-center gap-2 cursor-pointer text-sm">
+                <Label class="flex items-center gap-2 cursor-pointer text-xs min-[390px]:text-sm">
                     <FlowbiteCheckbox
                         bind:checked={showBankHolidays}
                         onchange={() => onPersist?.()}
                     />
-                    <span>UK Holidays</span>
+                    <span>UK holidays</span>
                 </Label>
-                <div class="flex items-center gap-2">
-                    <Label class="flex items-center gap-2 cursor-pointer text-sm">
+                <div class="flex flex-wrap items-center gap-2">
+                    <Label class="flex items-center gap-2 cursor-pointer text-xs min-[390px]:text-sm">
                         <FlowbiteCheckbox
                             checked={selectedCountry !== "none"}
                             onchange={(e: Event) => {
@@ -494,7 +511,7 @@
                             }}
                             class="w-40"
                             classes={{
-                                select: "text-xs !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                                select: "text-xs min-[390px]:text-sm !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
                             }}
                         >
                             <option value="GB-SCT">Scotland</option>
@@ -521,42 +538,15 @@
                     {/if}
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- --- Month Navigation --- -->
-    <div class="w-full calendar-controls">
-        <div
-            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
-        >
-            <div class="flex items-center justify-center gap-4">
-                <!-- Previous month button -->
-                <Button
-                    onclick={handlePreviousMonth}
-                    color="light"
-                    class="px-3 py-2"
-                    disabled={focusedIndex <= 0}
-                >
-                    ← Previous
-                </Button>
-
-                <!-- Current month display -->
-                <div class="text-center min-w-[120px]">
-                    <div class="text-sm font-semibold text-gray-900 dark:text-white">
-                        {visibleRangeLabel}
-                    </div>
-                </div>
-
-                <!-- Next month button -->
-                <Button
-                    onclick={handleNextMonth}
-                    color="light"
-                    class="px-3 py-2"
-                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
-                >
-                    Next →
-                </Button>
-            </div>
+            {#if selectedCountry !== "none" && isLoadingAdditionalHolidays}
+                <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400" role="status">
+                    Loading additional holidays...
+                </p>
+            {:else if selectedCountry !== "none" && additionalHolidaysError}
+                <p class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300" role="alert">
+                    {additionalHolidaysError}
+                </p>
+            {/if}
         </div>
     </div>
 
@@ -575,7 +565,7 @@
                         <option value={option.value}>{option.label}</option>
                     {/each}
                 </Select>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
                     Best for Excel or Google Sheets.
                 </p>
             </div>
@@ -621,7 +611,7 @@
                     }}
                     class="w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
                     Some calendar apps ignore categories or don’t display them.
                 </p>
             </div>
@@ -659,7 +649,7 @@
                         placeholder="#22c55e"
                     />
                 </div>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
                     Best-effort: Apple Calendar may use this; Google Calendar often ignores event
                     colour from ICS imports.
                 </p>
@@ -667,7 +657,7 @@
             <div>
                 <Button color="light" onclick={openReminderDialog}>Reminder settings</Button>
                 {#if reminderSettings.alarmEnabled}
-                    <span class="ml-2 text-xs text-green-600 dark:text-green-400"
+                    <span class="ml-2 text-xs min-[390px]:text-sm text-green-600 dark:text-green-400"
                         >Reminder: {reminderSettings.daysBefore} day(s) before</span
                     >
                 {/if}
@@ -687,21 +677,65 @@
         on:close={() => (reminderDialogOpen = false)}
     />
 
+    <div class="w-full calendar-controls">
+        <div
+            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3"
+        >
+            <div class="w-full sm:w-auto flex items-center justify-center gap-2">
+                <Button
+                    onclick={handlePreviousMonth}
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    disabled={focusedIndex <= 0}
+                >
+                    Previous
+                </Button>
+                <div
+                    class="px-2.5 h-8 inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs min-[390px]:text-sm font-semibold text-gray-900 dark:text-white"
+                >
+                    {visibleRangeLabel}
+                </div>
+                <Button
+                    onclick={handleNextMonth}
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
+                >
+                    Next
+                </Button>
+                <Button
+                    onclick={handleJumpToToday}
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    disabled={!canJumpToToday}
+                    title={canJumpToToday
+                        ? "Jump to current month"
+                        : "Current month is outside this calendar range"}
+                >
+                    Today
+                </Button>
+            </div>
+        </div>
+    </div>
+
     <!-- --- Multiple Month Calendar Grid (screen) --- -->
     {#if !renderPrintAllMonths}
         <div
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full calendar-grid screen-only"
+            bind:this={screenGridEl}
         >
             {#each visibleMonths as monthData (monthData.year * 12 + monthData.month)}
-                <CalendarMonth
-                    year={monthData.year}
-                    month={monthData.month}
-                    {showBankHolidays}
-                    {payments}
-                    {bankHolidays}
-                    {additionalHolidays}
-                    {selectedCountry}
-                />
+                <div data-month-key={`${monthData.year}-${monthData.month}`}>
+                    <CalendarMonth
+                        year={monthData.year}
+                        month={monthData.month}
+                        {showBankHolidays}
+                        {payments}
+                        {bankHolidays}
+                        {additionalHolidays}
+                        {selectedCountry}
+                    />
+                </div>
             {/each}
         </div>
     {/if}
@@ -725,37 +759,42 @@
         </div>
     {/if}
 
-    <!-- --- Month Navigation (Bottom) --- -->
-    <div class="w-full calendar-controls" bind:this={bottomNavEl}>
+    <div class="w-full calendar-controls">
         <div
-            class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3"
+            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3"
         >
-            <div class="flex items-center justify-center gap-4">
-                <!-- Previous month button -->
+            <div class="w-full sm:w-auto flex items-center justify-center gap-2">
                 <Button
-                    onclick={handlePreviousMonthFromBottom}
+                    onclick={handlePreviousMonth}
                     color="light"
-                    class="px-3 py-2"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
                     disabled={focusedIndex <= 0}
                 >
-                    ← Previous
+                    Previous
                 </Button>
-
-                <!-- Current month display -->
-                <div class="text-center min-w-[120px]">
-                    <div class="text-sm font-semibold text-gray-900 dark:text-white">
-                        {visibleRangeLabel}
-                    </div>
+                <div
+                    class="px-2.5 h-8 inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs min-[390px]:text-sm font-semibold text-gray-900 dark:text-white"
+                >
+                    {visibleRangeLabel}
                 </div>
-
-                <!-- Next month button -->
                 <Button
-                    onclick={handleNextMonthFromBottom}
+                    onclick={handleNextMonth}
                     color="light"
-                    class="px-3 py-2"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
                     disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
                 >
-                    Next →
+                    Next
+                </Button>
+                <Button
+                    onclick={handleJumpToToday}
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    disabled={!canJumpToToday}
+                    title={canJumpToToday
+                        ? "Jump to current month"
+                        : "Current month is outside this calendar range"}
+                >
+                    Today
                 </Button>
             </div>
         </div>
@@ -775,7 +814,7 @@
                 <Button color="blue" onclick={() => (printUnsupportedOpen = false)}>OK</Button>
             </div>
             {#if copyLinkStatus}
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
                     {copyLinkStatus}
                 </p>
             {/if}

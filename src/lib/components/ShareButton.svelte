@@ -76,7 +76,7 @@
 
 {#if shareStatus}
     <div
-        class="fixed right-4 top-16 z-[60] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+        class="fixed right-4 top-16 z-[60] rounded-lg border border-gray-300 bg-white/95 px-3 py-2 text-xs min-[390px]:text-sm text-gray-700 shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
         role="status"
         aria-live="polite"
     >
