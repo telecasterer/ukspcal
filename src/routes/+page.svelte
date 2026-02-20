@@ -707,8 +707,7 @@
                         print or export the calendar to your own device.
                     </p>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                        Privacy: this app does not save or share any personal
-                        data on a server.
+                        Privacy: Nothing you enter is sent to a server or shared with third parties.
                     </p>
                 </div>
             </div>

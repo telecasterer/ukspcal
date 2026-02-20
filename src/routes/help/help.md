@@ -1,12 +1,12 @@
 ## Quick Start
 
-1. Enter your National Insurance (NI) code suffix (the last 3 characters of your National Insurance number, e.g. <strong>35C</strong>) and your date of birth.
+1. Enter your National Insurance (NI) code suffix (the last 3 characters of your National Insurance number, e.g. **35C**) and your date of birth.
 2. Choose your payment cycle and date range.
 3. View your personalised State Pension payment calendar.
 4. Export your calendar as CSV (spreadsheet) or ICS (calendar app), or print it for your records.
 5. (Optional, recommended) Install the app.
 
-- Know someone approaching retirement who might find this useful? 
+- Know someone approaching retirement age who might find this useful?
 - Use the **Share** button in the toolbar above to send them the link.
 
 ## Data Privacy
@@ -19,36 +19,36 @@
 
 ### Inputs
 
-- **NI code:** Enter the last 3 characters (2 digits and a letter, e.g., 22D) of your National Insurance number.
+- **NI code:** Enter the last 3 characters (2 digits and a letter, e.g., **22D**) of your National Insurance number.
 - **Date of birth:** Used to calculate your State Pension Age (SPA) and set your calendar start.
 
 ### Calendar Date Range
 
 - By defalt the calendar view will start with month of your first pension payment after reaching SPA.
-- You can select how many years of calendar you want to view, print, export but bear in mind that we usually only have the official UK bank holiday dates for the next two years.
+- You can select how many years of the calendar you want to view, print, export.
 
-### Display Options
+### Calendar Display Options
 
-- **Weekends:** Toggle weekend days highlight on/off (weekends are shown in a light gray).
-- **UK Holidays:** Toggle UK bank holidays on/off (shown with a blue background and white text). These are the official UK bank holidays that affect payment dates—if your payment date falls on a UK bank holiday, it will be paid on the previous working day.
-- **Additional holidays:** Optionally display public holidays from another country/region alongside UK holidays for reference. Currently supports France, Germany, Spain, Italy, Netherlands, Belgium, Austria, Portugal, Ireland, Sweden, Denmark, Norway, Switzerland, United States, Canada, Australia, New Zealand, Japan, Scotland, and Northern Ireland. These are marked with a flag 🇫🇷 (respective country/region) icon on calendar days. **Important:** These additional country holidays are shown for information only and do not affect when the DWP issues your payment. However, they may affect when your receiving bank credits the funds to your account, so they are useful for reference if you are receiving payments in another country.
+- **UK Holidays:** Toggle UK bank holidays on/off (shown with a blue background and white text). These are the official UK bank holidays that affect payment dates — if your payment date falls on a UK bank holiday, it will be paid on the previous working day.
+- **Additional holidays:** Optionally display public holidays from another country/region alongside UK holidays for reference. Currently supports France, Germany, Spain, Italy, Netherlands, Belgium, Austria, Portugal, Ireland, Sweden, Denmark, Norway, Switzerland, United States, Canada, Australia, New Zealand, Japan, Scotland, and Northern Ireland. These are marked with a flag 🇫🇷 (respective country/region) icon on calendar days.
+  - **Important:** These additional country holidays are shown for information only and do not affect when the DWP issues your payment. However, they may affect when your receiving bank credits the funds to your account, so they are useful for reference if you are receiving payments in another country.
 
 ### Payment Frequency
 
-**Note:** Most users do not need to read the detailed rules below. The app will automatically calculate your payment dates based on your NI code and chosen cycle. The following sections are for those who want to understand the calculation logic.
-
 - Choose from 28-day (default), 7-day, 14-day, or 91-day cycles.
 - See below for details on how each cycle is calculated.
+
+**Note:** Most users do not need to read the detailed rules below. The app will automatically calculate your payment dates based on your NI code and chosen cycle. The following sections are for those who want to understand the calculation logic.
 
 #### 28-day (4-week) Cycle
 
 - Uses your NI suffix letter (A–D) as a phase (which week in the 4-week pattern).
 - The last two digits of your NI code determine your payment weekday:
-    - 00–19: Monday
-    - 20–39: Tuesday
-    - 40–59: Wednesday
-    - 60–79: Thursday
-    - 80–99: Friday
+  - 00–19: Monday
+  - 20–39: Tuesday
+  - 40–59: Wednesday
+  - 60–79: Thursday
+  - 80–99: Friday
 - Phase (A–D) shifts the schedule by one week per letter.
 - Payments repeat every 28 days. Bank-holiday payments are paid early (previous working day).
 
@@ -73,7 +73,7 @@
 
 ### Exporting Data
 
-- Click **Export** to download your payment calendar as a CSV or ICS file. Files are generated on your device and never uploaded.
+- Click **Export** to download your payment calendar as a CSV (spreadsheet) or ICS (calendar)file. Files are generated on your device and never uploaded.
 
 When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calendars:
 
@@ -90,21 +90,13 @@ When exporting as an **ICS** (calendar) file for Apple, Google, or Outlook calen
 
 ## UK Bank Holiday Data
 
-The app uses public holiday data to decide when payments move earlier. By default the app uses England & Wales bank holidays for early-payment calculations. Scotland and Northern Ireland are available as additional reference overlays in the additional countries selector. 
+The app uses public holiday data to decide when payments move earlier. By default the app uses England & Wales bank holidays for early-payment calculations. Scotland and Northern Ireland are available as additional reference holidays in the additional countries selector.
 
 ## Troubleshooting
 
 ### In-app browser issues
 
-- Some features may not work in Facebook, Messenger, or other in-app browsers. Open the app in Chrome, Safari, or Edge for best results.
-
-### Printing problems
-
-- For best results, install the app or open in a standard browser.
-
-### Export not working
-
-- Ensure you are not in an in-app browser. Try Chrome, Safari, or Edge.
+- Some features like printing and exporting may not work in Facebook, Messenger, or other in-app browsers. For best results, install the app or open in a standard browser like Chrome, Safari, Firefox or Edge.
 
 ### How to clear saved data
 
