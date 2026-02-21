@@ -390,6 +390,16 @@
         }
     }
 
+    function extendNumberOfYearsByOne(): boolean {
+        if (numberOfYears >= 50) return false;
+        pendingCalendarFocusIso = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, "0")}-01`;
+        numberOfYears += 1;
+        numberOfYearsInput = String(numberOfYears);
+        persistInputs();
+        generate("range_extend_one_year");
+        return true;
+    }
+
     /**
      * Handle country selection change
      */
@@ -766,7 +776,7 @@
             >
                 <div>
                     <h1
-hen                         class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-2"
+                        class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-2"
                     >
                         UK State Pension Payment Calendar
                     </h1>
@@ -864,6 +874,7 @@ hen                         class="text-3xl sm:text-4xl font-bold tracking-tight
                             {years}
                             {applyStartYear}
                             {applyNumberOfYears}
+                            extendRangeByOneYear={extendNumberOfYearsByOne}
                             onPersist={persistInputs}
                             bind:selectedCountry
                             {additionalHolidays}

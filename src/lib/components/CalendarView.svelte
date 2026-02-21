@@ -1,7 +1,7 @@
 <script lang="ts">
     // CalendarView.svelte: Renders the multi-month calendar, export, and print controls
     import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
-    import { previousMonth, nextMonth } from "$lib/utils/calendarHelpers";
+    import { previousMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
     import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
     import type { Payment } from "$lib/pensionEngine";
@@ -41,6 +41,7 @@
     export let years: number[];
     export let applyStartYear: () => void;
     export let applyNumberOfYears: () => void;
+    export let extendRangeByOneYear: () => boolean = () => false;
     export let selectedCountry: string;
     export let additionalHolidays: Record<string, string>;
     export let isLoadingAdditionalHolidays: boolean = false;
@@ -229,18 +230,16 @@
     }
 
     function handleNextMonth() {
-        if (focusedIndex !== -1 && focusedIndex < allMonths.length - 1) {
-            const targetIndex = Math.min(allMonths.length - 1, focusedIndex + navStep);
+        if (focusedIndex !== -1 && focusedIndex + navStep < allMonths.length) {
+            const targetIndex = focusedIndex + navStep;
             const next = allMonths[targetIndex];
             currentMonth = next.month;
             currentYear = next.year;
             return;
         }
 
-        // Fallback (should rarely be hit)
-        const newMonth = nextMonth(currentMonth, currentYear);
-        currentMonth = newMonth.month;
-        currentYear = newMonth.year;
+        // At end of generated range: auto-extend by 1 year and regenerate.
+        extendRangeByOneYear();
     }
 
     /**

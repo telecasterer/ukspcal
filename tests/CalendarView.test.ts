@@ -186,4 +186,22 @@ describe("CalendarView", () => {
         todayButtons.forEach((btn) => expect(btn).toBeEnabled());
         await fireEvent.click(todayButtons[0]);
     });
+
+    it("auto-extends range when Next is clicked at the end", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const extendRangeByOneYear = vi.fn(() => true);
+
+        const { getAllByRole } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                currentMonth: 1,
+                currentYear: 2026,
+                extendRangeByOneYear,
+            },
+        });
+
+        await fireEvent.click(getAllByRole("button", { name: "Next" })[0]);
+        expect(extendRangeByOneYear).toHaveBeenCalledTimes(1);
+    });
 });
