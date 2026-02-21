@@ -232,7 +232,7 @@
     </TopBar>
     <!-- Main content area: full-width single section, no card or rounded corners -->
     <main
-        class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+        class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="w-full">
             <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-5 sm:p-6 space-y-2 help-top-container">
@@ -314,52 +314,6 @@
         scroll-margin-top: 4rem;
     }
 
-    /* Custom details/summary styling with animated chevron */
-    .custom-summary {
-        cursor: pointer;
-        transition: background-color 160ms ease, border-radius 160ms ease;
-    }
-    .custom-summary:hover { background-color: rgba(0,0,0,0.03); }
-    :global(.dark) .custom-summary:hover { background-color: rgba(255,255,255,0.03); }
-    /* Keep open summaries visually consistent with hover state */
-    details[open] > .custom-summary { background-color: rgba(0,0,0,0.03); }
-    :global(.dark) details[open] > .custom-summary { background-color: rgba(255,255,255,0.03); }
-    .custom-summary .chev {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transform: rotate(0deg);
-        transition: transform 160ms ease;
-        color: inherit;
-    }
-    details[open] > .custom-summary .chev {
-        transform: rotate(180deg);
-    }
-    /* Hide default marker */
-    summary::-webkit-details-marker { display: none; }
-    summary::marker { display: none; }
-
     /* Reduce vertical spacing for grouped container */
     .help-top-container > details + details { margin-top: 0.25rem; }
-
-    /* Make subsection summaries visually match H2 summaries */
-    .custom-details .custom-summary { gap: 0.5rem; }
-
-    /* Rounded corners for summary 'title' panels */
-    .custom-summary { border-radius: 0.5rem; }
-    /* Slightly smaller radius for nested subsections */
-    .custom-details .custom-summary { border-radius: 0.375rem; }
-    /* Ensure open summaries keep rounded background */
-    details[open] > .custom-summary { border-radius: 0.5rem; }
-    :global(.dark) details[open] > .custom-summary { border-radius: 0.5rem; }
-
-    /* No animation: use native details/summary behaviour */
-    .details-content {
-        display: block;
-        max-height: none;
-        opacity: 1;
-        transform: none;
-        overflow: visible;
-        transition: none;
-    }
 </style>

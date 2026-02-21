@@ -7,7 +7,7 @@ Thank you for considering contributing!
 - Fork the repository and create a feature branch
 - Make your changes with clear, well-commented code
 - Add or update tests as needed
-- Update documentation if your change affects usage or APIs
+- Update documentation in `doc/` if your change affects behavior, usage, or APIs
 - Open a pull request with a clear description and screenshots for UI changes
 
 ## Code Style

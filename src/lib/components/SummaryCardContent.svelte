@@ -273,16 +273,3 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
         </div>
     </details>
 </div>
-
-<style>
-    /* Shared details/summary styling is defined in src/app.css */
-    /* No animation: native details/summary behaviour for content */
-    .details-content {
-        display: block;
-        max-height: none;
-        opacity: 1;
-        transform: none;
-        overflow: visible;
-        transition: none;
-    }
-</style>

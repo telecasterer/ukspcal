@@ -18,6 +18,9 @@
 3. Update `RELEASE_NOTES.md` if user-visible changes are included.
 4. Verify the help page content renders correctly.
 5. Confirm build output: `npm run build`.
+6. Smoke-test calendar navigation:
+   - Change `Duration` and verify the header range updates.
+   - Click `Next` at the end of range and verify duration auto-extends by 1 year.
 
 ## Dependency updates
 

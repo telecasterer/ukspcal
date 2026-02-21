@@ -17,6 +17,12 @@ A free, privacy-first tool to calculate your UK State Pension payment dates, exp
 4. Review the calendar. Early payments (due to weekends/bank holidays) are highlighted.
 5. Export or print as needed.
 
+## Calendar navigation
+
+- `Previous` and `Next` move the calendar in 6-month steps.
+- If you click `Next` at the end of the generated range, the app automatically increases duration by 1 year and regenerates the schedule.
+- The duration selector always controls how many years are generated.
+
 ## Exports & downloads
 
 The app supports:
@@ -29,7 +35,7 @@ The app supports:
 
 - The calculator uses public holiday data from Nager.Date for regional holiday overlays.
 - If a payment date falls on a weekend or bank holiday, it moves earlier.
-- You can optionally overlay additional public holidays for another country using Nager.Date. The UK region selection (`ukRegion`) affects which regional bank holidays are applied — the app supports combined region codes (e.g., England & Wales uses `GB-ENG+GB-WLS`).
+- You can optionally overlay additional public holidays for another country using Nager.Date.
 - When additional holiday data is loading, the calendar options panel shows a loading status. If the fetch fails, an inline warning is shown and you can try again.
 
 ## Sharing

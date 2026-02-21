@@ -7,6 +7,7 @@ A modern, privacy-focused web app to calculate and export your UK State Pension 
 - Calculates UK State Pension age and payment schedules.
 - Supports official payment cycles (7-day, 14-day, 28-day, 91-day).
 - Adjusts payment dates for weekends and UK bank holidays.
+- Extends calendar duration automatically by 1 year if `Next` reaches the end of the generated range.
 - Optional holiday overlays using a public holiday API for non-UK calendars.
 - Exports payment schedules to CSV and ICS formats.
 - Works offline and can be installed as a PWA.

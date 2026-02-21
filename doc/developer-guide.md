@@ -28,18 +28,17 @@
 
 ## How data flows
 
-1. **Layout/load** (`src/routes/+layout.ts`) exposes holiday data to the app. The project uses the Nager.Date API (`src/lib/services/nagerHolidayService.ts`) for holiday data and region-specific filtering; the persisted `ukRegion` selection controls which UK region codes are applied.
+1. **Layout/load** (`src/routes/+layout.ts`) exposes initial holiday data to the app.
 2. **Main page** (`src/routes/+page.svelte`) loads persisted inputs, computes state pension age, and calls `generatePayments` from `src/lib/pensionEngine.ts`.
-3. **Calendar + summary UI** renders payments, highlights early payments, and supports CSV/ICS export.
+3. **Calendar + summary UI** renders payments, highlights early payments, supports CSV/ICS export, and auto-extends duration by one year when `Next` reaches the end of range.
 4. **Help page** (`src/routes/help/+page.svelte`) renders markdown with dynamic bank holiday placeholders.
 
 ## Core logic modules
 
 - `src/lib/pensionEngine.ts` — Payment schedule rules and holiday adjustment logic.
-- `src/lib/fetchBankHolidays.ts` — (unused) placeholder for alternate holiday fetchers.
- - `src/lib/services/nagerHolidayService.ts` — Holiday overlay using Nager.Date with region filtering.
+- `src/lib/services/nagerHolidayService.ts` — Holiday overlay using Nager.Date.
 
-Note: UK region selection (`ukRegion`) is persisted in local storage and affects which region-specific UK holidays are applied (England & Wales combines both ENG and WLS region codes).
+Note: UK bank-holiday adjustments use the app default baseline for England & Wales (`GB-ENG+GB-WLS`). There is no user-facing UK region selector.
 - `src/lib/utils/` — Date formatting, export helpers, persistence, and PWA helpers.
 
 ## Adding features

@@ -2,14 +2,19 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render } from "@testing-library/svelte";
+import { waitFor } from "@testing-library/dom";
 import type { DateFormat } from "../src/lib/utils/dateFormatting";
 
 vi.mock("../src/lib/utils/inAppBrowser", () => ({
     detectFacebookInAppBrowserFromWindow: vi.fn(),
 }));
+vi.mock("../src/lib/utils/clipboard", () => ({
+    copyLinkToClipboard: vi.fn(async () => true),
+}));
 
 import CalendarView from "../src/lib/components/CalendarView.svelte";
 import { detectFacebookInAppBrowserFromWindow } from "../src/lib/utils/inAppBrowser";
+import { copyLinkToClipboard } from "../src/lib/utils/clipboard";
 
 const baseProps = {
     result: {
@@ -68,6 +73,73 @@ describe("CalendarView", () => {
         expect(await findByText("Printing not available")).toBeInTheDocument();
     });
 
+    it("prints in normal browsers and toggles print-only grid with print events", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const printSpy = vi.spyOn(window, "print").mockImplementation(() => undefined);
+
+        const { container, getByRole } = render(CalendarView, {
+            props: baseProps,
+        });
+
+        await fireEvent.click(getByRole("button", { name: "Print calendar" }));
+
+        await waitFor(() => {
+            expect(printSpy).toHaveBeenCalledTimes(1);
+            expect(container.querySelector(".print-only")).toBeInTheDocument();
+        });
+
+        window.dispatchEvent(new Event("afterprint"));
+        await waitFor(() => {
+            expect(container.querySelector(".print-only")).not.toBeInTheDocument();
+            expect(container.querySelector(".screen-only")).toBeInTheDocument();
+        });
+    });
+
+    it("shows fallback copy message when print throws and copy fails", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        vi.spyOn(window, "print").mockImplementation(() => {
+            throw new Error("print blocked");
+        });
+        vi.mocked(copyLinkToClipboard).mockResolvedValue(false);
+
+        const { getByRole, findByText } = render(CalendarView, {
+            props: baseProps,
+        });
+
+        await fireEvent.click(getByRole("button", { name: "Print calendar" }));
+        expect(await findByText("Printing not available")).toBeInTheDocument();
+
+        const copyLinkText = await findByText("Copy link");
+        await fireEvent.click(copyLinkText.closest("button") ?? copyLinkText);
+        expect(
+            await findByText(
+                "Couldn't copy automatically — please copy the address bar URL."
+            )
+        ).toBeInTheDocument();
+    });
+
+    it("shows success copy message when print throws and copy succeeds", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        vi.spyOn(window, "print").mockImplementation(() => {
+            throw new Error("print blocked");
+        });
+        vi.mocked(copyLinkToClipboard).mockResolvedValue(true);
+
+        const { getByRole, findByText } = render(CalendarView, {
+            props: baseProps,
+        });
+
+        await fireEvent.click(getByRole("button", { name: "Print calendar" }));
+        expect(await findByText("Printing not available")).toBeInTheDocument();
+
+        const copyLinkText = await findByText("Copy link");
+        await fireEvent.click(copyLinkText.closest("button") ?? copyLinkText);
+        expect(await findByText("Link copied.")).toBeInTheDocument();
+    });
+
     it("shows loading status for additional holidays", () => {
         const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
         detectMock.mockReturnValue(false);
@@ -81,6 +153,53 @@ describe("CalendarView", () => {
         });
 
         expect(getByText("Loading additional holidays...")).toBeInTheDocument();
+    });
+
+    it("enables additional holidays from detected country and can disable again", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const onCountryChange = vi.fn();
+        const onPersist = vi.fn();
+
+        const { getByLabelText } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                selectedCountry: "none",
+                detectedCountry: "DE",
+                onCountryChange,
+                onPersist,
+            },
+        });
+
+        const checkbox = getByLabelText("Additional holidays");
+        await fireEvent.click(checkbox);
+        expect(onCountryChange).toHaveBeenCalledWith("DE");
+        expect(onPersist).toHaveBeenCalled();
+
+        await fireEvent.click(checkbox);
+        expect(onCountryChange).toHaveBeenCalledWith("none");
+    });
+
+    it("uses FR fallback when detected country is none", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const onCountryChange = vi.fn();
+        const onPersist = vi.fn();
+
+        const { getByLabelText } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                selectedCountry: "none",
+                detectedCountry: "none",
+                onCountryChange,
+                onPersist,
+            },
+        });
+
+        const checkbox = getByLabelText("Additional holidays");
+        await fireEvent.click(checkbox);
+        expect(onCountryChange).toHaveBeenCalledWith("FR");
+        expect(onPersist).toHaveBeenCalled();
     });
 
     it("shows additional holiday load error", () => {
@@ -203,5 +322,104 @@ describe("CalendarView", () => {
 
         await fireEvent.click(getAllByRole("button", { name: "Next" })[0]);
         expect(extendRangeByOneYear).toHaveBeenCalledTimes(1);
+    });
+
+    it("calls start year and duration apply handlers on select input/change", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const applyStartYear = vi.fn();
+        const applyNumberOfYears = vi.fn();
+
+        const { getByLabelText } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                applyStartYear,
+                applyNumberOfYears,
+            },
+        });
+
+        const startYear = getByLabelText("Start year");
+        const duration = getByLabelText("Duration");
+
+        await fireEvent.input(startYear, { target: { value: "2026" } });
+        await fireEvent.change(startYear, { target: { value: "2026" } });
+        await fireEvent.input(duration, { target: { value: "2" } });
+        await fireEvent.change(duration, { target: { value: "2" } });
+
+        expect(applyStartYear).toHaveBeenCalled();
+        expect(applyNumberOfYears).toHaveBeenCalled();
+    });
+
+    it("calls onCountryChange and onPersist when country selection changes", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const onCountryChange = vi.fn();
+        const onPersist = vi.fn();
+
+        const { getByLabelText } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                selectedCountry: "FR",
+                onCountryChange,
+                onPersist,
+            },
+        });
+
+        const countrySelect = getByLabelText("Additional holidays")
+            .closest("div")
+            ?.querySelector("#country-holidays") as HTMLSelectElement;
+        expect(countrySelect).toBeInTheDocument();
+
+        await fireEvent.change(countrySelect, { target: { value: "DE" } });
+        expect(onCountryChange).toHaveBeenCalledWith("DE");
+        expect(onPersist).toHaveBeenCalled();
+    });
+
+    it("auto-extends from both navigation rows when each is at range end", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const extendRangeByOneYear = vi.fn(() => true);
+
+        const { getAllByRole } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                currentMonth: 1,
+                currentYear: 2026,
+                extendRangeByOneYear,
+            },
+        });
+
+        const nextButtons = getAllByRole("button", { name: "Next" });
+        await fireEvent.click(nextButtons[0]);
+        await fireEvent.click(nextButtons[1]);
+        expect(extendRangeByOneYear).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not auto-extend while next step is still available", async () => {
+        const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
+        detectMock.mockReturnValue(false);
+        const extendRangeByOneYear = vi.fn(() => true);
+
+        const monthlyPayments = Array.from({ length: 12 }, (_, i) => {
+            const month = String(i + 1).padStart(2, "0");
+            return {
+                due: `2026-${month}-05`,
+                paid: `2026-${month}-05`,
+                early: false,
+            };
+        });
+
+        const { getAllByRole } = render(CalendarView, {
+            props: {
+                ...baseProps,
+                payments: monthlyPayments,
+                currentMonth: 0,
+                currentYear: 2026,
+                extendRangeByOneYear,
+            },
+        });
+
+        await fireEvent.click(getAllByRole("button", { name: "Next" })[0]);
+        expect(extendRangeByOneYear).not.toHaveBeenCalled();
     });
 });

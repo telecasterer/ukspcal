@@ -2,8 +2,14 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render } from "@testing-library/svelte";
+import { waitFor } from "@testing-library/dom";
 import { tick } from "svelte";
 import Page from "../src/routes/+page.svelte";
+import { fetchHolidaysForCountryAndYears } from "../src/lib/services/nagerHolidayService";
+
+vi.mock("../src/lib/services/nagerHolidayService", () => ({
+    fetchHolidaysForCountryAndYears: vi.fn(async () => ({})),
+}));
 
 const PERSIST_KEY = "ukspcal.inputs.v1";
 
@@ -65,6 +71,58 @@ describe("+page persistence", () => {
         expect(finalParsed.ni).toBe("29B");
         expect(finalParsed.dob).toBe("1956-03-15");
         // showWeekends has been removed from persisted inputs
+    });
+
+    it("updates calendar header range when duration changes", async () => {
+        localStorage.setItem(
+            PERSIST_KEY,
+            JSON.stringify({
+                ni: "29B",
+                dob: "1956-03-15",
+                startYear: 2026,
+                numberOfYears: 1,
+                cycleDays: 28,
+                showBankHolidays: true,
+                csvDateFormat: "dd/mm/yyyy",
+                icsEventName: "UK State Pension Payment",
+                icsCategory: "Finance",
+                icsColor: "#22c55e",
+            })
+        );
+
+        const { container, getByLabelText } = render(Page, {
+            props: {
+                bankHolidays: {} as Record<string, string>,
+            },
+        });
+
+        await waitFor(() => {
+            expect(container.textContent).toContain("Payment calendar");
+            expect(container.textContent).toContain("payments ·");
+        });
+
+        const getHeaderText = () =>
+            container.textContent?.match(/\d+\s+payments\s+·\s+[A-Za-z]{3}\s+\d{4}\s+–\s+[A-Za-z]{3}\s+\d{4}/)?.[0] ??
+            "";
+        const endYearFrom = (text: string): number => {
+            const m = text.match(/–\s+[A-Za-z]{3}\s+(\d{4})/);
+            return m ? Number.parseInt(m[1], 10) : Number.NaN;
+        };
+
+        const before = getHeaderText();
+        const beforeEndYear = endYearFrom(before);
+        expect(Number.isFinite(beforeEndYear)).toBe(true);
+
+        const durationSelect = getByLabelText("Duration") as HTMLSelectElement;
+        await fireEvent.input(durationSelect, { target: { value: "5" } });
+        await fireEvent.change(durationSelect, { target: { value: "5" } });
+
+        await waitFor(() => {
+            const after = getHeaderText();
+            const afterEndYear = endYearFrom(after);
+            expect(Number.isFinite(afterEndYear)).toBe(true);
+            expect(afterEndYear).toBeGreaterThan(beforeEndYear);
+        });
     });
 
     it("ignores invalid persisted values and writes a sane payload on commit", async () => {
@@ -137,5 +195,18 @@ describe("+page persistence", () => {
         // There should be no UK Region select in the UI anymore.
         const regionSelect = queryByLabelText(/UK Region/i);
         expect(regionSelect).toBeNull();
+    });
+
+    it("uses mocked holiday service in page tests (no real network)", async () => {
+        render(Page, {
+            props: {
+                bankHolidays: {} as Record<string, string>,
+            },
+        });
+        await tick();
+        await tick();
+
+        const holidayFetchMock = vi.mocked(fetchHolidaysForCountryAndYears);
+        expect(holidayFetchMock).toHaveBeenCalled();
     });
 });

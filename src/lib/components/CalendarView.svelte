@@ -3,6 +3,7 @@
     import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
     import { previousMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
+    import CalendarPager from "./CalendarPager.svelte";
     import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
     import type { Payment } from "$lib/pensionEngine";
     import type { PensionResult } from "$lib/pensionEngine";
@@ -676,46 +677,15 @@
         on:close={() => (reminderDialogOpen = false)}
     />
 
-    <div class="w-full calendar-controls">
-        <div
-            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3"
-        >
-            <div class="w-full sm:w-auto flex items-center justify-center gap-2">
-                <Button
-                    onclick={handlePreviousMonth}
-                    color="light"
-                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
-                    disabled={focusedIndex <= 0}
-                >
-                    Previous
-                </Button>
-                <div
-                    class="px-2.5 h-8 inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs min-[390px]:text-sm font-semibold text-gray-900 dark:text-white"
-                >
-                    {visibleRangeLabel}
-                </div>
-                <Button
-                    onclick={handleNextMonth}
-                    color="light"
-                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
-                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
-                >
-                    Next
-                </Button>
-                <Button
-                    onclick={handleJumpToToday}
-                    color="light"
-                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
-                    disabled={!canJumpToToday}
-                    title={canJumpToToday
-                        ? "Jump to current month"
-                        : "Current month is outside this calendar range"}
-                >
-                    Today
-                </Button>
-            </div>
-        </div>
-    </div>
+    <CalendarPager
+        {visibleRangeLabel}
+        {canJumpToToday}
+        canGoPrevious={focusedIndex > 0}
+        canGoNext={focusedIndex !== -1 && focusedIndex < allMonths.length - 1}
+        onPrevious={handlePreviousMonth}
+        onNext={handleNextMonth}
+        onToday={handleJumpToToday}
+    />
 
     <!-- --- Multiple Month Calendar Grid (screen) --- -->
     {#if !renderPrintAllMonths}
@@ -758,46 +728,15 @@
         </div>
     {/if}
 
-    <div class="w-full calendar-controls">
-        <div
-            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3"
-        >
-            <div class="w-full sm:w-auto flex items-center justify-center gap-2">
-                <Button
-                    onclick={handlePreviousMonth}
-                    color="light"
-                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
-                    disabled={focusedIndex <= 0}
-                >
-                    Previous
-                </Button>
-                <div
-                    class="px-2.5 h-8 inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs min-[390px]:text-sm font-semibold text-gray-900 dark:text-white"
-                >
-                    {visibleRangeLabel}
-                </div>
-                <Button
-                    onclick={handleNextMonth}
-                    color="light"
-                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
-                    disabled={focusedIndex === -1 || focusedIndex >= allMonths.length - 1}
-                >
-                    Next
-                </Button>
-                <Button
-                    onclick={handleJumpToToday}
-                    color="light"
-                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
-                    disabled={!canJumpToToday}
-                    title={canJumpToToday
-                        ? "Jump to current month"
-                        : "Current month is outside this calendar range"}
-                >
-                    Today
-                </Button>
-            </div>
-        </div>
-    </div>
+    <CalendarPager
+        {visibleRangeLabel}
+        {canJumpToToday}
+        canGoPrevious={focusedIndex > 0}
+        canGoNext={focusedIndex !== -1 && focusedIndex < allMonths.length - 1}
+        onPrevious={handlePreviousMonth}
+        onNext={handleNextMonth}
+        onToday={handleJumpToToday}
+    />
 
     <!-- --- Print Unsupported Modal (Facebook in-app browser) --- -->
     <Modal title="Printing not available" bind:open={printUnsupportedOpen} size="md">
