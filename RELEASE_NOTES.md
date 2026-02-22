@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-22 (v0.2.3)
+
+### Fixes
+
+- PWA manifest and image updates (c262c0f)
+
 ## 2026-02-22 (v0.2.2)
 
 ### Fixes
