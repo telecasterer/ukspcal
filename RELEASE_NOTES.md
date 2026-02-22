@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-22 (v0.2.0)
+
+### Features
+
+- added percentage of full payment information to first payment information (5b89bd3)
+
 ## 2026-02-22 (v0.1.0)
 
 ### Features
