@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-22 (v0.3.0)
+
+### Features
+
+- add in-app privacy policy page and links; ignore Android build artifacts (dd27893)
+
 ## 2026-02-22 (v0.2.4)
 
 ### Fixes
