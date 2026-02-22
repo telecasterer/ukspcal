@@ -94,8 +94,13 @@ export default defineConfig({
                 "favicon.ico",
                 "icon-192.png",
                 "icon-512.png",
+                "mobile-home.png",
+                "mobile-summary.png",
+                "mobile-calendar.png",
+                "desktop-home.png",
             ],
             manifest: {
+                id: "/",
                 name: "UK State Pension Calendar",
                 short_name: "UKSPCal",
                 description: "UK State Pension payment calendar generator",
@@ -104,6 +109,7 @@ export default defineConfig({
                 display: "standalone",
                 background_color: "#ffffff",
                 theme_color: "#2563eb",
+                categories: ["finance", "utilities", "productivity"],
                 icons: [
                     {
                         src: "/icon-192.png",
@@ -128,6 +134,50 @@ export default defineConfig({
                         sizes: "any",
                         type: "image/svg+xml",
                         purpose: "maskable",
+                    },
+                ],
+                shortcuts: [
+                    {
+                        name: "Open Calculator",
+                        short_name: "Calculator",
+                        description: "Open the pension calculator",
+                        url: "/",
+                    },
+                    {
+                        name: "Help",
+                        short_name: "Help",
+                        description: "Open help and install guidance",
+                        url: "/help",
+                    },
+                ],
+                screenshots: [
+                    {
+                        src: "/mobile-home.png",
+                        sizes: "1080x2111",
+                        type: "image/png",
+                        form_factor: "narrow",
+                        label: "Home screen with pension input form",
+                    },
+                    {
+                        src: "/mobile-summary.png",
+                        sizes: "1080x2263",
+                        type: "image/png",
+                        form_factor: "narrow",
+                        label: "Schedule summary and payment dates list",
+                    },
+                    {
+                        src: "/mobile-calendar.png",
+                        sizes: "1080x2116",
+                        type: "image/png",
+                        form_factor: "narrow",
+                        label: "Monthly payment calendar view",
+                    },
+                    {
+                        src: "/desktop-home.png",
+                        sizes: "1074x598",
+                        type: "image/png",
+                        form_factor: "wide",
+                        label: "Desktop layout overview",
                     },
                 ],
             },
