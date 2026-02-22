@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-22 (v0.2.2)
+
+### Fixes
+
+- updates to PWA config to improve iOS installs (05b896f)
+
 ## 2026-02-22 (v0.2.1)
 
 ### Fixes
