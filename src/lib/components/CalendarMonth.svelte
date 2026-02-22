@@ -182,10 +182,7 @@
         if (selectedCountry === "none") return false;
         return calendarDays.some((day) => {
             if (!day) return false;
-            const additionalHoliday = getAdditionalHolidayForDate(day);
-            const holiday = showBankHolidays ? getBankHolidayForDate(day) : null;
-            const payment = getPaymentForDate(day);
-            return !!additionalHoliday && !holiday && !payment;
+            return !!getAdditionalHolidayForDate(day);
         });
     });
     const hasLegendItems = $derived(

@@ -228,9 +228,7 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
         </summary>
 
         <div class="details-content">
-            <p class="mt-2 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-300">
-                List actions apply to this dates list only. For full calendar files/views, use Calendar: Export and Print.
-            </p>
+            
             <div class="mt-2 flex flex-wrap gap-2">
                 <Button color="light" size="xs" onclick={handleCopyPaymentList}>
                     Copy list
