@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-22 (v0.2.1)
+
+### Fixes
+
+- calendar legend was missing for additional countries in some cases (4d8eb92)
+
 ## 2026-02-22 (v0.2.0)
 
 ### Features
