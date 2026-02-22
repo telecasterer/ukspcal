@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-22 (v0.2.4)
+
+### Fixes
+
+- more PWA tweaks for stores (377c393)
+
 ## 2026-02-22 (v0.2.3)
 
 ### Fixes
