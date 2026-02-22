@@ -755,6 +755,7 @@
                     </p>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         Privacy: your details stay on this device and are not sent to a server.
+                        Read our <a href="/privacy" class="underline hover:no-underline">Privacy Policy</a>.
                     </p>
                 </div>
             </div>

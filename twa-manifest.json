@@ -1,0 +1,51 @@
+{
+  "packageId": "app.vercel.ukspcal.twa",
+  "host": "ukspcal.vercel.app",
+  "name": "UK State Pension Age and Payments Calendar",
+  "launcherName": "UKSPCal",
+  "display": "standalone",
+  "themeColor": "#2563EB",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#7CC0FF",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://ukspcal.vercel.app/icon-512.png",
+  "maskableIconUrl": "https://ukspcal.vercel.app/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "/home/paul/projects/ukspcal/android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://ukspcal.vercel.app/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://ukspcal.vercel.app/",
+  "minSdkVersion": 21,
+  "orientation": "any",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "appVersion": "1"
+}

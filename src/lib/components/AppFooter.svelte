@@ -12,6 +12,13 @@
         <div
             class="flex flex-col min-[390px]:flex-row min-[390px]:items-center gap-2 min-[390px]:gap-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/70 px-2 py-1.5 self-start"
         >
+            <a
+                href="/privacy"
+                class="text-sm text-gray-700 hover:underline dark:text-gray-200"
+            >
+                Privacy Policy
+            </a>
+
             <!-- Feedback link -->
             <a
                 href="https://tally.so/r/q4Vbq2"

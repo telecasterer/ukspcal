@@ -6,10 +6,12 @@ describe("SEO - Meta Tags and Schema", () => {
     const layoutPath = join(process.cwd(), "src/routes/+layout.svelte");
     const mainPagePath = join(process.cwd(), "src/routes/+page.svelte");
     const helpPagePath = join(process.cwd(), "src/routes/help/+page.svelte");
+    const privacyPagePath = join(process.cwd(), "src/routes/privacy/+page.svelte");
 
     const layoutContent = readFileSync(layoutPath, "utf-8");
     const mainPageContent = readFileSync(mainPagePath, "utf-8");
     const helpPageContent = readFileSync(helpPagePath, "utf-8");
+    const privacyPageContent = readFileSync(privacyPagePath, "utf-8");
 
     it("should have base meta description tag", () => {
         expect(layoutContent).toContain('name="description"');
@@ -42,6 +44,10 @@ describe("SEO - Meta Tags and Schema", () => {
         expect(helpPageContent).toContain("https://ukspcal.vercel.app/help");
     });
 
+    it("should have canonical link on privacy page", () => {
+        expect(privacyPageContent).toContain("https://ukspcal.vercel.app/privacy");
+    });
+
     it("should have page-specific title on main page", () => {
         expect(mainPageContent).toContain(
             "<title>UK State Pension Age & Payment Calendar"
@@ -51,6 +57,12 @@ describe("SEO - Meta Tags and Schema", () => {
     it("should have page-specific title on help page", () => {
         expect(helpPageContent).toContain(
             "<title>Help - UK State Pension Calculator"
+        );
+    });
+
+    it("should have page-specific title on privacy page", () => {
+        expect(privacyPageContent).toContain(
+            "<title>Privacy Policy - UK State Pension Calendar"
         );
     });
 

@@ -15,6 +15,12 @@ export async function GET() {
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://ukspcal.vercel.app/privacy</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>`.trim();
 
     return new Response(sitemap, {

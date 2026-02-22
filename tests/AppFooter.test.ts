@@ -43,6 +43,13 @@ describe("AppFooter", () => {
         expect(feedbackLink).toHaveTextContent("Send Feedback");
     });
 
+    it("has a privacy policy link", () => {
+        const { container, getByText } = render(AppFooter);
+        const privacyLink = container.querySelector('a[href="/privacy"]');
+        expect(privacyLink).toBeInTheDocument();
+        expect(getByText("Privacy Policy")).toBeInTheDocument();
+    });
+
     it("feedback link opens in new tab", () => {
         const { container } = render(AppFooter);
         const feedbackLink = container.querySelector(

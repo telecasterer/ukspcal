@@ -23,6 +23,7 @@ The tool is designed to help you plan ahead and keep your likely payment dates i
 - **Your data stays on your device.** Nothing you enter is sent to a server.
 - **Settings are saved locally** in your browser storage so the app remembers your choices next time.
 - To remove saved data, use **Restore defaults** in the input form.
+- Full policy: [Privacy Policy](/privacy).
 
 ## Using the App
 

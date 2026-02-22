@@ -39,3 +39,15 @@ coverage/
 src/routes/help/help.old.md
 todo.md
 .github/copilot-instructions.md
+
+# Android / TWA local build outputs and secrets
+.gradle/
+local.properties
+app/build/
+*.jks
+*.keystore
+*.aab
+*.apk
+*.idsig
+manifest-checksum.txt
+artifacts/
