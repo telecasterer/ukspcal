@@ -35,6 +35,7 @@
         }
     </script>
     <link rel="icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- Base Meta Tags -->
@@ -49,6 +50,10 @@
         content="UK State Pension, State Pension age, pension payment dates, National Insurance, pension calculator, bank holiday adjustments, CSV export, ICS export"
     />
     <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="UKSPCal" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta
         name="google-site-verification"
         content="dcA8PMyEy_4d5j2XzWexJmLUW-vg-bY_AmgNrQHyMBU"
