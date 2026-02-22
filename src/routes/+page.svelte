@@ -751,7 +751,7 @@
                         Check your expected payment dates using your NI code and date of birth.
                     </p>
                     <p class="text-sm text-gray-600 dark:text-gray-300">
-                        We also estimate your State Pension age and let you print or export your calendar.
+                        We also show your State Pension age and let you print or export your calendar.
                     </p>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         Privacy: your details stay on this device and are not sent to a server.

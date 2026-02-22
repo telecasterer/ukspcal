@@ -130,6 +130,11 @@
         color: #fff !important;
     }
 
+    .calendar-day.today {
+        outline: 2px solid #0ea5e9 !important;
+        outline-offset: -2px !important;
+    }
+
     /* Ensure day numbers and flex containers have transparent backgrounds */
     .calendar-day .text-sm,
     .calendar-day > div {

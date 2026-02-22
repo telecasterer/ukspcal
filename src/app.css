@@ -41,6 +41,14 @@
     .calendar-day.additional-holiday {
     }
 
+    .calendar-day.today {
+        @apply outline outline-2 outline-sky-500 dark:outline-sky-300 outline-offset-[-2px];
+    }
+
+    .calendar-day .today-number {
+        @apply inline-flex items-center justify-center rounded-full border border-current px-1 leading-tight;
+    }
+
     /* Subtle shading for non-working weekend days (screen only) */
     .calendar-day.weekend {
         @apply bg-gray-50 dark:bg-gray-700;

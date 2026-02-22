@@ -101,6 +101,7 @@
 
         const iso = getIsoForDay(day);
         const parts: string[] = [formatIsoForAria(iso)];
+        if (iso === todayIso) parts.push("Today.");
 
         if (payment) {
             if (payment.early && payment.paid !== payment.due) {
@@ -156,12 +157,50 @@
     const selectedCountryName = $derived.by(
         () => countryCodeToName[selectedCountry] ?? selectedCountry
     );
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const hasPaymentInMonth = $derived.by(() =>
+        calendarDays.some((day) => {
+            if (!day) return false;
+            const payment = getPaymentForDate(day);
+            return !!payment && !payment.early;
+        })
+    );
+    const hasEarlyPaymentInMonth = $derived.by(() =>
+        calendarDays.some((day) => {
+            if (!day) return false;
+            return !!getPaymentForDate(day)?.early;
+        })
+    );
+    const hasHolidayInMonth = $derived.by(() => {
+        if (!showBankHolidays) return false;
+        return calendarDays.some((day) => {
+            if (!day) return false;
+            return !!getBankHolidayForDate(day) && !getPaymentForDate(day);
+        });
+    });
+    const hasAdditionalHolidayInMonth = $derived.by(() => {
+        if (selectedCountry === "none") return false;
+        return calendarDays.some((day) => {
+            if (!day) return false;
+            const additionalHoliday = getAdditionalHolidayForDate(day);
+            const holiday = showBankHolidays ? getBankHolidayForDate(day) : null;
+            const payment = getPaymentForDate(day);
+            return !!additionalHoliday && !holiday && !payment;
+        });
+    });
+    const hasLegendItems = $derived(
+        hasPaymentInMonth ||
+            hasEarlyPaymentInMonth ||
+            hasHolidayInMonth ||
+            hasAdditionalHolidayInMonth
+    );
 
     /**
      * Compute extra CSS classes for a calendar day cell
      */
     function getDayExtraClasses(
         day: number | null,
+        isToday: boolean,
         weekend: boolean,
         payment: Payment | null,
         holiday: string | null,
@@ -169,6 +208,7 @@
     ): string {
         return [
             !day ? "empty" : "",
+            isToday ? "today" : "",
             weekend && day && !payment && !holiday ? "weekend" : "",
             payment && !payment.early ? "payment" : "",
             payment?.early ? "early-payment" : "",
@@ -361,10 +401,11 @@
                 ? getAdditionalHolidayForDate(day)
                 : null}
             {@const weekend = day ? isWeekendDay(day) : false}
+            {@const isToday = day ? getIsoForDay(day) === todayIso : false}
 
             <!-- Calendar day cell: highlights payment, early, holiday, weekend -->
             <div
-                class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${(payment || holiday || additionalHoliday) && day ? "cursor-pointer" : ""} ${getDayExtraClasses(day, weekend, payment, holiday, additionalHoliday)}`}
+                class={`calendar-day relative aspect-square border border-gray-200 dark:border-gray-600 p-2 flex flex-col justify-between bg-white dark:bg-gray-800 hover:ring-2 hover:ring-blue-400 transition overflow-hidden ${(payment || holiday || additionalHoliday) && day ? "cursor-pointer" : ""} ${getDayExtraClasses(day, isToday, weekend, payment, holiday, additionalHoliday)}`}
                 title={holiday && !payment
                     ? holiday
                     : additionalHoliday
@@ -412,7 +453,7 @@
             >
                 {#if day}
                     <div class="flex items-start">
-                        <div class="text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0">{day}</div>
+                        <div class={`text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0 ${isToday ? "today-number" : ""}`}>{day}</div>
                     </div>
                     {#if additionalHoliday && !payment && flagSvg}
                         <img
@@ -445,43 +486,43 @@
         </div>
     {/if}
 
-    <!-- Month Legend -->
-    <div
-        class="px-3 py-2 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-300 dark:border-gray-700 space-y-1"
-    >
-        <div class="flex flex-wrap gap-2 justify-center">
-            <span class="inline-flex items-center gap-1">
-                <span class="w-3 h-3 rounded legend-item payment"></span>
-                <span>Payment</span>
-            </span>
-            <span class="inline-flex items-center gap-1">
-                <span class="w-3 h-3 rounded legend-item early-payment"></span>
-                <span>Early</span>
-            </span>
-            {#if showBankHolidays}
-                <span class="inline-flex items-center gap-1">
-                    <span class="w-3 h-3 rounded legend-item holiday"></span>
-                    <span>UK Holiday</span>
-                </span>
-            {/if}
-            <span class="inline-flex items-center gap-1">
-                <span
-                    class="w-3 h-3 rounded legend-item weekend border border-gray-300"
-                ></span>
-                <span>Weekend</span>
-            </span>
-            {#if selectedCountry !== "none"}
-                <span class="inline-flex items-center gap-1">
-                    {#if flagSvg}
-                        <img
-                            src={flagSvg}
-                            alt={`${selectedCountryName} flag`}
-                            class="w-4 h-4 border border-gray-200"
-                        />
-                    {/if}
-                    <span>{selectedCountryName} Holiday</span>
-                </span>
-            {/if}
+    {#if hasLegendItems}
+        <!-- Month Legend -->
+        <div
+            class="px-3 py-2 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300 border-t border-gray-300 dark:border-gray-700 space-y-1"
+        >
+            <div class="flex flex-wrap gap-2 justify-center">
+                {#if hasPaymentInMonth}
+                    <span class="inline-flex items-center gap-1">
+                        <span class="w-3 h-3 rounded legend-item payment"></span>
+                        <span>Payment</span>
+                    </span>
+                {/if}
+                {#if hasEarlyPaymentInMonth}
+                    <span class="inline-flex items-center gap-1">
+                        <span class="w-3 h-3 rounded legend-item early-payment"></span>
+                        <span>Early</span>
+                    </span>
+                {/if}
+                {#if hasHolidayInMonth}
+                    <span class="inline-flex items-center gap-1">
+                        <span class="w-3 h-3 rounded legend-item holiday"></span>
+                        <span>UK Holiday</span>
+                    </span>
+                {/if}
+                {#if hasAdditionalHolidayInMonth}
+                    <span class="inline-flex items-center gap-1">
+                        {#if flagSvg}
+                            <img
+                                src={flagSvg}
+                                alt={`${selectedCountryName} flag`}
+                                class="w-4 h-4 border border-gray-200"
+                            />
+                        {/if}
+                        <span>{selectedCountryName} Holiday</span>
+                    </span>
+                {/if}
+            </div>
         </div>
-    </div>
+    {/if}
 </div>
