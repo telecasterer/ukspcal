@@ -23,6 +23,7 @@ Currently released app: https://ukspcal.vercel.app
 - Developer guide: doc/developer-guide.md
 - Component reference: doc/components.md
 - Maintenance guide: doc/maintenance.md
+- Store packaging guide: doc/store-release.md
 
 ## Develop
 

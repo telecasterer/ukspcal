@@ -101,14 +101,19 @@ export default defineConfig({
             ],
             manifest: {
                 id: "/",
-                name: "UK State Pension Calendar",
+                name: "UK State Pension Age and Payments Calendar",
                 short_name: "UKSPCal",
-                description: "UK State Pension payment calendar generator",
+                description:
+                    "UK State Pension age and payments calendar. Show your State Pension age and let you print or export your payments calendar.",
                 start_url: "/",
                 scope: "/",
+                lang: "en-GB",
+                dir: "ltr",
                 display: "standalone",
+                display_override: ["standalone", "minimal-ui", "browser"],
                 background_color: "#ffffff",
                 theme_color: "#2563eb",
+                prefer_related_applications: false,
                 categories: ["finance", "utilities", "productivity"],
                 icons: [
                     {
@@ -118,10 +123,22 @@ export default defineConfig({
                         purpose: "any",
                     },
                     {
+                        src: "/icon-192.png",
+                        sizes: "192x192",
+                        type: "image/png",
+                        purpose: "maskable",
+                    },
+                    {
                         src: "/icon-512.png",
                         sizes: "512x512",
                         type: "image/png",
                         purpose: "any",
+                    },
+                    {
+                        src: "/icon-512.png",
+                        sizes: "512x512",
+                        type: "image/png",
+                        purpose: "maskable",
                     },
                     {
                         src: "/favicon.svg",
@@ -138,9 +155,9 @@ export default defineConfig({
                 ],
                 shortcuts: [
                     {
-                        name: "Open Calculator",
-                        short_name: "Calculator",
-                        description: "Open the pension calculator",
+                        name: "Open Pension Calendar",
+                        short_name: "Calendar",
+                        description: "Open the pension payment calendar",
                         url: "/",
                     },
                     {
