@@ -49,6 +49,24 @@ function formatDate(iso: string, timeZone?: string): string {
 
 // Pre-formatted build info for UI/debug
 export const buildInfoFormatted = {
+    release: /^\d+\.\d+\.\d+$/.test(buildInfo.version)
+        ? `v${buildInfo.version}`
+        : buildInfo.version,
+    commitShort:
+        buildInfo.commit && buildInfo.commit !== "unknown"
+            ? buildInfo.commit.slice(0, 7)
+            : "unknown",
     commitDate: formatDate(buildInfo.commitDate, "UTC"),
     buildTime: formatDate(buildInfo.buildTime, "UTC"),
+    summary: (() => {
+        const release = /^\d+\.\d+\.\d+$/.test(buildInfo.version)
+            ? `v${buildInfo.version}`
+            : buildInfo.version;
+        const commitShort =
+            buildInfo.commit && buildInfo.commit !== "unknown"
+                ? buildInfo.commit.slice(0, 7)
+                : "unknown";
+        const commitDate = formatDate(buildInfo.commitDate, "UTC");
+        return `${release} (${commitShort}, ${commitDate})`;
+    })(),
 };

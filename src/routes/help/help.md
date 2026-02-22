@@ -114,7 +114,6 @@ Useful details to include:
 |                 |                           |
 | --------------- | ------------------------- |
 | **Developer**   | Paul Robins               |
-| **Version**     | {{BUILDINFO_VERSION}}     |
-| **Commit**      | {{BUILDINFO_COMMIT}}      |
-| **Commit date** | {{BUILDINFO_COMMIT_DATE}} |
+| **Release**     | {{BUILDINFO_RELEASE}}     |
+| **Build**       | {{BUILDINFO_SUMMARY}}     |
 | **Build date**  | {{BUILDINFO_BUILD_TIME}}  |

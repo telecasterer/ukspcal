@@ -1,6 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vitest/config";
 import { execSync } from "child_process";
+import { readFileSync } from "fs";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 const isVitest = Boolean(process.env.VITEST);
 
@@ -26,6 +27,14 @@ function parseEpochToIso(value: string | undefined): string | undefined {
 
 function getBuildInfo() {
     const buildTime = new Date().toISOString();
+    const packageJsonVersion = (() => {
+        try {
+            const pkg = JSON.parse(readFileSync("./package.json", "utf8"));
+            return String(pkg.version ?? "0.0.0");
+        } catch {
+            return "0.0.0";
+        }
+    })();
 
     // Prefer CI-provided metadata (Vercel/GitHub) because some build environments
     // do not include a full .git directory.
@@ -54,13 +63,8 @@ function getBuildInfo() {
     const dirty =
         !isCI && (safeExec("git status --porcelain") ?? "").length > 0;
 
-    const baseVersion =
-        commitCount > 0 && commit !== "unknown"
-            ? `${commitCount}-${commit}`
-            : commit;
-
     return {
-        version: `${baseVersion}${dirty ? "-dirty" : ""}`,
+        version: packageJsonVersion,
         commit,
         commitCount,
         commitDate,

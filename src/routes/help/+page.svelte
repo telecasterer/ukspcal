@@ -59,8 +59,10 @@
 
     // Replace placeholders in the markdown with dynamic values
     const placeholderMap: Record<string, string> = {
+        "{{BUILDINFO_SUMMARY}}": buildInfoFormatted.summary,
+        "{{BUILDINFO_RELEASE}}": buildInfoFormatted.release,
         "{{BUILDINFO_VERSION}}": buildInfo.version,
-        "{{BUILDINFO_COMMIT}}": buildInfo.commit,
+        "{{BUILDINFO_COMMIT}}": buildInfoFormatted.commitShort,
         "{{BUILDINFO_COMMIT_DATE}}": buildInfoFormatted.commitDate,
         "{{BUILDINFO_BUILD_TIME}}": buildInfoFormatted.buildTime,
     };

@@ -24,7 +24,9 @@ const baseProps = {
         { due: "2026-01-05", paid: "2026-01-05", early: false },
         { due: "2026-02-02", paid: "2026-02-02", early: false },
     ],
-    bankHolidays: {},
+    bankHolidays: {
+        "2026-01-01": "New Year's Day",
+    },
     showBankHolidays: true,
     currentMonth: 0,
     currentYear: 2026,
@@ -47,7 +49,7 @@ const baseProps = {
 };
 
 describe("Calendar options", () => {
-    it("shows UK Holiday legend when bank holidays are enabled", () => {
+    it("shows UK Holiday legend when enabled and present in the month", () => {
         const detectMock = vi.mocked(detectFacebookInAppBrowserFromWindow);
         detectMock.mockReturnValue(false);
         const { container } = render(CalendarView, { props: baseProps });

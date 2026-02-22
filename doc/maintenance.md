@@ -13,12 +13,13 @@
 
 ## Release checklist
 
-1. Run tests: `npm run test`.
-2. Run type checks: `npm run check`.
-3. Update `RELEASE_NOTES.md` if user-visible changes are included.
-4. Verify the help page content renders correctly.
-5. Confirm build output: `npm run build`.
-6. Smoke-test calendar navigation:
+1. Ensure hooks are installed once per clone: `npm run hooks:install`.
+2. Use Conventional Commits for unreleased work.
+3. Run release automation: `npm run release`.
+4. Push commit + tag: `git push origin main --follow-tags`.
+5. Verify the help page content/version info renders correctly.
+6. Confirm build output locally when needed: `npm run build`.
+7. Smoke-test calendar navigation:
    - Change `Duration` and verify the header range updates.
    - Click `Next` at the end of range and verify duration auto-extends by 1 year.
 

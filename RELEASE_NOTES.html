@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Release Notes</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        <style>
+
+</style>
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="release-notes">Release Notes</h1>
+<p>This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.</p>
+<h2 id="2026-02-22">2026-02-22</h2>
+<ul>
+<li>Calendar month legend now only shows event types that appear in that month.</li>
+<li>Removed weekend legend entry.</li>
+<li>Current day is now highlighted in the calendar.</li>
+</ul>
+<h2 id="2026-02-21">2026-02-21</h2>
+<ul>
+<li>Calendar navigation now auto-extends the generated range when navigating past the end.</li>
+<li>Test coverage improvements and cleanup.</li>
+<li>Fixed dark-mode page background issue.</li>
+</ul>
+<h2 id="2026-02-20">2026-02-20</h2>
+<ul>
+<li>Added jump-to-today calendar action.</li>
+<li>Added hover/focus tooltips for calendar day details.</li>
+<li>Streamlined calendar controls and UX flow.</li>
+<li>Expanded and reorganized Help content.</li>
+<li>Added analytics events for key calendar interactions.</li>
+</ul>
+<h2 id="2026-02-19">2026-02-19</h2>
+<ul>
+<li>Added payment date list in Summary, with list-focused actions.</li>
+<li>Added calendar options/date-format test coverage and robustness fixes.</li>
+<li>Ensured <code>showBankHolidays</code> is consistently respected in month rendering.</li>
+<li>Improved Help page typography and details/summary UI consistency.</li>
+<li>Upgraded core dependencies (including Svelte and adapter-vercel).</li>
+</ul>
+<h2 id="2026-02-13">2026-02-13</h2>
+<ul>
+<li>Removed legacy UK region selector from payment-calculation path.</li>
+<li>England + Wales (<code>GB-ENG+GB-WLS</code>) is now the canonical UK bank-holiday baseline for payment calculations.</li>
+<li>Scotland and Northern Ireland are available as optional additional holiday overlays.</li>
+<li>Added first-load migration to clear legacy <code>ukRegion</code> and related regional holiday caches.</li>
+<li>Added one-time in-app migration notice.</li>
+</ul>
+<h2 id="2026-02-10-to-2026-02-12">2026-02-10 to 2026-02-12</h2>
+<ul>
+<li>Calendar navigation labels updated to show visible month ranges.</li>
+<li>Added secondary calendar pager controls below the month grid.</li>
+<li>Improved paging behavior to keep viewport stable after next/previous.</li>
+<li>SEO metadata and structured data improvements.</li>
+</ul>
+<h2 id="2026-02-04">2026-02-04</h2>
+<ul>
+<li>Added optional overlay of additional countries' public holidays.</li>
+<li>Fixed persistence and regeneration behavior for additional-country holiday data.</li>
+<li>Updated holiday overlays when duration changes.</li>
+</ul>
+<h2 id="2026-02-01-to-2026-02-03">2026-02-01 to 2026-02-03</h2>
+<ul>
+<li>Added CSP hardening and follow-up fixes for Vercel/runtime compatibility.</li>
+<li>Added soft reload support when a new service worker is available.</li>
+<li>Added feedback entry points (floating button and footer link).</li>
+<li>Improved help docs, layout ergonomics, and multiple UI polish fixes.</li>
+<li>Fixed duration off-by-one issue (<code>n+1</code> years) and summary first-payment accuracy.</li>
+</ul>
+<h2 id="2026-01-31">2026-01-31</h2>
+<ul>
+<li>Added ICS reminder dialog and persistence.</li>
+<li>Added reset app data capability.</li>
+<li>Added ICS event-time support and corrected local-time formatting behavior.</li>
+<li>Renamed &quot;Alarms&quot; to &quot;Reminders&quot; in UI language.</li>
+</ul>
+<h2 id="2026-01-26-to-2026-01-30">2026-01-26 to 2026-01-30</h2>
+<ul>
+<li>Added/expanded PWA support (manifest/icons/install UX).</li>
+<li>Added top bar improvements and in-app browser guidance.</li>
+<li>Help content moved to Markdown and expanded.</li>
+<li>Improved print layout and calendar visual styling (payment/early/holiday distinction).</li>
+<li>Added GitHub Actions unit-test workflow and status badge.</li>
+</ul>
+<h2 id="2026-01-24-to-2026-01-25">2026-01-24 to 2026-01-25</h2>
+<ul>
+<li>Initial SvelteKit/Vercel deployment stabilization and build fixes.</li>
+<li>Added SPA calculation, export options, help page, and major layout updates.</li>
+<li>Added/fixed ICS compatibility behavior (including early-payment handling).</li>
+<li>Added payment-cycle improvements (including 14-day and 13-week options) and input UX/persistence updates.</li>
+<li>Added early project unit tests and rendering/performance tweaks.</li>
+</ul>
+<h2 id="2026-01-20-to-2026-01-23">2026-01-20 to 2026-01-23</h2>
+<ul>
+<li>Initial app release: UK State Pension Calendar with calendar/list views.</li>
+<li>Calendar correctness fixes: Monday-start weeks, UTC weekend detection, and first-of-month alignment.</li>
+<li>Added NI code input validation improvements.</li>
+<li>Added dark mode toggle, persistence, and styling refinements.</li>
+<li>Improved responsive layout and calendar styling.</li>
+<li>Updated Svelte 5 runes usage (<code>$props</code>) and button implementation reliability.</li>
+<li>Added early debugging/test hardening work prior to subsequent feature expansion.</li>
+</ul>
+<h2 id="developer-notes">Developer Notes</h2>
+<ul>
+<li>Node.js: use <code>nvm</code> and <code>nvm use</code> (see <code>.nvmrc</code>). Project requires Node 18+.</li>
+<li>Git history in this repository currently begins on 2026-01-20.</li>
+</ul>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>
