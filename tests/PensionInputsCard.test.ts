@@ -118,4 +118,16 @@ describe("PensionInputsCard", () => {
         expect(arg).toHaveProperty("due");
         expect(arg).toHaveProperty("paid");
     });
+
+    it("shows first-payment proportion as a percentage of the full payment", () => {
+        const { getByText } = renderCard({
+            props: {
+                ni: "29B",
+                dob: "1956-03-15",
+                cycleDays: 28,
+            },
+        } as any);
+
+        expect(getByText(/% of a full 28-day payment\)/i)).toBeInTheDocument();
+    });
 });

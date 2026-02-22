@@ -196,6 +196,15 @@
         return days + 1;
     }
 
+    function formatPaymentPercentage(days: number, fullCycleDays: number): string {
+        if (!Number.isFinite(days) || !Number.isFinite(fullCycleDays) || fullCycleDays <= 0) {
+            return "";
+        }
+        const pct = (days / fullCycleDays) * 100;
+        const rounded = Math.round(pct);
+        return `${rounded}%`;
+    }
+
     const comprisingText = $derived.by(() => {
         if (!spa || !firstPaymentAfterSpa) return "";
         const days = daysBetweenIsoUtcInclusive(
@@ -204,7 +213,8 @@
         );
         const weeks = Math.floor(days / 7);
         const rem = days % 7;
-        return `Comprising ${weeks} week(s) and ${rem} day(s) pension`;
+        const pctText = formatPaymentPercentage(days, cycleDays);
+        return `Comprising ${weeks} week(s) and ${rem} day(s) pension (${pctText} of a full ${cycleDays}-day payment)`;
     });
 
     const firstPaymentDueFormatted = $derived.by(() => {
@@ -457,8 +467,8 @@
                         <div
                             class="mt-1 text-sm text-gray-600 dark:text-gray-200"
                         >
-                            Based on an age of {spa.spaAgeYears}{#if spa.spaAgeMonths}y
-                                {spa.spaAgeMonths}m{/if}.
+                            Based on an age of {spa.spaAgeYears}{#if spa.spaAgeMonths}{" "}years
+                                {spa.spaAgeMonths} months{/if}.
                         </div>
                     {/if}
 
