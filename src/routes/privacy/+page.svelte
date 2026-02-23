@@ -103,25 +103,25 @@
         class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <article
-            class="w-full max-w-4xl mx-auto shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
+            class="w-full max-w-5xl mx-auto shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
         >
             <header>
-                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                <h1 class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">
                     Privacy Policy
                 </h1>
-                <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                <p class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-gray-300 mt-2">
                     Last updated: February 22, 2026
                 </p>
             </header>
 
             <section class="space-y-3 text-sm sm:text-base leading-relaxed text-gray-800 dark:text-gray-200">
                 <p>
-                    UK State Pension Age and Payments Calendar is designed to work
+                    UK State Pension Calendar is designed to work
                     primarily on your device. This page explains what data is used
                     and why.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Data you enter in the app</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Data you enter in the app</h2>
                 <p>
                     You may enter your NI code suffix and date of birth to generate
                     a pension schedule. This data is used locally in your browser on
@@ -129,7 +129,7 @@
                     transferred to a server or shared in any way.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Local storage on your device</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Local storage on your device</h2>
                 <p>
                     The app stores settings and recent inputs in your browser local
                     storage so your preferences can be restored when you return.
@@ -137,7 +137,7 @@
                     control or your browser/site settings.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Analytics and technical data</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Analytics and technical data</h2>
                 <p>
                     The app uses anonymous analytics to aggregate usage
                     metrics and facilitate product improvement. These services may process
@@ -149,27 +149,27 @@
                     collect or share your NI code or date of birth.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Holiday data providers</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Holiday data providers</h2>
                 <p>
                     To show bank holidays and optional country holiday overlays, the
                     app requests public holiday data from third-party APIs. Requests
                     may include country and year parameters needed for those results.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Exports and sharing</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Exports and sharing</h2>
                 <p>
                     If you choose CSV/ICS export, print, or share actions, the
                     generated content is created from your inputs and handled by your
                     device/browser or selected apps.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Changes to this policy</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Changes to this policy</h2>
                 <p>
                     This policy may be updated from time to time. Updates will be
                     posted on this page with a revised "Last updated" date.
                 </p>
 
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Contact</h2>
+                <h2 class="pt-1 text-lg sm:text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Contact</h2>
                 <p>
                     For privacy questions or requests, use the feedback form:
                     <a

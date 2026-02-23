@@ -236,13 +236,13 @@
     <main
         class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <div class="w-full">
+        <div class="w-full max-w-5xl mx-auto">
             <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-5 sm:p-6 space-y-2 help-top-container">
                 <header class="mb-3 sm:mb-4">
-                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    <h1 class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">
                         Help & guidance
                     </h1>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                    <p class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-gray-300 mt-1">
                         Expand a section below for setup steps, privacy details, and troubleshooting.
                     </p>
                 </header>
@@ -251,7 +251,7 @@
                         class="custom-details group"
                         open={i === 0}
                     >
-                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm text-gray-900 dark:text-gray-100">
+                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm sm:text-base text-gray-900 dark:text-gray-100">
                             <span>{section.title}</span>
                             <span class="chev" aria-hidden="true">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -262,7 +262,7 @@
 
                         {#if section.html !== undefined}
                             <div class="details-content">
-                                <div class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none px-3 pb-2">
+                                <div class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-3 pb-2">
                                     {@html section.html}
                                 </div>
                             </div>
@@ -272,7 +272,7 @@
                             <div class="px-3 pb-2 space-y-1">
                                 {#each section.subSections as sub}
                                     <details class="custom-details group ml-4">
-                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm text-gray-900 dark:text-gray-100">
+                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm sm:text-base text-gray-900 dark:text-gray-100">
                                                 <span>{sub.title}</span>
                                                 <span class="chev" aria-hidden="true">
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -281,7 +281,7 @@
                                                 </span>
                                             </summary>
                                             <div class="details-content">
-                                                <div class="help-markdown prose prose-sm prose-blue dark:prose-invert max-w-none px-2 pb-1">
+                                                <div class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-2 pb-1">
                                                     {@html sub.html}
                                                 </div>
                                             </div>

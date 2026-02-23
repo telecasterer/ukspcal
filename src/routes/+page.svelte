@@ -613,7 +613,7 @@
 </script>
 
 <!-- --- Navigation Bar --- -->
-<TopBar title="Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
+<TopBar title="UK Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
     <svelte:fragment slot="actions">
         <Button
             color="light"
@@ -743,15 +743,15 @@
             >
                 <div>
                     <h1
-                        class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white mb-2"
+                        class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white mb-2"
                     >
                         UK State Pension Payment Calendar
                     </h1>
-                    <p class="text-base sm:text-lg text-gray-700 dark:text-gray-300">
-                        Check your expected payment dates using your NI code and date of birth.
+                    <p class="text-sm sm:text-base leading-relaxed text-gray-700 dark:text-gray-300">
+                        Check your State Pension age and expected payment dates using your NI code and date of birth.
                     </p>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">
-                        We also show your State Pension age and let you print or export your calendar.
+                    <p class="mt-1 text-xs sm:text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                        Print or export your payment calendar when you&rsquo;re ready.
                     </p>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         Privacy: your details stay on this device and are not sent to a server.
@@ -859,15 +859,20 @@
     <AppFooter />
 </div>
 
+
 <svelte:head>
-    <title>UK State Pension Age & Payment Calendar</title>
-    <meta
-        property="og:title"
-        content="UK State Pension Age & Payment Calendar"
-    />
-    <meta
-        property="og:description"
-        content="Calculate your UK State Pension payment dates based on your National Insurance code and date of birth. Get an accurate pension schedule with bank holiday considerations."
-    />
+    <title>UK State Pension Payment Dates & Age Calculator</title>
+
+    <meta name="description"
+        content="Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export." />
+
+    <meta property="og:title"
+        content="UK State Pension Payment Dates & Age Calculator" />
+
+    <meta property="og:description"
+        content="Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export." />
+
     <meta property="og:url" content="https://ukspcal.vercel.app" />
+
+    <meta property="og:type" content="website" />
 </svelte:head>

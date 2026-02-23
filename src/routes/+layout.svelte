@@ -43,7 +43,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
         name="description"
-        content="Confirm your UK State Pension age and calculate payment dates from your National Insurance number and date of birth. Includes bank holiday adjustments and CSV/ICS exports."
+        content="Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export."
     />
     <meta
         name="keywords"
@@ -52,7 +52,7 @@
     <meta name="theme-color" content="#2563eb" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="UKSPCal" />
+    <meta name="apple-mobile-web-app-title" content="UK Pension Calendar" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta
         name="google-site-verification"
@@ -71,8 +71,8 @@
         {
             "@context": "https://schema.org",
             "@type": "WebApplication",
-            "name": "UK State Pension Calculator",
-            "description": "Calculate your UK State Pension payment dates based on your National Insurance code and date of birth",
+            "name": "UK State Pension Calendar",
+            "description": "Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export.",
             "url": "https://ukspcal.vercel.app",
             "applicationCategory": "FinanceApplication",
             "offers": {
@@ -103,8 +103,8 @@
         {
             "@context": "https://schema.org",
             "@type": "Calculator",
-            "name": "UK State Pension Payment Date Calculator",
-            "description": "Calculate precise UK State Pension payment dates with bank holiday adjustments",
+            "name": "UK State Pension Calendar",
+            "description": "Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export.",
             "url": "https://ukspcal.vercel.app",
             "applicationCategory": "FinanceApplication"
         }

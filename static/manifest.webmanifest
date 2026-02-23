@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "UK State Pension Age and Payments Calendar",
-  "short_name": "UKSPCal",
-  "description": "UK State Pension age and payments calendar. Show your State Pension age and let you print or export your payments calendar.",
+  "name": "UK State Pension Calendar",
+  "short_name": "UK Pension Cal",
+  "description": "Calculate your UK State Pension age and payment dates with bank holiday adjustments and CSV/ICS export.",
   "start_url": "/",
   "scope": "/",
   "lang": "en-GB",
