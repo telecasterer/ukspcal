@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-23 (v0.3.1)
+
+### Chores
+
+- UI and SEO tweaks (a5dcf81)
+
 ## 2026-02-22 (v0.3.0)
 
 ### Features
