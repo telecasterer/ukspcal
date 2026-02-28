@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-28 (v0.4.0)
+
+### Features
+
+- Added claiming pension page and date to claim in summary (9e584c9)
+
 ## 2026-02-23 (v0.3.1)
 
 ### Chores
