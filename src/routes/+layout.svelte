@@ -3,7 +3,6 @@
     import { injectAnalytics } from "@vercel/analytics/sveltekit";
     import { onMount } from "svelte";
     import { registerSW } from "virtual:pwa-register";
-    import FloatingFeedbackButton from "$lib/components/FloatingFeedbackButton.svelte";
     import { initPosthog } from "$lib/utils/posthog";
 
     let { children } = $props();
@@ -112,4 +111,3 @@
 </svelte:head>
 
 {@render children()}
-<FloatingFeedbackButton />

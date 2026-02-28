@@ -121,4 +121,52 @@ describe("SummaryCardContent", () => {
         ).toBeInTheDocument();
         expect(createObjectURL).toHaveBeenCalledOnce();
     });
+
+    it("shows state pension claim date details and link to claiming page", async () => {
+        const { getByText, getByRole } = render(SummaryCardContent, {
+            props: {
+                result: baseResult,
+                spaDate: "Tue, 5 Aug 2026",
+                nextPaymentDate: "",
+                statePensionApplyInfo: {
+                    applyFromIso: "2026-04-05",
+                    applyFromFormatted: "Sunday, 5 April 2026",
+                    countdownDays: 40,
+                    applyNow: false,
+                },
+            },
+        });
+
+        expect(
+            getByText(
+                "You can apply from Sunday, 5 April 2026 (40 days to go)."
+            )
+        ).toBeInTheDocument();
+
+        const link = getByRole("link", { name: "Claiming your State Pension" });
+        expect(link).toHaveAttribute("href", "/claiming");
+    });
+
+    it("shows within-3-months warning in summary when applicable", async () => {
+        const { findByText } = render(SummaryCardContent, {
+            props: {
+                result: baseResult,
+                spaDate: "Tue, 5 Aug 2026",
+                nextPaymentDate: "",
+                statePensionApplyInfo: {
+                    applyFromIso: "2026-04-05",
+                    applyFromFormatted: "Sunday, 5 April 2026",
+                    countdownDays: 0,
+                    applyNow: true,
+                },
+                isWithinThreeMonthsOfSpa: true,
+            },
+        });
+
+        expect(
+            await findByText(
+                "You are within 3 months of your State Pension age. If you have not claimed yet, claim as soon as possible."
+            )
+        ).toBeInTheDocument();
+    });
 });

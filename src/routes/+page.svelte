@@ -163,6 +163,62 @@
         }
     });
 
+    function subtractMonthsFromIso(iso: string, months: number): string {
+        const [year, month, day] = iso.split("-").map((v) => Number.parseInt(v, 10));
+        const start = Date.UTC(year, month - 1, 1);
+        const target = new Date(start);
+        target.setUTCMonth(target.getUTCMonth() - months);
+        const targetYear = target.getUTCFullYear();
+        const targetMonth = target.getUTCMonth() + 1;
+        const lastDay = new Date(Date.UTC(targetYear, targetMonth, 0)).getUTCDate();
+        const clampedDay = Math.min(day, lastDay);
+        return `${targetYear}-${String(targetMonth).padStart(2, "0")}-${String(clampedDay).padStart(2, "0")}`;
+    }
+
+    function formatIsoDateLong(iso: string): string {
+        const d = new Date(iso + "T00:00:00Z");
+        return d.toLocaleDateString("en-GB", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    }
+
+    function daysUntilIso(iso: string): number {
+        const now = new Date();
+        const todayUtc = Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate()
+        );
+        const target = new Date(iso + "T00:00:00Z");
+        const targetUtc = Date.UTC(
+            target.getUTCFullYear(),
+            target.getUTCMonth(),
+            target.getUTCDate()
+        );
+        return Math.max(0, Math.ceil((targetUtc - todayUtc) / 86400000));
+    }
+
+    const statePensionApplyInfo = $derived.by(() => {
+        if (!spaDateIso || hasPassedSpa) return null;
+        const applyFromIso = subtractMonthsFromIso(spaDateIso, 4);
+        const applyNow = applyFromIso <= new Date().toISOString().slice(0, 10);
+        const countdownDays = applyNow ? 0 : daysUntilIso(applyFromIso);
+        return {
+            applyFromIso,
+            applyFromFormatted: formatIsoDateLong(applyFromIso),
+            countdownDays,
+            applyNow,
+        };
+    });
+
+    const isWithinThreeMonthsOfSpa = $derived.by(() => {
+        if (!spaDateIso || hasPassedSpa) return false;
+        return daysUntilIso(spaDateIso) <= 92;
+    });
+
     let darkMode: boolean = $state(readDarkModeFromStorage());
     let hasLoadedPersistedInputs: boolean = $state(false);
     let hasUserCommittedInputs: boolean = $state(false);
@@ -795,6 +851,9 @@
                             embedded
                             spaDate={firstPaymentDateFormatted}
                             nextPaymentDate={nextPaymentDateFormatted}
+                            statePensionApplyInfo={statePensionApplyInfo}
+                            {spaDateIso}
+                            {isWithinThreeMonthsOfSpa}
                         />
                     {:else}
                         <div class="p-6">

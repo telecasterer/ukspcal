@@ -10,7 +10,7 @@
         class="w-full max-w-7xl mx-auto flex flex-col gap-3"
     >
         <div
-            class="flex flex-col min-[390px]:flex-row min-[390px]:items-center gap-2 min-[390px]:gap-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/70 px-2 py-1.5 self-start"
+            class="w-full sm:w-auto flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100/90 dark:bg-gray-800/70 px-3 py-2 sm:self-start"
         >
             <a
                 href="/privacy"
@@ -30,7 +30,7 @@
             </a>
 
             <!-- GitHub link -->
-            <div class="flex items-center gap-2">
+            <div class="inline-flex items-center gap-2">
                 <FooterIcon
                     href="https://github.com/telecasterer/ukspcal"
                     ariaLabel="GitHub repository"

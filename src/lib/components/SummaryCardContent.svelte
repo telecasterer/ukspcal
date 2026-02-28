@@ -4,9 +4,19 @@
     import { formatDateForCSV } from "$lib/utils/dateFormatting";
     import { copyTextToClipboard } from "$lib/utils/clipboard";
 
+    type StatePensionApplyInfo = {
+        applyFromIso: string;
+        applyFromFormatted: string;
+        countdownDays: number;
+        applyNow: boolean;
+    };
+
     export let result: PensionResult;
     export let spaDate: string = "";
     export let nextPaymentDate: string = "";
+    export let statePensionApplyInfo: StatePensionApplyInfo | null = null;
+    export let spaDateIso: string = "";
+    export let isWithinThreeMonthsOfSpa: boolean = false;
     let listActionStatus = "";
     let listActionStatusTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -216,6 +226,35 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
         </Card>
     {/if}
 </div>
+{#if statePensionApplyInfo}
+    <Card
+        size="xl"
+        class="mt-3 p-3 bg-indigo-50/90 dark:bg-indigo-900/60 border-indigo-200 dark:border-indigo-700"
+    >
+        <p class="text-xs min-[390px]:text-sm font-semibold text-indigo-700 dark:text-indigo-200">
+            State Pension claim date
+        </p>
+        <p class="mt-1 text-sm text-indigo-900 dark:text-indigo-100">
+            {#if statePensionApplyInfo.applyNow}
+                You can apply now (from {statePensionApplyInfo.applyFromFormatted}).
+            {:else}
+                You can apply from {statePensionApplyInfo.applyFromFormatted} ({statePensionApplyInfo.countdownDays} day{statePensionApplyInfo.countdownDays === 1 ? "" : "s"} to go).
+            {/if}
+        </p>
+        {#if isWithinThreeMonthsOfSpa}
+            <p class="mt-2 text-sm font-medium text-red-700 dark:text-red-300">
+                You are within 3 months of your State Pension age. If you have
+                not claimed yet, claim as soon as possible.
+            </p>
+        {/if}
+        <a
+            class="mt-2 inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            href={spaDateIso ? `/claiming?spaDate=${encodeURIComponent(spaDateIso)}` : "/claiming"}
+        >
+            Claiming your State Pension
+        </a>
+    </Card>
+{/if}
 <div class="mt-3">
     <details class="custom-details group bg-gray-50/90 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3">
         <summary class="custom-summary flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 list-none hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">

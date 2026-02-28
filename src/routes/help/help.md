@@ -77,6 +77,7 @@ England & Wales is the default UK holiday set for calculation purposes. Scotland
 
 - The SPA calculation follows published UK government policy.
 - If your SPA is before **6 April 2016**, results may be less reliable and a warning is shown.
+- Need claim guidance? See the app page: [Claiming your State Pension](/claiming).
 
 ## Troubleshooting
 
@@ -97,6 +98,7 @@ Dates and calculations use publicly available information and may change over ti
 ## Official Sources
 
 - [GOV.UK State Pension age guidance](https://www.gov.uk/state-pension-age)
+- [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension)
 - [State Pension age timetable](https://www.gov.uk/government/publications/state-pension-age-timetable/state-pension-age-timetable)
 - [UK bank holidays](https://www.gov.uk/bank-holidays)
 - [Nager.Date worldwide public holidays](https://date.nager.at)
