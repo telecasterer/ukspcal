@@ -40,6 +40,7 @@ describe("Claiming page", () => {
             getByText(/International Pension Centre \(DWP\)\./)
         ).toBeInTheDocument();
         expect(getByText(/Future Pension Centre \(DWP\)\./)).toBeInTheDocument();
+        expect(getByText(/IBAN and BIC/i)).toBeInTheDocument();
     });
 
     it("shows ASAP claim warning when within 3 months of SPA", () => {

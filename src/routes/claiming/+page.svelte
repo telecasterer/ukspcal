@@ -17,11 +17,7 @@
 
     function daysUntilIso(iso: string): number {
         const now = new Date();
-        const todayUtc = Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate()
-        );
+        const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
         const target = new Date(iso + "T00:00:00Z");
         const targetUtc = Date.UTC(
             target.getUTCFullYear(),
@@ -101,7 +97,9 @@
                         aria-hidden="true"
                     >
                         <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                        <path
+                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+                        />
                     </svg>
                 {:else}
                     <svg
@@ -127,19 +125,18 @@
             <div
                 class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
             >
-                <h1
-                    class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
-                >
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                     Claiming your State Pension
                 </h1>
 
                 <p>
-                    You will not receive your State Pension automatically; you
-                    must claim it. You can start your claim as soon as you are
-                    within 4 months of your State Pension age.
+                    You will not receive your State Pension automatically. You need to make a
+                    claim. You can apply once you are within 4 months of your State Pension age.
                 </p>
 
-                <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/30 space-y-2">
+                <div
+                    class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/30 space-y-2"
+                >
                     <p>
                         Start with the official service:
                         <a
@@ -152,9 +149,9 @@
                         </a>
                     </p>
                     <p>
-                        If you were sent an invitation letter, keep your claim
-                        code ready. If you are within 3 months of State Pension
-                        age and do not have a code, GOV.UK explains how to request one.
+                        If you were sent an invitation letter, keep your claim code ready. If you
+                        are within 3 months of State Pension age and do not have a code, GOV.UK
+                        explains how to request one.
                     </p>
                 </div>
 
@@ -163,14 +160,13 @@
                         If you live in the UK
                     </h2>
                     <p>
-                        <span class="font-medium">Invitation letter:</span> You
-                        should usually receive a letter with a claim code around
-                        4 months before pension age.
+                        <span class="font-medium">Invitation letter:</span> You should usually receive
+                        a letter with a claim code around 4 months before pension age.
                     </p>
                     <p>
-                        <span class="font-medium">Claim online:</span> GOV.UK
-                        offers online, phone, and post claims. If you have your
-                        invitation code, online is a straightforward route to apply.
+                        <span class="font-medium">Claim online:</span> GOV.UK offers online, phone, and
+                        post claims. If you have your invitation code, the online form is usually the
+                        simplest route.
                     </p>
                     <p>
                         <span class="font-medium">Claim by phone:</span> The Pension Service (DWP).
@@ -199,21 +195,21 @@
 
                 <div class="space-y-2">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        If you live abroad (Non-UK residents)
+                        If you live elsewhere (Non-UK residents)
                     </h2>
                     <p>
                         <span class="font-medium">Do not wait for a code:</span>
-                        Many people abroad do not receive an invitation letter.
-                        You do not need one to start your claim.
+                        Many people overseas do not receive an invitation letter. You do not need one to
+                        start your claim.
                     </p>
                     <p>
-                        <span class="font-medium">Local route:</span> Official
-                        guidance may direct you to claim through the pension
-                        authority in your country of residence. This can take
-                        longer in some cases.
+                        <span class="font-medium">Local route:</span> Official guidance may direct you
+                        to claim through the pension authority in your country of residence. In some
+                        cases this route can take longer.
                     </p>
                     <p>
-                        <span class="font-medium">Claim by phone:</span> International Pension Centre (DWP).
+                        <span class="font-medium">Claim by phone:</span> International Pension Centre
+                        (DWP).
                     </p>
                     <p class="text-sm sm:text-base">
                         <span class="font-medium">Call:</span>
@@ -225,7 +221,7 @@
                         </a>
                     </p>
                     <p>
-                        <span class="font-medium">Official abroad claim guidance:</span>
+                        <span class="font-medium">Official non-UK claim guidance:</span>
                         <a
                             class="underline hover:no-underline"
                             href="https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim"
@@ -236,11 +232,11 @@
                         </a>.
                     </p>
                     <p>
-                        <span class="font-medium">Tip:</span> Ask the agent for
-                        a callback to reduce international phone charges.
+                        <span class="font-medium">Tip:</span> Ask the agent for a callback to reduce international
+                        phone charges.
                     </p>
                     <p>
-                        <span class="font-medium">Planning ahead (more than 4 months away):</span>
+                        <span class="font-medium">Planning ahead (more than 4 months away from SPA):</span>
                         Future Pension Centre (DWP).
                     </p>
                     <p class="text-sm sm:text-base">
@@ -261,30 +257,32 @@
                     <ul class="list-disc pl-5 space-y-1">
                         <li>Your National Insurance number</li>
                         <li>Your bank or building society account details</li>
+                        <li>If you want payment to a non-UK account: the IBAN and BIC (SWIFT/BIC)</li>
                         <li>Your marriage or civil partnership details (if relevant)</li>
                         <li>Dates you lived or worked abroad, if relevant</li>
+                        <li>Any social security numbers used for overseas state pensions, if relevant</li>
                         <li>Your invitation/claim code, if you have one</li>
                     </ul>
                 </div>
 
-                <div class="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/30 space-y-2">
+                <div
+                    class="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/30 space-y-2"
+                >
                     <h2 class="text-lg font-semibold text-amber-900 dark:text-amber-200">
                         ⚠️ The 3-Month Deadline
                     </h2>
                     {#if showAsapWarning}
                         <p class="font-medium text-amber-900 dark:text-amber-200">
-                            You are within 3 months of your State Pension age.
-                            If you have not yet claimed or received an
-                            invitation letter, claim as soon as possible to
-                            reduce the risk of a payment gap.
+                            You are within 3 months of your State Pension age. If you have not yet
+                            claimed or received an invitation letter, claim as soon as possible to
+                            reduce the risk of a payment delay.
                         </p>
                     {:else}
                         <p>
-                            If you are within 3 months of your State Pension
-                            age and have not yet made a claim or received an
-                            invitation letter, call the relevant number above
-                            as soon as possible. Waiting longer may lead to a gap in
-                            your payments.
+                            If you are within 3 months of your State Pension age and have not yet
+                            made a claim or received an invitation letter, call the relevant number
+                            above as soon as possible. Waiting longer may lead to a delay in your
+                            payments.
                         </p>
                     {/if}
                 </div>
