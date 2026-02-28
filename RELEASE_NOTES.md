@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-28 (v0.4.2)
+
+### Fixes
+
+- updated assetlinks.json for Google play console (5ea4cf6)
+
 ## 2026-02-28 (v0.4.1)
 
 ### Fixes
