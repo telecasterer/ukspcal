@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-02-28 (v0.4.1)
+
+### Fixes
+
+- tweaked the wording on the claiming page (8c721eb)
+
 ## 2026-02-28 (v0.4.0)
 
 ### Features
