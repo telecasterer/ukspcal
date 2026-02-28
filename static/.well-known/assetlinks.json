@@ -1,13 +1,14 @@
 [
   {
     "relation": [
-      "delegate_permission/common.handle_all_urls"
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
     ],
     "target": {
       "namespace": "android_app",
-      "package_name": "REPLACE_WITH_ANDROID_PACKAGE_NAME",
+      "package_name": "app.vercel.ukspcal.twa",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_PLAY_APP_SIGNING_SHA256_FINGERPRINT"
+        "17:EF:F5:B6:60:CA:BC:EE:FA:EB:89:47:7B:4E:2F:E0:36:2C:69:0E:1C:4B:09:F5:5E:73:35:3D:0B:80:D4:2F"
       ]
     }
   }
