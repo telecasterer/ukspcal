@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-01 (v0.4.3)
+
+### Fixes
+
+- fully restore defaults and fallback to system theme (d60f8a2)
+
 ## 2026-02-28 (v0.4.2)
 
 ### Fixes
