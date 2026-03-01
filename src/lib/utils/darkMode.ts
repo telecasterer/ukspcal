@@ -1,7 +1,13 @@
 export function readDarkModeFromStorage(): boolean {
     if (typeof window === "undefined") return false;
     try {
-        return localStorage.getItem("darkMode") === "true";
+        const stored = localStorage.getItem("darkMode");
+        if (stored === "true") return true;
+        if (stored === "false") return false;
+        return (
+            typeof window.matchMedia === "function" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+        );
     } catch {
         return false;
     }

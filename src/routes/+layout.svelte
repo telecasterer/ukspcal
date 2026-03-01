@@ -26,11 +26,16 @@
 <svelte:head>
     <script>
         // Prevent flash of light mode on reload
-        if (
-            typeof localStorage !== "undefined" &&
-            localStorage.getItem("darkMode") === "true"
-        ) {
-            document.documentElement.classList.add("dark");
+        if (typeof localStorage !== "undefined") {
+            const stored = localStorage.getItem("darkMode");
+            const shouldUseDark =
+                stored === "true" ||
+                (stored !== "false" &&
+                    typeof window.matchMedia === "function" &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches);
+            if (shouldUseDark) {
+                document.documentElement.classList.add("dark");
+            }
         }
     </script>
     <link rel="icon" href="/favicon.svg" />

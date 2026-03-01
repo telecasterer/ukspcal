@@ -49,11 +49,21 @@
         icsEventName = "UK State Pension Payment";
         icsCategory = "Finance";
         icsColor = "#22c55e";
+        selectedCountry = "none";
+        ukRegion = "GB-ENG+GB-WLS";
         additionalHolidays = {};
         isLoadingAdditionalHolidays = false;
         additionalHolidaysError = "";
-        // Optionally reset dark mode
-        // darkMode = false;
+        lastAdditionalHolidaysKey = "";
+        additionalHolidaysRequestSeq = 0;
+        ukHolidaysRequestSeq = 0;
+        pendingCalendarFocusIso = null;
+        minPaymentIso = null;
+        lastFirstPaymentAfterSpaKey = null;
+        currentCalendarMonth = new Date().getMonth();
+        currentCalendarYear = new Date().getFullYear();
+        // Follow saved preference if present, otherwise device setting.
+        darkMode = readDarkModeFromStorage();
         result = null;
         error = "";
         hasUserCommittedInputs = false;

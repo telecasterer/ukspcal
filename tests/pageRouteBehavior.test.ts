@@ -186,4 +186,52 @@ describe("+page route behavior", () => {
             expect(rangeEndYear).toBeGreaterThanOrEqual(2028);
         });
     });
+
+    it("restore defaults resets selectedCountry to none", async () => {
+        localStorage.setItem(
+            PERSIST_KEY,
+            JSON.stringify(basePersistedInputs({ selectedCountry: "FR" }))
+        );
+        vi.mocked(fetchHolidaysForCountryAndYears).mockResolvedValue({});
+
+        const { container, getAllByRole, getByLabelText, getByRole } = render(Page, {
+            props: { bankHolidays: {} as Record<string, string> },
+        });
+
+        await waitFor(() => {
+            expect(container.textContent).toContain("Payment calendar");
+        });
+
+        const additionalHolidaysBefore = getByLabelText(
+            "Additional holidays"
+        ) as HTMLInputElement;
+        expect(additionalHolidaysBefore.checked).toBe(true);
+
+        const user = userEvent.setup();
+        await user.click(getAllByRole("button", { name: /Restore defaults/i })[0]);
+        const restoreButtons = await waitFor(() => {
+            const buttons = Array.from(container.querySelectorAll("button")).filter((button) =>
+                /Restore defaults/i.test(button.textContent ?? "")
+            );
+            expect(buttons.length).toBeGreaterThan(1);
+            return buttons;
+        });
+        await user.click(restoreButtons.at(-1)!);
+
+        const niInput = getByLabelText(/NI code/i) as HTMLInputElement;
+        await waitFor(() => {
+            expect(niInput.value).toBe("");
+        });
+        await user.type(niInput, "29B");
+        await fireEvent.blur(niInput);
+
+        await waitFor(() => {
+            expect(container.textContent).toContain("Payment calendar");
+        });
+
+        const additionalHolidaysAfter = getByLabelText(
+            "Additional holidays"
+        ) as HTMLInputElement;
+        expect(additionalHolidaysAfter.checked).toBe(false);
+    });
 });
