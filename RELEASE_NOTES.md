@@ -2,6 +2,15 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-02 (v0.4.4)
+
+### Fixes
+
+- ui polish (663ee74)
+- deduped styling for buttons and markdown rendered pages (8c2381c)
+- restyled the privacy and claiming pages (ae89b4d)
+- use flowbite-svelte-icons. Changed privacy and claiming pages to use markdown as source (77350f4)
+
 ## 2026-03-01 (v0.4.3)
 
 ### Fixes
