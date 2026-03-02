@@ -78,7 +78,7 @@
     );
 }
 
-:global(.dark) .app-page-bg {
+.dark .app-page-bg {
     background-image: linear-gradient(
         to bottom,
         rgb(3 7 18),
@@ -112,7 +112,7 @@
     background: rgb(255 255 255 / 0.98);
 }
 
-:global(.dark) .card-surface {
+.dark .card-surface {
     border-color: rgb(55 65 81);
     background: rgb(31 41 55 / 0.95);
     box-shadow: 0 10px 30px -20px rgb(0 0 0 / 0.65);
@@ -142,14 +142,14 @@ summary::marker { display: none; }
     border-radius: 0.5rem;
 }
 .custom-summary:hover { background-color: rgba(0,0,0,0.03); }
-:global(.dark) .custom-summary:hover { background-color: rgba(255,255,255,0.03); }
+.dark .custom-summary:hover { background-color: rgba(255,255,255,0.03); }
 
 /* Slightly smaller radius for nested subsections */
 .custom-details .custom-summary { gap: 0.5rem; border-radius: 0.375rem; }
 
 /* Keep open summaries visually consistent with hover state */
 details[open] > .custom-summary { background-color: rgba(0,0,0,0.03); border-radius: 0.5rem; }
-:global(.dark) details[open] > .custom-summary { background-color: rgba(255,255,255,0.03); border-radius: 0.5rem; }
+.dark details[open] > .custom-summary { background-color: rgba(255,255,255,0.03); border-radius: 0.5rem; }
 
 .custom-summary .chev { transition: transform 160ms ease; }
 details[open] > .custom-summary .chev { transform: rotate(180deg); }
