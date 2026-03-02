@@ -2,6 +2,7 @@
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
     import { capturePosthog } from "$lib/utils/posthog";
     import { Button } from "flowbite-svelte";
+    import { ShareNodesOutline } from "flowbite-svelte-icons";
 
     export let shareTitle = "UK State Pension Payment Calendar";
     export let shareText =
@@ -9,6 +10,7 @@
     export let shareUrl: string | null = null;
     export let toastDurationMs = 4000;
     export let size: "xs" | "sm" | "md" | "lg" | "xl" | undefined = undefined;
+    export let buttonClass = "";
 
     let shareStatus = "";
     let shareStatusTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -67,11 +69,15 @@
 <Button
     color="light"
     {size}
+    class={buttonClass}
     onclick={handleShare}
     title="Share this app"
     aria-label="Share this app"
 >
-    Share
+    <span class="inline-flex items-center gap-1.5">
+        <ShareNodesOutline class="h-4 w-4" />
+        <span>Share</span>
+    </span>
 </Button>
 
 {#if shareStatus}

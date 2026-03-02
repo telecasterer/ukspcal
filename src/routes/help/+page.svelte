@@ -92,6 +92,7 @@
             <Button
                 color="light"
                 size="xs"
+                class="toolbar-btn"
                 onclick={() => {
                     goto("/");
                 }}
@@ -104,10 +105,12 @@
             <ShareButton
                 shareText="Calculate your State Pension Age and payment calendar."
                 size="xs"
+                buttonClass="toolbar-btn"
             />
             <Button
                 color="light"
                 size="xs"
+                class="toolbar-icon-btn"
                 onclick={() => {
                     darkMode = !darkMode;
                 }}
@@ -124,11 +127,11 @@
     </TopBar>
     <!-- Main content area: full-width single section, no card or rounded corners -->
     <main
-        class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+        class="app-page-bg py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <div class="w-full max-w-5xl mx-auto">
+        <div class="page-container-help w-full">
             <div
-                class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-5 sm:p-6 space-y-2 help-top-container"
+                class="card-surface w-full summary-section p-5 sm:p-6 space-y-2 help-top-container"
             >
                 <header class="mb-3 sm:mb-4">
                     <h1
@@ -157,7 +160,7 @@
                         {#if section.html !== undefined}
                             <div class="details-content">
                                 <div
-                                    class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-3 pb-2"
+                                    class="doc-markdown help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-3 pb-2"
                                 >
                                     {@html section.html}
                                 </div>
@@ -181,7 +184,7 @@
                                         </summary>
                                         <div class="details-content">
                                             <div
-                                                class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-2 pb-1"
+                                                class="doc-markdown help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-2 pb-1"
                                             >
                                                 {@html sub.html}
                                             </div>

@@ -4,8 +4,8 @@
         type Payment,
         type PensionResult,
     } from "$lib/pensionEngine";
-    import { Button, Card } from "flowbite-svelte";
-    import { CloseOutline, MoonOutline, SunOutline } from "flowbite-svelte-icons";
+    import { Button, Card, Modal } from "flowbite-svelte";
+    import { MoonOutline, SunOutline } from "flowbite-svelte-icons";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
@@ -685,6 +685,7 @@
         <Button
             color="light"
             size="xs"
+            class="toolbar-btn"
             onclick={handleHelpClick}
         >
             Help
@@ -692,12 +693,14 @@
         <ShareButton
             shareText="Calculate your State Pension Age and payment calendar, including bank holiday adjustments."
             size="xs"
+            buttonClass="toolbar-btn"
         />
         {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
             <!-- Install button for PWA or iOS help -->
             <Button
                 color="blue"
                 size="xs"
+                class="toolbar-btn"
                 onclick={handleInstallClick}
                 title="Install app"
                 aria-label="Install app"
@@ -709,6 +712,7 @@
         <Button
             color="light"
             size="xs"
+            class="toolbar-icon-btn"
             onclick={() => {
                 darkMode = !darkMode;
             }}
@@ -725,53 +729,33 @@
 </TopBar>
 
 {#if showInstallHelpModal}
-    <!-- Modal for iOS install help -->
-    <div class="fixed inset-0 z-[60]">
-        <button
-            type="button"
-            class="absolute inset-0 bg-black/40"
-            onclick={() => (showInstallHelpModal = false)}
-            aria-label="Close install help"
-        ></button>
-        <div
-            class="relative mx-auto mt-24 w-[92%] max-w-md rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl"
-        >
-            <div class="p-4">
-                <div class="flex items-start justify-between gap-3">
-                    <h2
-                        class="text-base font-semibold text-gray-900 dark:text-white"
-                    >
-                        Install on iPhone/iPad
-                    </h2>
-                    <button
-                        onclick={() => (showInstallHelpModal = false)}
-                        class="px-2 py-1 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        aria-label="Close"
-                    >
-                        <CloseOutline class="h-4 w-4" ariaLabel="Close" />
-                    </button>
-                </div>
-                <p
-                    class="mt-2 text-sm text-gray-700 dark:text-gray-200 leading-relaxed"
+    <Modal title="Install on iPhone/iPad" bind:open={showInstallHelpModal} size="md">
+        <div class="space-y-3">
+            <p class="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+                In Safari, tap the Share button, then choose
+                <span class="font-semibold">Add to Home Screen</span>.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+                If you’re viewing inside an in-app browser, use “Open in browser” first.
+            </p>
+            <div class="flex justify-end">
+                <Button
+                    color="light"
+                    class="toolbar-btn"
+                    onclick={() => (showInstallHelpModal = false)}
                 >
-                    In Safari, tap the Share button, then choose <span
-                        class="font-semibold">Add to Home Screen</span
-                    >.
-                </p>
-                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                    If you’re viewing inside an in-app browser, use “Open in
-                    browser” first.
-                </p>
+                    Close
+                </Button>
             </div>
         </div>
-    </div>
+    </Modal>
 {/if}
 
 <!-- --- Main Content --- -->
 <div
-    class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
+    class="app-page-bg min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
 >
-    <div class="max-w-7xl mx-auto">
+    <div class="page-container-app">
         <!-- Header section -->
         <div class="mb-6 sm:mb-8">
             <div
@@ -800,7 +784,7 @@
         <!-- Inputs + Summary (single cohesive card) -->
         <Card
             size="xl"
-            class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 mb-6 sm:mb-8 input-section"
+            class="card-surface w-full mb-6 sm:mb-8 input-section"
         >
             <div
                 class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700"
@@ -862,7 +846,7 @@
                     <!-- Calendar -->
                     <Card
                         size="xl"
-                        class="w-full shadow-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 calendar-print-wrapper"
+                        class="card-surface w-full calendar-print-wrapper"
                     >
                         
                         <CalendarView

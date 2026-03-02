@@ -68,6 +68,68 @@
     margin-bottom: 0.75rem;
 }
 
+/* Shared surface/layout tokens */
+.app-page-bg {
+    background-image: linear-gradient(
+        to bottom,
+        rgb(248 250 252),
+        rgb(239 246 255 / 0.4),
+        rgb(255 255 255)
+    );
+}
+
+:global(.dark) .app-page-bg {
+    background-image: linear-gradient(
+        to bottom,
+        rgb(3 7 18),
+        rgb(3 7 18),
+        rgb(17 24 39)
+    );
+}
+
+.page-container-app {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page-container-doc {
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page-container-help {
+    max-width: 64rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-surface {
+    border: 1px solid rgb(229 231 235);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 30px -20px rgb(15 23 42 / 0.45);
+    background: rgb(255 255 255 / 0.98);
+}
+
+:global(.dark) .card-surface {
+    border-color: rgb(55 65 81);
+    background: rgb(31 41 55 / 0.95);
+    box-shadow: 0 10px 30px -20px rgb(0 0 0 / 0.65);
+}
+
+.toolbar-btn {
+    padding-inline: 0.65rem;
+    min-height: 2rem;
+    font-size: 0.75rem;
+}
+
+.toolbar-icon-btn {
+    min-width: 2rem;
+    min-height: 2rem;
+    padding-inline: 0.5rem;
+}
+
 /* Shared details/summary styles for custom summary panels used across the app
    Applies to .custom-details/.custom-summary pattern used in Help and SummaryCardContent
 */
@@ -109,11 +171,53 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
     margin-bottom: 0.5rem;
 }
 
-/* Policy/claiming markdown (privacy + claiming pages) */
+/* Shared markdown base (help + privacy + claiming) */
+.doc-markdown > h1:first-child,
 .policy-markdown > h1:first-child {
     display: none;
 }
 
+.doc-markdown p,
+.doc-markdown li,
+.policy-markdown p,
+.policy-markdown li {
+    line-height: 1.65;
+}
+
+.doc-markdown ul,
+.policy-markdown ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.doc-markdown a,
+.policy-markdown a {
+    color: rgb(29 78 216);
+    font-weight: 600;
+    text-underline-offset: 2px;
+}
+
+.doc-markdown a:hover,
+.policy-markdown a:hover {
+    text-decoration: underline;
+}
+
+.dark .doc-markdown a,
+.dark .policy-markdown a {
+    color: rgb(147 197 253);
+}
+
+.doc-markdown strong,
+.policy-markdown strong {
+    color: rgb(17 24 39);
+}
+
+.dark .doc-markdown strong,
+.dark .policy-markdown strong {
+    color: rgb(255 255 255);
+}
+
+/* Policy/claiming markdown (privacy + claiming pages) */
 .policy-markdown h2 {
     font-size: 1.1rem;
     font-weight: 700;
@@ -139,38 +243,6 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
 
 .dark .policy-markdown h3 {
     color: rgb(229 231 235);
-}
-
-.policy-markdown p,
-.policy-markdown li {
-    line-height: 1.65;
-}
-
-.policy-markdown ul {
-    margin-top: 0.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.policy-markdown strong {
-    color: rgb(17 24 39);
-}
-
-.dark .policy-markdown strong {
-    color: rgb(255 255 255);
-}
-
-.policy-markdown a {
-    color: rgb(29 78 216);
-    font-weight: 600;
-    text-underline-offset: 2px;
-}
-
-.policy-markdown a:hover {
-    text-decoration: underline;
-}
-
-.dark .policy-markdown a {
-    color: rgb(147 197 253);
 }
 
 .policy-markdown a[href^="tel:"] {

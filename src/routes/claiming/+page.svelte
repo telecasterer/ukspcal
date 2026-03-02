@@ -62,6 +62,7 @@
             <Button
                 color="light"
                 size="xs"
+                class="toolbar-btn"
                 onclick={() => {
                     goto("/");
                 }}
@@ -74,6 +75,7 @@
             <Button
                 color="light"
                 size="xs"
+                class="toolbar-icon-btn"
                 onclick={() => {
                     darkMode = !darkMode;
                 }}
@@ -90,11 +92,11 @@
     </TopBar>
 
     <main
-        class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+        class="app-page-bg py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <div class="max-w-4xl mx-auto">
+        <div class="page-container-doc">
             <div
-                class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
+                class="card-surface w-full p-5 sm:p-6 space-y-5"
             >
                 <header
                     class="border-b border-gray-200 dark:border-gray-700 pb-4 sm:pb-5"
@@ -114,7 +116,7 @@
                     </p>
                 </header>
                 <section
-                    class="policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
+                    class="doc-markdown policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
                 >
                     {@html claimingHtml}
                 </section>
