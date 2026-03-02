@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-02 (v0.4.5)
+
+### Fixes
+
+- fix dark mode (b44c389)
+
 ## 2026-03-02 (v0.4.4)
 
 ### Fixes
