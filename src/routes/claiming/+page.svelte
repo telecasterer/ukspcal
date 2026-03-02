@@ -92,12 +92,29 @@
     <main
         class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <div
                 class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
             >
+                <header
+                    class="border-b border-gray-200 dark:border-gray-700 pb-4 sm:pb-5"
+                >
+                    <p
+                        class="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-blue-700 dark:border-blue-700 dark:bg-blue-900/50 dark:text-blue-200"
+                    >
+                        Claiming guidance
+                    </p>
+                    <h1
+                        class="mt-2 text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
+                    >
+                        State Pension Claim Guidance
+                    </h1>
+                    <p class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                        Claim routes and key contact numbers for UK and non-UK residents.
+                    </p>
+                </header>
                 <section
-                    class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
+                    class="policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
                 >
                     {@html claimingHtml}
                 </section>

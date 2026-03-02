@@ -109,6 +109,89 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
     margin-bottom: 0.5rem;
 }
 
+/* Policy/claiming markdown (privacy + claiming pages) */
+.policy-markdown > h1:first-child {
+    display: none;
+}
+
+.policy-markdown h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.6rem;
+    color: rgb(17 24 39);
+    border-top: 1px solid rgb(229 231 235);
+    padding-top: 1rem;
+}
+
+.dark .policy-markdown h2 {
+    color: rgb(243 244 246);
+    border-top-color: rgb(55 65 81);
+}
+
+.policy-markdown h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    color: rgb(31 41 55);
+}
+
+.dark .policy-markdown h3 {
+    color: rgb(229 231 235);
+}
+
+.policy-markdown p,
+.policy-markdown li {
+    line-height: 1.65;
+}
+
+.policy-markdown ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.policy-markdown strong {
+    color: rgb(17 24 39);
+}
+
+.dark .policy-markdown strong {
+    color: rgb(255 255 255);
+}
+
+.policy-markdown a {
+    color: rgb(29 78 216);
+    font-weight: 600;
+    text-underline-offset: 2px;
+}
+
+.policy-markdown a:hover {
+    text-decoration: underline;
+}
+
+.dark .policy-markdown a {
+    color: rgb(147 197 253);
+}
+
+.policy-markdown a[href^="tel:"] {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgb(191 219 254);
+    background: rgb(239 246 255);
+    border-radius: 9999px;
+    padding: 0.15rem 0.6rem;
+    text-decoration: none;
+}
+
+.policy-markdown a[href^="tel:"]:hover {
+    background: rgb(219 234 254);
+}
+
+.dark .policy-markdown a[href^="tel:"] {
+    border-color: rgb(30 64 175);
+    background: rgb(30 58 138 / 0.35);
+}
+
 /* Help markdown image styling */
 .help-markdown img {
     max-width: 100%;

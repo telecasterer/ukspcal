@@ -76,10 +76,25 @@
         class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <article
-            class="w-full max-w-5xl mx-auto shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
+            class="w-full max-w-4xl mx-auto shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
         >
+            <header class="border-b border-gray-200 dark:border-gray-700 pb-4 sm:pb-5">
+                <p
+                    class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200"
+                >
+                    Data handling
+                </p>
+                <h1
+                    class="mt-2 text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
+                >
+                    Privacy Policy
+                </h1>
+                <p class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                    How this app uses local storage, analytics, and exported data.
+                </p>
+            </header>
             <section
-                class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
+                class="policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
             >
                 {@html privacyHtml}
             </section>
