@@ -365,11 +365,11 @@
                         {payments.length} payments · {fullRangeLabel}
                     </p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
+                <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-2">
                     <Button
                         id="export-menu"
                         color="light"
-                        class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        class="w-full px-2.5 py-2 text-xs min-[390px]:text-sm"
                         title="Export"
                         aria-label="Export"
                     >
@@ -395,7 +395,7 @@
                     <Button
                         onclick={handlePrint}
                         color="light"
-                        class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        class="w-full px-2.5 py-2 text-xs min-[390px]:text-sm"
                         title="Print calendar"
                         aria-label="Print calendar"
                     >
