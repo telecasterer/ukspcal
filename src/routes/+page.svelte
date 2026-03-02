@@ -5,6 +5,7 @@
         type PensionResult,
     } from "$lib/pensionEngine";
     import { Button, Card } from "flowbite-svelte";
+    import { CloseOutline, MoonOutline, SunOutline } from "flowbite-svelte-icons";
     import SummaryCard from "$lib/components/SummaryCard.svelte";
     import PensionInputsCard from "$lib/components/PensionInputsCard.svelte";
     import CalendarView from "$lib/components/CalendarView.svelte";
@@ -715,30 +716,9 @@
             aria-label="Toggle dark mode"
         >
             {#if darkMode}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    class="h-4 w-4"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
-                >
-                    <circle cx="12" cy="12" r="4" />
-                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-                </svg>
+                <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
             {:else}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    class="h-4 w-4"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
-                >
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
+                <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
             {/if}
         </Button>
     </svelte:fragment>
@@ -768,17 +748,7 @@
                         class="px-2 py-1 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                         aria-label="Close"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            class="h-4 w-4"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            aria-hidden="true"
-                        >
-                            <path d="M18 6 6 18M6 6l12 12" />
-                        </svg>
+                        <CloseOutline class="h-4 w-4" ariaLabel="Close" />
                     </button>
                 </div>
                 <p

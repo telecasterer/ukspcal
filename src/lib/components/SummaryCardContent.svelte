@@ -1,5 +1,11 @@
 <script lang="ts">
     import { Button, Card } from "flowbite-svelte";
+    import {
+        ChevronDownOutline,
+        ClipboardOutline,
+        DownloadOutline,
+        PrinterOutline,
+    } from "flowbite-svelte-icons";
     import type { Payment, PensionResult } from "$lib/pensionEngine";
     import { formatDateForCSV } from "$lib/utils/dateFormatting";
     import { copyTextToClipboard } from "$lib/utils/clipboard";
@@ -260,23 +266,48 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
         <summary class="custom-summary flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 list-none hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
             <span>Show payment dates ({result.payments.length})</span>
                 <span class="chev" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                    <ChevronDownOutline class="h-4 w-4" ariaLabel="Expand" />
                 </span>
         </summary>
 
         <div class="details-content">
             
             <div class="mt-2 flex flex-wrap gap-2">
-                <Button color="light" size="xs" onclick={handleCopyPaymentList}>
-                    Copy list
+                <Button
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    onclick={handleCopyPaymentList}
+                    title="Copy list"
+                    aria-label="Copy list"
+                >
+                    <span class="inline-flex items-center gap-1.5">
+                        <ClipboardOutline class="h-4 w-4" ariaLabel="Copy list" />
+                        <span>Copy</span>
+                    </span>
                 </Button>
-                <Button color="light" size="xs" onclick={handleSavePaymentList}>
-                    Save list
+                <Button
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    onclick={handleSavePaymentList}
+                    title="Save list"
+                    aria-label="Save list"
+                >
+                    <span class="inline-flex items-center gap-1.5">
+                        <DownloadOutline class="h-4 w-4" ariaLabel="Save list" />
+                        <span>Save</span>
+                    </span>
                 </Button>
-                <Button color="light" size="xs" onclick={handlePrintPaymentList}>
-                    Print list
+                <Button
+                    color="light"
+                    class="px-2.5 py-2 text-xs min-[390px]:text-sm"
+                    onclick={handlePrintPaymentList}
+                    title="Print list"
+                    aria-label="Print list"
+                >
+                    <span class="inline-flex items-center gap-1.5">
+                        <PrinterOutline class="h-4 w-4" ariaLabel="Print list" />
+                        <span>Print</span>
+                    </span>
                 </Button>
             </div>
             {#if listActionStatus}

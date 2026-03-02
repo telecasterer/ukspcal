@@ -1,6 +1,7 @@
 <script lang="ts">
     // CalendarView.svelte: Renders the multi-month calendar, export, and print controls
     import { Button, Dropdown, DropdownItem, Label, Modal, Input, Select } from "flowbite-svelte";
+    import { DownloadOutline, PrinterOutline } from "flowbite-svelte-icons";
     import { previousMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
     import CalendarPager from "./CalendarPager.svelte";
@@ -373,17 +374,7 @@
                         aria-label="Export"
                     >
                         <span class="inline-flex items-center gap-1.5">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                class="h-4 w-4"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                aria-hidden="true"
-                            >
-                                <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2h16v-2" />
-                            </svg>
+                            <DownloadOutline class="h-4 w-4" ariaLabel="Export" />
                             <span>Export</span>
                         </span>
                     </Button>
@@ -409,17 +400,7 @@
                         aria-label="Print calendar"
                     >
                         <span class="inline-flex items-center gap-1.5">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                class="h-4 w-4"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                aria-hidden="true"
-                            >
-                                <path d="M6 9V3h12v6M6 18h12v3H6zM6 14H5a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1" />
-                            </svg>
+                            <PrinterOutline class="h-4 w-4" ariaLabel="Print" />
                             <span>Print</span>
                         </span>
                     </Button>

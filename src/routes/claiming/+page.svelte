@@ -2,6 +2,7 @@
     import TopBar from "$lib/components/TopBar.svelte";
     import AppFooter from "$lib/components/AppFooter.svelte";
     import { Button } from "flowbite-svelte";
+    import { ArrowLeftOutline, MoonOutline, SunOutline } from "flowbite-svelte-icons";
     import {
         applyDarkModeClass,
         persistDarkModeToStorage,
@@ -10,6 +11,8 @@
     import { goto } from "$app/navigation";
     import { page } from "$app/state";
     import { onMount } from "svelte";
+    import claimingMarkdown from "./claiming.md?raw";
+    import { renderMarkdown } from "$lib/markdown";
 
     function isIsoDate(value: string): boolean {
         return /^\d{4}-\d{2}-\d{2}$/.test(value);
@@ -37,6 +40,7 @@
         const days = daysUntilIso(spaDateIso);
         return days >= 0 && days <= 92;
     });
+    const claimingHtml = renderMarkdown(claimingMarkdown);
 
     let darkMode: boolean = $state(readDarkModeFromStorage());
 
@@ -63,17 +67,7 @@
                 }}
             >
                 <span class="inline-flex items-center gap-1.5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="h-4 w-4"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <path d="M15 18l-6-6 6-6" />
-                    </svg>
+                    <ArrowLeftOutline class="h-4 w-4" ariaLabel="Back" />
                     <span>Back</span>
                 </span>
             </Button>
@@ -87,32 +81,9 @@
                 aria-label="Toggle dark mode"
             >
                 {#if darkMode}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="h-4 w-4"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <circle cx="12" cy="12" r="4" />
-                        <path
-                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-                        />
-                    </svg>
+                    <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
                 {:else}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="h-4 w-4"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                    </svg>
+                    <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
                 {/if}
             </Button>
         </svelte:fragment>
@@ -125,151 +96,17 @@
             <div
                 class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 sm:p-6 space-y-5"
             >
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                    Claiming your State Pension
-                </h1>
-
-                <p>
-                    You will not receive your State Pension automatically. You need to make a
-                    claim. You can apply once you are within 4 months of your State Pension age.
-                </p>
-
-                <div
-                    class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700 dark:bg-blue-900/30 space-y-2"
+                <section
+                    class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
                 >
-                    <p>
-                        Start with the official service:
-                        <a
-                            class="underline hover:no-underline"
-                            href="https://www.gov.uk/get-state-pension"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            GOV.UK: Get your State Pension
-                        </a>
-                    </p>
-                    <p>
-                        If you were sent an invitation letter, keep your claim code ready. If you
-                        are within 3 months of State Pension age and do not have a code, GOV.UK
-                        explains how to request one.
-                    </p>
-                </div>
-
-                <div class="space-y-2">
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        If you live in the UK
-                    </h2>
-                    <p>
-                        <span class="font-medium">Invitation letter:</span> You should usually receive
-                        a letter with a claim code around 4 months before pension age.
-                    </p>
-                    <p>
-                        <span class="font-medium">Claim online:</span> GOV.UK offers online, phone, and
-                        post claims. If you have your invitation code, the online form is usually the
-                        simplest route.
-                    </p>
-                    <p>
-                        <span class="font-medium">Claim by phone:</span> The Pension Service (DWP).
-                    </p>
-                    <div class="space-y-1 text-sm sm:text-base">
-                        <p>
-                            <span class="font-medium">Call:</span>
-                            <a
-                                class="ml-1 inline-block whitespace-nowrap rounded border border-gray-300 dark:border-gray-600 px-2 py-0.5 font-mono underline hover:no-underline"
-                                href="tel:08007317898"
-                            >
-                                0800 731 7898
-                            </a>
-                        </p>
-                        <p>
-                            <span class="font-medium">Welsh language:</span>
-                            <a
-                                class="ml-1 inline-block whitespace-nowrap rounded border border-gray-300 dark:border-gray-600 px-2 py-0.5 font-mono underline hover:no-underline"
-                                href="tel:08007317936"
-                            >
-                                0800 731 7936
-                            </a>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        If you live elsewhere (Non-UK residents)
-                    </h2>
-                    <p>
-                        <span class="font-medium">Do not wait for a code:</span>
-                        Many people overseas do not receive an invitation letter. You do not need one to
-                        start your claim.
-                    </p>
-                    <p>
-                        <span class="font-medium">Local route:</span> Official guidance may direct you
-                        to claim through the pension authority in your country of residence. In some
-                        cases this route can take longer.
-                    </p>
-                    <p>
-                        <span class="font-medium">Claim by phone:</span> International Pension Centre
-                        (DWP).
-                    </p>
-                    <p class="text-sm sm:text-base">
-                        <span class="font-medium">Call:</span>
-                        <a
-                            class="ml-1 inline-block whitespace-nowrap rounded border border-gray-300 dark:border-gray-600 px-2 py-0.5 font-mono underline hover:no-underline"
-                            href="tel:+441912187777"
-                        >
-                            +44 191 218 7777
-                        </a>
-                    </p>
-                    <p>
-                        <span class="font-medium">Official non-UK claim guidance:</span>
-                        <a
-                            class="underline hover:no-underline"
-                            href="https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            GOV.UK: Claim if you retire abroad
-                        </a>.
-                    </p>
-                    <p>
-                        <span class="font-medium">Tip:</span> Ask the agent for a callback to reduce international
-                        phone charges.
-                    </p>
-                    <p>
-                        <span class="font-medium">Planning ahead (more than 4 months away from SPA):</span>
-                        Future Pension Centre (DWP).
-                    </p>
-                    <p class="text-sm sm:text-base">
-                        <span class="font-medium">Call:</span>
-                        <a
-                            class="ml-1 inline-block whitespace-nowrap rounded border border-gray-300 dark:border-gray-600 px-2 py-0.5 font-mono underline hover:no-underline"
-                            href="tel:+441912183600"
-                        >
-                            +44 191 218 3600
-                        </a>
-                    </p>
-                </div>
-
-                <div class="space-y-2">
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        What to have ready
-                    </h2>
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li>Your National Insurance number</li>
-                        <li>Your bank or building society account details</li>
-                        <li>If you want payment to a non-UK account: the IBAN and BIC (SWIFT/BIC)</li>
-                        <li>Your marriage or civil partnership details (if relevant)</li>
-                        <li>Dates you lived or worked abroad, if relevant</li>
-                        <li>Any social security numbers used for overseas state pensions, if relevant</li>
-                        <li>Your invitation/claim code, if you have one</li>
-                    </ul>
-                </div>
+                    {@html claimingHtml}
+                </section>
 
                 <div
                     class="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/30 space-y-2"
                 >
                     <h2 class="text-lg font-semibold text-amber-900 dark:text-amber-200">
-                        ⚠️ The 3-Month Deadline
+                        The 3-Month Deadline
                     </h2>
                     {#if showAsapWarning}
                         <p class="font-medium text-amber-900 dark:text-amber-200">

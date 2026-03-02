@@ -52,10 +52,20 @@
     // The help markdown no longer uses a dynamic latest-bank-holiday placeholder.
 
     // --- 2. Import markdown and replace placeholder ---
-    import MarkdownIt from "markdown-it";
     import helpMarkdown from "./help.md?raw";
     import { Button } from "flowbite-svelte";
+    import {
+        ArrowLeftOutline,
+        ChevronDownOutline,
+        MoonOutline,
+        SunOutline,
+    } from "flowbite-svelte-icons";
     import { buildInfo, buildInfoFormatted } from "$lib/buildInfo";
+    import {
+        parseMarkdownSections,
+        replaceMarkdownPlaceholders,
+        type MarkdownSection,
+    } from "$lib/markdown";
 
     // Replace placeholders in the markdown with dynamic values
     const placeholderMap: Record<string, string> = {
@@ -67,99 +77,10 @@
         "{{BUILDINFO_BUILD_TIME}}": buildInfoFormatted.buildTime,
     };
 
-    const helpMarkdownReplaced = Object.entries(placeholderMap).reduce(
-        (acc, [key, value]) => acc.replaceAll(key, value),
-        helpMarkdown
-    );
+    const helpMarkdownReplaced = replaceMarkdownPlaceholders(helpMarkdown, placeholderMap);
 
     // --- 3. Parse markdown into structured sections ---
-    // Types for help sections
-    type HelpSubSection = { title: string; html: string };
-    type HelpSection = {
-        title: string;
-        html?: string;
-        subSections?: HelpSubSection[];
-    };
-
-    // Initialize markdown parser
-    const md = new MarkdownIt({ html: true, linkify: true });
-    const sections: HelpSection[] = [];
-    const allTokens = md.parse(helpMarkdownReplaced, {});
-
-    // State for section parsing
-    let currentSection: HelpSection | null = null;
-    let currentSubSection: HelpSubSection | null = null;
-    let bodyTokens: any[] = [];
-    let subBodyTokens: any[] = [];
-
-    /**
-     * Push the current H3 subsection (if any) into the current H2 section.
-     * Renders the collected tokens as HTML.
-     */
-    function pushSubSection(): void {
-        if (currentSubSection && currentSection) {
-            currentSubSection.html = md.renderer.render(subBodyTokens, md.options, {});
-            if (!currentSection.subSections) currentSection.subSections = [];
-            currentSection.subSections.push(currentSubSection);
-            currentSubSection = null;
-            subBodyTokens = [];
-        }
-    }
-
-    /**
-     * Push the current H2 section (if any) into the sections array.
-     * Renders the collected tokens as HTML.
-     */
-    function pushSection(): void {
-        if (!currentSection) return;
-        // If there were any H3s, render content before first H3 as html
-        if (currentSection.subSections && bodyTokens.length > 0) {
-            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
-        } else if (!currentSection.subSections) {
-            // No H3s: render all content as html
-            currentSection.html = md.renderer.render(bodyTokens, md.options, {});
-        }
-        sections.push(currentSection);
-        currentSection = null;
-        currentSubSection = null;
-        bodyTokens = [];
-        subBodyTokens = [];
-    }
-
-    // --- Main token parsing loop ---
-    // Walk through all tokens and build up sections and subsections
-    for (let i = 0; i < allTokens.length; i++) {
-        const token = allTokens[i];
-        if (token.type === "heading_open" && token.tag === "h2") {
-            pushSubSection();
-            pushSection();
-            const inline = allTokens[i + 1];
-            currentSection = {
-                title: inline && inline.type === "inline" ? inline.content.trim() : "Section",
-            };
-            // Skip over the h2 (heading_open, inline, heading_close).
-            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
-            continue;
-        } else if (token.type === "heading_open" && token.tag === "h3") {
-            pushSubSection();
-            const inline = allTokens[i + 1];
-            currentSubSection = {
-                title: inline && inline.type === "inline" ? inline.content.trim() : "Subsection",
-                html: "",
-            };
-            // Skip over the h3 (heading_open, inline, heading_close).
-            while (i < allTokens.length && allTokens[i].type !== "heading_close") i++;
-            continue;
-        }
-        if (currentSubSection) {
-            subBodyTokens.push(token);
-        } else if (currentSection) {
-            bodyTokens.push(token);
-        }
-    }
-    // Ensure the last section is included
-    pushSubSection();
-    pushSection();
+    const sections: MarkdownSection[] = parseMarkdownSections(helpMarkdownReplaced);
 
     // No JS-driven animation: rely on native <details> behaviour
 </script>
@@ -176,17 +97,7 @@
                 }}
             >
                 <span class="inline-flex items-center gap-1.5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="h-4 w-4"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <path d="M15 18l-6-6 6-6" />
-                    </svg>
+                    <ArrowLeftOutline class="h-4 w-4" ariaLabel="Back" />
                     <span>Back</span>
                 </span>
             </Button>
@@ -204,30 +115,9 @@
                 aria-label="Toggle dark mode"
             >
                 {#if darkMode}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="h-4 w-4"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <circle cx="12" cy="12" r="4" />
-                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-                    </svg>
+                    <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
                 {:else}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        class="h-4 w-4"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                    </svg>
+                    <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
                 {/if}
             </Button>
         </svelte:fragment>
@@ -237,32 +127,38 @@
         class="bg-gradient-to-b from-slate-50 via-blue-50/40 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-900 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="w-full max-w-5xl mx-auto">
-            <div class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-5 sm:p-6 space-y-2 help-top-container">
+            <div
+                class="w-full shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 summary-section rounded-lg p-5 sm:p-6 space-y-2 help-top-container"
+            >
                 <header class="mb-3 sm:mb-4">
-                    <h1 class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">
+                    <h1
+                        class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
+                    >
                         Help & guidance
                     </h1>
-                    <p class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-gray-300 mt-1">
-                        Expand a section below for setup steps, privacy details, and troubleshooting.
+                    <p
+                        class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-gray-300 mt-1"
+                    >
+                        Expand a section below for setup steps, privacy details, and
+                        troubleshooting.
                     </p>
                 </header>
                 {#each sections as section, i}
-                    <details
-                        class="custom-details group"
-                        open={i === 0}
-                    >
-                        <summary class="custom-summary flex items-center justify-between px-3 py-2 text-sm sm:text-base text-gray-900 dark:text-gray-100">
+                    <details class="custom-details group" open={i === 0}>
+                        <summary
+                            class="custom-summary flex items-center justify-between px-3 py-2 text-sm sm:text-base text-gray-900 dark:text-gray-100"
+                        >
                             <span>{section.title}</span>
                             <span class="chev" aria-hidden="true">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
+                                <ChevronDownOutline class="h-4 w-4" ariaLabel="Expand" />
                             </span>
                         </summary>
 
                         {#if section.html !== undefined}
                             <div class="details-content">
-                                <div class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-3 pb-2">
+                                <div
+                                    class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-3 pb-2"
+                                >
                                     {@html section.html}
                                 </div>
                             </div>
@@ -272,19 +168,24 @@
                             <div class="px-3 pb-2 space-y-1">
                                 {#each section.subSections as sub}
                                     <details class="custom-details group ml-4">
-                                        <summary class="custom-summary flex items-center justify-between px-2 py-1 text-sm sm:text-base text-gray-900 dark:text-gray-100">
-                                                <span>{sub.title}</span>
-                                                <span class="chev" aria-hidden="true">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                                    </svg>
-                                                </span>
-                                            </summary>
-                                            <div class="details-content">
-                                                <div class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-2 pb-1">
-                                                    {@html sub.html}
-                                                </div>
+                                        <summary
+                                            class="custom-summary flex items-center justify-between px-2 py-1 text-sm sm:text-base text-gray-900 dark:text-gray-100"
+                                        >
+                                            <span>{sub.title}</span>
+                                            <span class="chev" aria-hidden="true">
+                                                <ChevronDownOutline
+                                                    class="h-4 w-4"
+                                                    ariaLabel="Expand"
+                                                />
+                                            </span>
+                                        </summary>
+                                        <div class="details-content">
+                                            <div
+                                                class="help-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none px-2 pb-1"
+                                            >
+                                                {@html sub.html}
                                             </div>
+                                        </div>
                                     </details>
                                 {/each}
                             </div>
@@ -317,5 +218,7 @@
     }
 
     /* Reduce vertical spacing for grouped container */
-    .help-top-container > details + details { margin-top: 0.25rem; }
+    .help-top-container > details + details {
+        margin-top: 0.25rem;
+    }
 </style>
