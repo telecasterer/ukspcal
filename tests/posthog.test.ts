@@ -11,6 +11,7 @@ describe("posthog utils", () => {
         const initMock = vi.fn();
         vi.doMock("posthog-js", () => ({ default: { init: initMock, capture: vi.fn() } }));
         vi.doMock("$env/static/public", () => ({
+            PUBLIC_POSTHOG_ENABLED: "true",
             PUBLIC_POSTHOG_KEY: "",
             PUBLIC_POSTHOG_HOST: "",
         }));
