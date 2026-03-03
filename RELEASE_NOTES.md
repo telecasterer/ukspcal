@@ -2,6 +2,13 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-03 (v0.4.6)
+
+### Fixes
+
+- posthog test fix (c448f2d)
+- tweaked calendar nav buttons. Control posthog with a POSTHOG_ENABLED env var. (67512b5)
+
 ## 2026-03-02 (v0.4.5)
 
 ### Fixes
