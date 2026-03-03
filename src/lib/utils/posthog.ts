@@ -1,5 +1,9 @@
 import posthog from "posthog-js";
-import { PUBLIC_POSTHOG_HOST, PUBLIC_POSTHOG_KEY } from "$env/static/public";
+import {
+    PUBLIC_POSTHOG_ENABLED,
+    PUBLIC_POSTHOG_HOST,
+    PUBLIC_POSTHOG_KEY,
+} from "$env/static/public";
 
 type PosthogEventProps = Record<
     string,
@@ -7,9 +11,13 @@ type PosthogEventProps = Record<
 >;
 
 let isInitialized = false;
+// Tracking is enabled only when explicitly set to true.
+const POSTHOG_ENABLED =
+    (PUBLIC_POSTHOG_ENABLED ?? "false").trim().toLowerCase() === "true";
 
 export function initPosthog(): void {
     if (isInitialized) return;
+    if (!POSTHOG_ENABLED) return;
     if (typeof window === "undefined") return;
     const apiKey = PUBLIC_POSTHOG_KEY?.trim();
     if (!apiKey) return;
