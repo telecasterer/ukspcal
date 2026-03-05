@@ -217,5 +217,15 @@ export default defineConfig({
             "src/**/*.{test,spec}.{js,ts}",
         ],
         setupFiles: ["tests/setup.ts"],
+        coverage: {
+            provider: "v8",
+            reporter: ["text", "html"],
+            thresholds: {
+                statements: 80,
+                branches: 70,
+                functions: 80,
+                lines: 80,
+            },
+        },
     },
 });
