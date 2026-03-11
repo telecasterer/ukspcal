@@ -2,6 +2,24 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-11 (v0.4.7)
+
+### Fixes
+
+- add edge-to-edge safe areas for android and restore print layout and add local visual regression test (5ce2657)
+
+### Chores
+
+- add more tests (419b307)
+- bump dompurify from 3.3.1 to 3.3.2 (#12) (4ebc52f)
+- bump tar from 7.5.9 to 7.5.10 (#11) (065a0cb)
+
+### Other
+
+- Bump rollup (#10) (22e5056)
+- Bump minimatch (#9) (7e427de)
+- Bump svelte from 5.53.0 to 5.53.6 (#8) (d28c5a3)
+
 ## 2026-03-03 (v0.4.6)
 
 ### Fixes
