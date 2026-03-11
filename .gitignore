@@ -39,6 +39,8 @@ coverage/
 src/routes/help/help.old.md
 todo.md
 .github/copilot-instructions.md
+playwright-report/
+test-results/
 
 # Android / TWA local build outputs and secrets
 .gradle/

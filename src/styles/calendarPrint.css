@@ -12,6 +12,10 @@
 }
 
 @media print {
+    @page {
+        margin: 10mm;
+    }
+
     :root {
         color-scheme: light;
     }
@@ -45,11 +49,11 @@
     .input-section,
     .calendar-controls,
     .summary-section,
-    .mb-8 {
+    .print-hide {
         display: none !important;
     }
     body {
-        margin: 10mm;
+        margin: 0;
     }
     /* Calendar month print block */
     .calendar-month {
@@ -82,9 +86,10 @@
         box-sizing: border-box !important;
     }
 
-    /* Hide bank holiday names in print to prevent cell expansion */
-    .calendar-day .text-xs {
-        display: none !important;
+    .calendar-day-number {
+        display: inline-flex !important;
+        background: transparent !important;
+        color: inherit !important;
     }
 
     .calendar-day.weekend {
@@ -103,6 +108,9 @@
         background: transparent !important;
         color: #fff !important;
     }
+    .calendar-day.payment .calendar-day-number {
+        color: #fff !important;
+    }
 
     .calendar-day.early-payment {
         background: #f59e0b !important;
@@ -114,6 +122,9 @@
     }
     .calendar-day.early-payment .text-sm {
         background: transparent !important;
+        color: #fff !important;
+    }
+    .calendar-day.early-payment .calendar-day-number {
         color: #fff !important;
     }
 
@@ -129,6 +140,9 @@
         background: transparent !important;
         color: #fff !important;
     }
+    .calendar-day.holiday .calendar-day-number {
+        color: #fff !important;
+    }
 
     .calendar-day.today {
         outline: 2px solid #0ea5e9 !important;
@@ -137,7 +151,8 @@
 
     /* Ensure day numbers and flex containers have transparent backgrounds */
     .calendar-day .text-sm,
-    .calendar-day > div {
+    .calendar-day > div,
+    .calendar-day .today-number {
         background: transparent !important;
     }
 
@@ -146,19 +161,19 @@
     }
 
     .print-only {
-        display: flex !important;
+        display: grid !important;
     }
 
     .calendar-grid {
-        display: flex !important;
-        flex-wrap: wrap !important;
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)) !important;
+        align-items: start !important;
         gap: 10px !important;
         page-break-inside: avoid;
     }
 
-    /* Remove duplicate @media print block for .calendar-grid > * */
-
     .calendar-grid > * {
+        min-width: 0 !important;
         break-inside: avoid;
         page-break-inside: avoid;
     }

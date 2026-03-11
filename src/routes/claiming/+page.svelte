@@ -92,7 +92,7 @@
     </TopBar>
 
     <main
-        class="app-page-bg py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
+        class="app-page-bg page-bottom-safe-area py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="page-container-doc">
             <div

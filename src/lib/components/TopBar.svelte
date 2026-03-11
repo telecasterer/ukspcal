@@ -6,7 +6,7 @@
 </script>
 
 <nav
-    class="bg-white/95 dark:bg-gray-900/95 border-b border-gray-300 dark:border-gray-700 sticky top-0 z-50 backdrop-blur"
+    class="safe-area-top bg-white/95 dark:bg-gray-900/95 border-b border-gray-300 dark:border-gray-700 sticky top-0 z-50 backdrop-blur"
 >
     {#if showInAppBanner}
         <!-- Info banner for in-app browser users -->

@@ -5,7 +5,7 @@
 
 <Footer
     footerType="default"
-    class="rounded-none border-t border-gray-200 dark:border-gray-700 shadow-none p-3 md:p-3"
+    class="safe-area-bottom print-hide rounded-none border-t border-gray-200 dark:border-gray-700 shadow-none p-3 md:p-3"
 >
     <div
         class="w-full max-w-7xl mx-auto flex flex-col gap-3"

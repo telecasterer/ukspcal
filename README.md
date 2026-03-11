@@ -46,6 +46,8 @@ npm run test          # Run tests
 npm run test:watch    # Run tests in watch mode
 npm run test:ui       # Run tests with UI
 npm run test:coverage # Generate coverage report
+npm run test:print:visual        # Local-only Playwright print snapshot check
+npm run test:print:visual:update # Refresh the local print snapshot baseline
 ```
 
 ## Check

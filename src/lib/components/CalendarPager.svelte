@@ -14,7 +14,7 @@
     export let onToday: () => void;
 </script>
 
-<div class="w-full calendar-controls">
+<div class="w-full calendar-controls print-hide">
     <div
         class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3"
     >

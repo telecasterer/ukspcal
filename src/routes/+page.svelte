@@ -753,11 +753,11 @@
 
 <!-- --- Main Content --- -->
 <div
-    class="app-page-bg min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
+    class="app-page-bg page-bottom-safe-area min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
 >
     <div class="page-container-app">
         <!-- Header section -->
-        <div class="mb-6 sm:mb-8">
+        <div class="mb-6 sm:mb-8 print-hide">
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
             >

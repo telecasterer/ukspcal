@@ -450,7 +450,7 @@
             >
                 {#if day}
                     <div class="flex items-start">
-                        <div class={`text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0 ${isToday ? "today-number" : ""}`}>{day}</div>
+                        <div class={`calendar-day-number text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0 ${isToday ? "today-number" : ""}`}>{day}</div>
                     </div>
                     {#if additionalHoliday && !payment && flagSvg}
                         <img

@@ -16,8 +16,10 @@
         "test:watch": "vitest --watch",
         "test:ui": "vitest --ui",
         "test:coverage": "vitest run --coverage",
+        "test:print:visual": "playwright test e2e/print-calendar.spec.ts",
+        "test:print:visual:update": "playwright test e2e/print-calendar.spec.ts --update-snapshots",
         "release:prepare": "node scripts/release.mjs",
-        "release": "npm run check && npm run test && node scripts/release.mjs --commit --tag",
+        "release": "npm run check && npm run test && npm run test:print:visual && node scripts/release.mjs --commit --tag",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },
@@ -31,6 +33,7 @@
         "posthog-js": "^1.345.5"
     },
     "devDependencies": {
+        "@playwright/test": "^1.58.2",
         "@sveltejs/adapter-vercel": "^6.3.2",
         "@sveltejs/kit": "^2.52.2",
         "@sveltejs/vite-plugin-svelte": "^6.2.4",
