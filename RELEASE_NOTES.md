@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-12 (v0.5.0)
+
+### Features
+
+- prefer store installs on Android and document app links (ffd27dc)
+
 ## 2026-03-11 (v0.4.7)
 
 ### Fixes
