@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     detectFacebookInAppBrowser,
+    isAndroidUserAgent,
     isFacebookInAppBrowserUserAgent,
     isForceFacebookInAppEnabled,
     isIosUserAgent,
@@ -59,5 +60,16 @@ describe("inAppBrowser utils", () => {
             isIosUserAgent("Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)")
         ).toBe(true);
         expect(isIosUserAgent("Mozilla/5.0 (Linux; Android 14)")).toBe(false);
+    });
+
+    it("detects Android user agents", () => {
+        expect(isAndroidUserAgent("Mozilla/5.0 (Linux; Android 14)")).toBe(
+            true
+        );
+        expect(
+            isAndroidUserAgent(
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"
+            )
+        ).toBe(false);
     });
 });

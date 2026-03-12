@@ -13,6 +13,13 @@ export function isIosUserAgent(userAgent: string): boolean {
 }
 
 /**
+ * Detect if the user agent is an Android device.
+ */
+export function isAndroidUserAgent(userAgent: string): boolean {
+    return /Android/i.test(userAgent ?? "");
+}
+
+/**
  * Check if the URL has forceFbInApp=1 query param.
  */
 export function isForceFacebookInAppEnabled(href: string): boolean {

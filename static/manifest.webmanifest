@@ -16,6 +16,13 @@
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=app.vercel.ukspcal.twa",
+      "id": "app.vercel.ukspcal.twa"
+    }
+  ],
   "categories": [
     "finance",
     "utilities",

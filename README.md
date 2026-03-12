@@ -4,6 +4,8 @@ SvelteKit web app for calculating UK State Pension age and payment dates, with c
 
 Currently released app: https://ukspcal.vercel.app
 
+Android app on Google Play: https://play.google.com/store/apps/details?id=app.vercel.ukspcal.twa
+
 [![unit test status](https://github.com/telecasterer/ukspcal/actions/workflows/test.yml/badge.svg)](https://github.com/telecasterer/ukspcal/actions/workflows/test.yml)
 
 ## Features
@@ -14,7 +16,7 @@ Currently released app: https://ukspcal.vercel.app
 - Optional additional holiday overlays for other countries.
 - Export to CSV or ICS (with alarms, category, colour, and event time).
 - Print-friendly calendar view.
-- Works offline and can be installed as a PWA.
+- Android app available on Google Play, with PWA install support on desktop and iOS.
 - Privacy-first: all calculations run locally in the browser.
 
 ## Documentation

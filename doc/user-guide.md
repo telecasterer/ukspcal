@@ -54,9 +54,10 @@ The app supports:
 - Calendar day cells are keyboard-focusable and include descriptive labels for payment and holiday states.
 - If the app is opened inside an in-app browser (e.g. Facebook), you may see limited export/print support—open in Safari/Chrome/Edge for best results.
 
-## Install as an app (PWA)
+## Install as an app
 
-- On supported browsers, you may see an **Install** button to add the app to your home screen.
+- On Android, use **Get Android app** to install from Google Play.
+- On supported desktop browsers, you may see an **Install** button to add the app.
 - On iOS Safari, use **Share → Add to Home Screen**.
 
 ## Troubleshooting

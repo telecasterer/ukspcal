@@ -13,7 +13,10 @@
     import TopBar from "$lib/components/TopBar.svelte";
     import ShareButton from "$lib/components/ShareButton.svelte";
     import type { DateFormat } from "$lib/utils/dateFormatting";
-    import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
+    import {
+        detectFacebookInAppBrowserFromWindow,
+        isAndroidUserAgent,
+    } from "$lib/utils/inAppBrowser";
     import {
         applyDarkModeClass,
         persistDarkModeToStorage,
@@ -80,6 +83,8 @@
     import "../styles/calendarPrint.css";
 
     const PERSIST_KEY = "ukspcal.inputs.v1";
+    const ANDROID_PLAY_STORE_URL =
+        "https://play.google.com/store/apps/details?id=app.vercel.ukspcal.twa";
     const ALLOWED_CYCLE_DAYS = new Set([7, 14, 28, 91]);
     const ALLOWED_DATE_FORMATS = new Set<DateFormat>([
         "dd/mm/yyyy",
@@ -234,12 +239,28 @@
     let hasLoadedPersistedInputs: boolean = $state(false);
     let hasUserCommittedInputs: boolean = $state(false);
     let isFacebookInAppBrowser: boolean = $state(false);
+    let isAndroid: boolean = $state(false);
     let isStandalone: boolean = $state(false);
     let canInstallPwa: boolean = $state(false);
     let showInstallHelpModal: boolean = $state(false);
     let showIosInstallHelp: boolean = $state(false);
     let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
     let hasCapturedInstallAccepted: boolean = $state(false);
+
+    const showInstallCta = $derived.by(
+        () =>
+            !isFacebookInAppBrowser &&
+            !isStandalone &&
+            (isAndroid || canInstallPwa || showIosInstallHelp)
+    );
+
+    const installButtonLabel = $derived.by(() =>
+        isAndroid ? "Get Android app" : "Install"
+    );
+
+    const installButtonTitle = $derived.by(() =>
+        isAndroid ? "Get the Android app on Google Play" : "Install app"
+    );
 
     function captureInstallAcceptedOnce() {
         if (hasCapturedInstallAccepted) return;
@@ -272,6 +293,7 @@
     onMount(() => {
         const ua = navigator.userAgent ?? "";
         isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
+        isAndroid = isAndroidUserAgent(ua);
 
         const mq =
             typeof window !== "undefined" &&
@@ -637,6 +659,7 @@
 
     async function handleInstallClick() {
         capturePosthog("install_click", {
+            is_android: isAndroid,
             can_install_pwa: canInstallPwa,
             show_ios_help: showIosInstallHelp,
             is_standalone: isStandalone,
@@ -644,6 +667,11 @@
         });
         if (isFacebookInAppBrowser) return;
         if (isStandalone) return;
+        if (isAndroid) {
+            capturePosthog("install_play_store_opened");
+            window.location.assign(ANDROID_PLAY_STORE_URL);
+            return;
+        }
 
         if (canInstallPwa && deferredInstallPrompt) {
             await deferredInstallPrompt.prompt();
@@ -695,17 +723,16 @@
             size="xs"
             buttonClass="toolbar-btn"
         />
-        {#if !isFacebookInAppBrowser && !isStandalone && (canInstallPwa || showIosInstallHelp)}
-            <!-- Install button for PWA or iOS help -->
+        {#if showInstallCta}
             <Button
                 color="blue"
                 size="xs"
                 class="toolbar-btn"
                 onclick={handleInstallClick}
-                title="Install app"
-                aria-label="Install app"
+                title={installButtonTitle}
+                aria-label={installButtonTitle}
             >
-                Install
+                {installButtonLabel}
             </Button>
         {/if}
         <!-- Dark mode toggle button -->

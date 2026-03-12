@@ -104,4 +104,15 @@ describe("+page toolbar and install", () => {
             }
         });
     });
+
+    it("shows a Google Play CTA on Android", () => {
+        setUserAgent("Mozilla/5.0 (Linux; Android 14)");
+        const { getByRole } = render(Page, {
+            props: { bankHolidays: {} as Record<string, string> },
+        });
+
+        expect(
+            getByRole("button", { name: "Get the Android app on Google Play" })
+        ).toBeInTheDocument();
+    });
 });

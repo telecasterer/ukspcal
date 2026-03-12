@@ -63,9 +63,11 @@ This keeps your imported calendar both compact and accurate for early-payment ex
 
 ### Installing as an App
 
-- Use the **Install** button when available, or your browser’s **Add to Home Screen / Install App** option.
+- On **Android**, use **Get Android app** to install from **Google Play**.
+- On **iPhone/iPad**, use Safari’s **Share -> Add to Home Screen** option.
+- On **desktop browsers**, use the **Install** button when available, or your browser’s **Install App** option.
 - ![Example](/help/images/install.png)
-- Once installed, all app updates are applied automatically.
+- Once installed, updates are delivered automatically through Google Play on Android or through your browser for PWA installs.
 
 ## UK Holiday Data
 
