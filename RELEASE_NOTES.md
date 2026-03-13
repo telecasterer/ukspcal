@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-13 (v0.5.2)
+
+### Fixes
+
+- cruft removal. more app title/name normalisations (d442fed)
+
 ## 2026-03-13 (v0.5.1)
 
 ### Fixes
