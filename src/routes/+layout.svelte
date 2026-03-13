@@ -8,7 +8,13 @@
     let { children } = $props();
 
     onMount(() => {
-        injectAnalytics();
+        const hostname = window.location.hostname;
+        const isLocalPreview =
+            hostname === "localhost" || hostname === "127.0.0.1";
+
+        if (!isLocalPreview) {
+            injectAnalytics();
+        }
         initPosthog();
         const updateSW = registerSW({
             immediate: true,

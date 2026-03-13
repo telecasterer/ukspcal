@@ -4,9 +4,9 @@
     "version": "0.5.2",
     "type": "module",
     "scripts": {
-        "dev": "vite dev",
+        "dev": "vite dev --host 0.0.0.0",
         "build": "vite build",
-        "preview": "vite preview",
+        "preview": "vite preview --host 0.0.0.0",
         "prepare": "svelte-kit sync || echo ''",
         "hooks:install": "node scripts/install-git-hooks.mjs",
         "commitmsg:check": "node scripts/validate-commit-msg.mjs",
