@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-13 (v0.5.1)
+
+### Fixes
+
+- updated and normalised app name for manifests (7486321)
+
 ## 2026-03-12 (v0.5.0)
 
 ### Features
