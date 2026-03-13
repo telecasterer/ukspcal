@@ -59,7 +59,7 @@
     <meta name="theme-color" content="#2563eb" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="UK Pension Calendar" />
+    <meta name="apple-mobile-web-app-title" content="UK State Pension Calendar" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta
         name="google-site-verification"

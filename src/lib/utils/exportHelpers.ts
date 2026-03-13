@@ -185,7 +185,7 @@ export function generateICS(
     const icsLines: string[] = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//UK Pension Calendar//NONSGML v1.0//EN",
+        "PRODID:-//UK State Pension Calendar//NONSGML v1.0//EN",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
     ];

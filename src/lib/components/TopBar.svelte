@@ -18,26 +18,22 @@
                     class="text-xs min-[390px]:text-sm text-amber-800 dark:text-amber-200 leading-snug"
                 >
                     <span class="sm:hidden"
-                        >Tip: works best in Safari/Chrome/Edge (use “Open in
-                        browser”).</span
+                        >Tip: works best in Safari/Chrome/Edge (use “Open in browser”).</span
                     >
                     <span class="hidden sm:inline"
-                        >Tip: this app works best in Safari/Chrome/Edge (use
-                        “Open in browser”).</span
+                        >Tip: this app works best in Safari/Chrome/Edge (use “Open in browser”).</span
                     >
                 </p>
             </div>
         </div>
     {/if}
-    <div class="max-w-7xl mx-auto flex flex-col gap-2 min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between px-4 py-2">
+    <div
+        class="max-w-7xl mx-auto flex flex-col gap-2 min-[520px]:flex-row min-[520px]:items-center min-[520px]:justify-between px-4 py-2"
+    >
         <div class="flex items-center gap-2">
-            <img
-                src={iconSrc}
-                alt={iconAlt}
-                class="w-7 h-7"
-                style="margin-bottom:2px;"
-            />
-            <span class="text-base min-[390px]:text-lg sm:text-xl font-bold text-blue-700 dark:text-blue-300"
+            <img src={iconSrc} alt={iconAlt} class="w-7 h-7" style="margin-bottom:2px;" />
+            <span
+                class="text-base min-[390px]:text-lg sm:text-xl font-bold text-blue-700 dark:text-blue-300"
                 >{title}</span
             >
         </div>

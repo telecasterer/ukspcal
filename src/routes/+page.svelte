@@ -708,7 +708,7 @@
 </script>
 
 <!-- --- Navigation Bar --- -->
-<TopBar title="UK Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
+<TopBar title="UK State Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
     <svelte:fragment slot="actions">
         <Button
             color="light"

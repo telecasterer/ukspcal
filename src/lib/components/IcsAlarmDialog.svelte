@@ -1,12 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
-    import {
-        Input,
-        Label,
-        Button,
-        Modal,
-        Checkbox as FlowbiteCheckbox,
-    } from "flowbite-svelte";
+    import { Input, Label, Button, Modal, Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
 
     export let open: boolean;
     export let alarmEnabled: boolean = false;
@@ -47,7 +41,9 @@
             </p>
         </div>
         <div class="flex gap-2 items-center">
-            <Label for="days-before" class="text-sm text-gray-700 dark:text-gray-200">Days before event</Label>
+            <Label for="days-before" class="text-sm text-gray-700 dark:text-gray-200"
+                >Days before event</Label
+            >
             <Input
                 id="days-before"
                 type="number"
