@@ -1,7 +1,7 @@
 {
   "id": "/",
   "name": "UK State Pension Calendar",
-  "short_name": "UK Pension Cal",
+  "short_name": "UK State Pension Calendar",
   "description": "Calculate your UK State Pension age and payment dates with bank holiday adjustments and CSV/ICS export.",
   "start_url": "/",
   "scope": "/",

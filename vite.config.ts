@@ -4,6 +4,7 @@ import { execSync } from "child_process";
 import { readFileSync } from "fs";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 const isVitest = Boolean(process.env.VITEST);
+const APP_NAME = "UK State Pension Calendar";
 
 function safeExec(command: string): string | undefined {
     try {
@@ -101,8 +102,8 @@ export default defineConfig({
             ],
             manifest: {
                 id: "/",
-                name: "UK State Pension Age and Payments Calendar",
-                short_name: "UKSPCal",
+                name: APP_NAME,
+                short_name: APP_NAME,
                 description:
                     "UK State Pension age and payments calendar. Show your State Pension age and let you print or export your payments calendar.",
                 start_url: "/",
