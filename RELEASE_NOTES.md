@@ -2,6 +2,23 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-13 (v0.5.3)
+
+### Fixes
+
+- calender print test hardened (994cb15)
+
+### Chores
+
+- switch off vercel analytics in preview mode (f1011b5)
+- bump devalue from 5.6.3 to 5.6.4 (b3a27b2)
+- bump tar from 7.5.10 to 7.5.11 (99a7ec4)
+
+### Other
+
+- Merge branch 'dependabot/npm_and_yarn/devalue-5.6.4' (5aa350d)
+- Merge branch 'dependabot/npm_and_yarn/tar-7.5.11' (fca8689)
+
 ## 2026-03-13 (v0.5.2)
 
 ### Fixes
