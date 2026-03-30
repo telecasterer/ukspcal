@@ -13,8 +13,8 @@
     import { capturePosthog } from "$lib/utils/posthog";
     import { goto } from "$app/navigation";
 
-    let isFacebookInAppBrowser: boolean = false;
-    let copyLinkStatus = "";
+    let isFacebookInAppBrowser: boolean = $state(false);
+    let copyLinkStatus = $state("");
 
     onMount(() => {
         isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
@@ -31,15 +31,15 @@
 
     // Share handled by ShareButton component
     // --- Dark mode state ---
-    let darkMode: boolean = readDarkModeFromStorage();
+    let darkMode: boolean = $state(readDarkModeFromStorage());
 
-    // Make darkMode reactive and persist to localStorage, update document class
-    $: {
+    // Persist darkMode to localStorage and update document class reactively
+    $effect(() => {
         if (typeof window !== "undefined") {
             persistDarkModeToStorage(darkMode);
             applyDarkModeClass(darkMode);
         }
-    }
+    });
     /**
      * --- HELP PAGE LOGIC ---
      *

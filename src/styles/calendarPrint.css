@@ -97,11 +97,11 @@
     }
 
     .calendar-day.payment {
-        background: #22c55e !important;
+        background: #10b981 !important;
         color: #fff !important;
     }
     .legend-item.payment {
-        background: #22c55e !important;
+        background: #10b981 !important;
         color: #fff !important;
     }
     .calendar-day.payment .text-sm {

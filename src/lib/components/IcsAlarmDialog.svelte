@@ -1,31 +1,35 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from "svelte";
     import { Input, Label, Button, Modal, Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
 
-    export let open: boolean;
-    export let alarmEnabled: boolean = false;
-    export let daysBefore: number = 1;
+    let {
+        open = $bindable(),
+        alarmEnabled = false,
+        daysBefore = 1,
+        onsave,
+        onclose,
+    }: {
+        open: boolean;
+        alarmEnabled?: boolean;
+        daysBefore?: number;
+        onsave?: (detail: { alarmEnabled: boolean; daysBefore: number }) => void;
+        onclose?: () => void;
+    } = $props();
 
-    const dispatch = createEventDispatcher();
+    let localReminderEnabled = $state(false);
+    let localDaysBefore = $state(1);
 
-    let localReminderEnabled = alarmEnabled;
-    let localDaysBefore = daysBefore;
-
-    onMount(() => {
+    $effect(() => {
         localReminderEnabled = alarmEnabled;
         localDaysBefore = daysBefore;
     });
 
     function save() {
-        dispatch("save", {
-            alarmEnabled: localReminderEnabled,
-            daysBefore: localDaysBefore,
-        });
-        dispatch("close");
+        onsave?.({ alarmEnabled: localReminderEnabled, daysBefore: localDaysBefore });
+        onclose?.();
     }
 
     function cancel() {
-        dispatch("close");
+        onclose?.();
     }
 </script>
 

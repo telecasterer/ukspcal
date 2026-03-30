@@ -5,13 +5,23 @@
         ArrowRightOutline,
     } from "flowbite-svelte-icons";
 
-    export let visibleRangeLabel: string;
-    export let canJumpToToday: boolean;
-    export let canGoPrevious: boolean;
-    export let canGoNext: boolean;
-    export let onPrevious: () => void;
-    export let onNext: () => void;
-    export let onToday: () => void;
+    let {
+        visibleRangeLabel,
+        canJumpToToday,
+        canGoPrevious,
+        canGoNext,
+        onPrevious,
+        onNext,
+        onToday,
+    }: {
+        visibleRangeLabel: string;
+        canJumpToToday: boolean;
+        canGoPrevious: boolean;
+        canGoNext: boolean;
+        onPrevious: () => void;
+        onNext: () => void;
+        onToday: () => void;
+    } = $props();
 </script>
 
 <div class="w-full calendar-controls print-hide">

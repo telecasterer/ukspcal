@@ -211,8 +211,8 @@
         reminderDialogOpen = true;
     }
 
-    function handleReminderDialogSave(e: CustomEvent<IcsReminderSettings>) {
-        reminderSettings = e.detail;
+    function handleReminderDialogSave(detail: IcsReminderSettings) {
+        reminderSettings = detail;
         saveIcsReminderSettings(reminderSettings);
     }
 
@@ -654,8 +654,8 @@
         bind:open={reminderDialogOpen}
         alarmEnabled={reminderSettings.alarmEnabled}
         daysBefore={reminderSettings.daysBefore}
-        on:save={handleReminderDialogSave}
-        on:close={() => (reminderDialogOpen = false)}
+        onsave={handleReminderDialogSave}
+        onclose={() => (reminderDialogOpen = false)}
     />
 
     <CalendarPager

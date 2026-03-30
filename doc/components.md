@@ -8,7 +8,6 @@
   - `Previous`/`Next` move in 6-month steps.
   - If `Next` reaches the end of generated months, it requests a one-year extension from the parent and regenerates.
 - **CalendarPager.svelte** — Reusable previous/next/today pager row used above and below the month grid.
-- **FloatingFeedbackButton.svelte** — Floating feedback launcher.
 - **IcsAlarmDialog.svelte** — Modal to configure ICS alarm settings.
 - **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options.
 - **SummaryCard.svelte** — Summary panel (first payment, pension age, normal weekday).
