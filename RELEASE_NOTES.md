@@ -2,6 +2,12 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-03-30 (v0.5.4)
+
+### Fixes
+
+- migrate legacy Svelte 4 syntax and correct print colour mismatch (56ab094)
+
 ## 2026-03-13 (v0.5.3)
 
 ### Fixes
