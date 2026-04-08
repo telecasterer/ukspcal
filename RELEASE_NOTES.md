@@ -2,6 +2,23 @@
 
 This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
 
+## 2026-04-08 (v0.5.5)
+
+### Fixes
+
+- various security alerts fixed by updating dependencies (7e3a7c3)
+- migrate legacy Svelte 4 syntax and correct print colour mismatch (9601cf7)
+
+### Refactors
+
+- decomplexify main page and CalendarView (a44bc0e)
+
+### Chores
+
+- v0.5.4 (476efa0)
+- bump undici from 7.21.0 to 7.24.1 (#15) (3f5d5e9)
+- bump flatted from 3.3.3 to 3.4.2 (#16) (8bbf119)
+
 ## 2026-03-30 (v0.5.4)
 
 ### Fixes
