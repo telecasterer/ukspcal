@@ -13,22 +13,7 @@
     import { onMount } from "svelte";
     import claimingMarkdown from "./claiming.md?raw";
     import { renderMarkdown } from "$lib/markdown";
-
-    function isIsoDate(value: string): boolean {
-        return /^\d{4}-\d{2}-\d{2}$/.test(value);
-    }
-
-    function daysUntilIso(iso: string): number {
-        const now = new Date();
-        const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-        const target = new Date(iso + "T00:00:00Z");
-        const targetUtc = Date.UTC(
-            target.getUTCFullYear(),
-            target.getUTCMonth(),
-            target.getUTCDate()
-        );
-        return Math.ceil((targetUtc - todayUtc) / 86400000);
-    }
+    import { daysUntilIso, isIsoDate } from "$lib/utils/isoDateHelpers";
 
     const spaDateIso = $derived.by(() => {
         const value = page.url.searchParams.get("spaDate") ?? "";

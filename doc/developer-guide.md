@@ -84,10 +84,13 @@ app/build/outputs/bundle/release/app-release.aab
 ## Core logic modules
 
 - `src/lib/pensionEngine.ts` — Payment schedule rules and holiday adjustment logic.
+- `src/lib/config.ts` — Shared app constants (persist key, allowed cycle days/date formats, Play Store URL).
 - `src/lib/services/nagerHolidayService.ts` — Holiday overlay using Nager.Date.
+- `src/lib/utils/isoDateHelpers.ts` — Shared ISO date utilities used across routes and components.
+- `src/lib/utils/loadAdditionalHolidays.ts` — Cache-aware fetch of non-UK public holidays with race-condition guard.
+- `src/lib/utils/` — Date formatting, export helpers, persistence, and PWA helpers.
 
 Note: UK bank-holiday adjustments use the app default baseline for England & Wales (`GB-ENG+GB-WLS`). There is no user-facing UK region selector.
-- `src/lib/utils/` — Date formatting, export helpers, persistence, and PWA helpers.
 
 ## Adding features
 

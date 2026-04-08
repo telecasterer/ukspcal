@@ -1,4 +1,5 @@
 <script lang="ts">
+    // --- Imports ---
     import {
         generatePayments,
         type Payment,
@@ -28,51 +29,23 @@
     } from "$lib/utils/inputPersistence";
     import { migrateLegacyUkRegion } from "$lib/utils/persistedInputsMigration";
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
-    import { onMount } from "svelte";
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
-
-    import { goto } from "$app/navigation";
-    import {
-        loadHolidaysFromCache,
-        saveHolidaysToCache,
-    } from "$lib/utils/holidayCache";
+    import { loadAdditionalHolidays } from "$lib/utils/loadAdditionalHolidays";
     import { detectCountryFromTimezone } from "$lib/utils/timezoneDetection";
     import { capturePosthog } from "$lib/utils/posthog";
-
-    // Reset all fields and clear all saved values
-    function handleResetAll() {
-        clearAllAppStorage();
-        // Reset all state variables to defaults
-        ni = "";
-        dob = "";
-        startYear = new Date().getFullYear();
-        numberOfYears = 5;
-        cycleDays = 28;
-        showBankHolidays = true;
-        csvDateFormat = "dd/mm/yyyy";
-        icsEventName = "UK State Pension Payment";
-        icsCategory = "Finance";
-        icsColor = "#22c55e";
-        selectedCountry = "none";
-        ukRegion = "GB-ENG+GB-WLS";
-        additionalHolidays = {};
-        isLoadingAdditionalHolidays = false;
-        additionalHolidaysError = "";
-        lastAdditionalHolidaysKey = "";
-        additionalHolidaysRequestSeq = 0;
-        ukHolidaysRequestSeq = 0;
-        pendingCalendarFocusIso = null;
-        minPaymentIso = null;
-        lastFirstPaymentAfterSpaKey = null;
-        currentCalendarMonth = new Date().getMonth();
-        currentCalendarYear = new Date().getFullYear();
-        // Follow saved preference if present, otherwise device setting.
-        darkMode = readDarkModeFromStorage();
-        result = null;
-        error = "";
-        hasUserCommittedInputs = false;
-        hasLoadedPersistedInputs = true;
-    }
+    import {
+        subtractMonthsFromIso,
+        formatIsoDateLong,
+        daysUntilIso,
+    } from "$lib/utils/isoDateHelpers";
+    import {
+        PERSIST_KEY,
+        ANDROID_PLAY_STORE_URL,
+        ALLOWED_CYCLE_DAYS,
+        ALLOWED_DATE_FORMATS,
+    } from "$lib/config";
+    import { goto } from "$app/navigation";
+    import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
     import {
         computeIsStandalone,
         getDisplayModeStandalone,
@@ -80,33 +53,44 @@
         shouldShowIosInstallHelp,
         type BeforeInstallPromptEvent,
     } from "$lib/utils/pwaInstall";
+    import { onMount } from "svelte";
     import "../styles/calendarPrint.css";
 
-    const PERSIST_KEY = "ukspcal.inputs.v1";
-    const ANDROID_PLAY_STORE_URL =
-        "https://play.google.com/store/apps/details?id=app.vercel.ukspcal.twa";
-    const ALLOWED_CYCLE_DAYS = new Set([7, 14, 28, 91]);
-    const ALLOWED_DATE_FORMATS = new Set<DateFormat>([
-        "dd/mm/yyyy",
-        "dd-mmm-yyyy",
-        "yyyy-mm-dd",
-        "mm/dd/yyyy",
-        "ddd, d mmmm yyyy",
-    ]);
+    // --- Props ---
+    type PageProps = { bankHolidays?: Record<string, string> };
+    const { bankHolidays: initialBankHolidays = {} }: PageProps = $props();
 
-    // --- State variables (using Svelte runes mode) ---
+    // --- State: core inputs ---
     let ni: string = $state("");
+    let dob: string = $state("");
     let startYear: number = $state(new Date().getFullYear());
     let numberOfYears: number = $state(5);
-    let cycleDays: number = $state<number>(28);
+    let cycleDays: number = $state(28);
     let showBankHolidays: boolean = $state(true);
-    let csvDateFormat: DateFormat = $state<DateFormat>("dd/mm/yyyy");
+    let csvDateFormat: DateFormat = $state("dd/mm/yyyy");
     let icsEventName: string = $state("UK State Pension Payment");
     let icsCategory: string = $state("Finance");
     let icsColor: string = $state("#22c55e");
-    let dob: string = $state("");
-    let detectedCountry: string = detectCountryFromTimezone();
     let ukRegion: string = $state("GB-ENG+GB-WLS"); // England & Wales default (combined)
+    const detectedCountry: string = detectCountryFromTimezone();
+    let result: PensionResult | null = $state(null);
+    let error: string = $state("");
+    let hasUserCommittedInputs: boolean = $state(false);
+    let hasLoadedPersistedInputs: boolean = $state(false);
+
+    // --- State: calendar navigation ---
+    const currentYear: number = new Date().getFullYear();
+    const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 15 + i);
+    let startYearSelect: string = $state("");
+    let numberOfYearsInput: string = $state("");
+    let currentCalendarMonth: number = $state(new Date().getMonth());
+    let currentCalendarYear: number = $state(new Date().getFullYear());
+    let pendingCalendarFocusIso: string | null = $state(null);
+    let minPaymentIso: string | null = $state(null);
+    let lastFirstPaymentAfterSpaKey: string | null = $state(null);
+
+    // --- State: holiday loading ---
+    let bankHolidays: Record<string, string> = $state({});
     let selectedCountry: string = $state("none");
     let additionalHolidays: Record<string, string> = $state({});
     let isLoadingAdditionalHolidays: boolean = $state(false);
@@ -115,20 +99,18 @@
     let ukHolidaysRequestSeq = 0;
     let additionalHolidaysRequestSeq = 0;
 
+    // --- State: PWA install ---
+    let darkMode: boolean = $state(readDarkModeFromStorage());
+    let isFacebookInAppBrowser: boolean = $state(false);
+    let isAndroid: boolean = $state(false);
+    let isStandalone: boolean = $state(false);
+    let canInstallPwa: boolean = $state(false);
+    let showInstallHelpModal: boolean = $state(false);
+    let showIosInstallHelp: boolean = $state(false);
+    let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
+    let hasCapturedInstallAccepted: boolean = $state(false);
 
-    const currentYear: number = new Date().getFullYear();
-    const years: number[] = Array.from(
-        { length: 50 },
-        (_, i) => currentYear - 15 + i
-    );
-
-    let startYearSelect: string = $state("");
-    let numberOfYearsInput: string = $state("");
-
-    // --- Initialize result early for use in deriveds ---
-    let result: PensionResult | null = $state(null);
-
-    // --- Derived SPA date ---
+    // --- Derived values ---
     const spaDateIso = $derived.by(() => {
         if (!dob) return "";
         try {
@@ -141,11 +123,9 @@
 
     const hasPassedSpa = $derived.by(() => {
         if (!spaDateIso) return false;
-        const todayIso = new Date().toISOString().slice(0, 10);
-        return todayIso >= spaDateIso;
+        return new Date().toISOString().slice(0, 10) >= spaDateIso;
     });
 
-    // --- Derived first payment date after SPA ---
     const firstPaymentDateFormatted = $derived.by(() => {
         if (!result || result.payments.length === 0) return "";
         try {
@@ -163,9 +143,7 @@
     const nextPaymentDateFormatted = $derived.by(() => {
         if (!result || result.payments.length === 0 || !hasPassedSpa) return "";
         const todayIso = new Date().toISOString().slice(0, 10);
-        const nextPayment = result.payments.find(
-            (payment) => payment.paid >= todayIso
-        );
+        const nextPayment = result.payments.find((p) => p.paid >= todayIso);
         if (!nextPayment) return "";
         try {
             const d = new Date(nextPayment.paid + "T00:00:00Z");
@@ -179,53 +157,14 @@
         }
     });
 
-    function subtractMonthsFromIso(iso: string, months: number): string {
-        const [year, month, day] = iso.split("-").map((v) => Number.parseInt(v, 10));
-        const start = Date.UTC(year, month - 1, 1);
-        const target = new Date(start);
-        target.setUTCMonth(target.getUTCMonth() - months);
-        const targetYear = target.getUTCFullYear();
-        const targetMonth = target.getUTCMonth() + 1;
-        const lastDay = new Date(Date.UTC(targetYear, targetMonth, 0)).getUTCDate();
-        const clampedDay = Math.min(day, lastDay);
-        return `${targetYear}-${String(targetMonth).padStart(2, "0")}-${String(clampedDay).padStart(2, "0")}`;
-    }
-
-    function formatIsoDateLong(iso: string): string {
-        const d = new Date(iso + "T00:00:00Z");
-        return d.toLocaleDateString("en-GB", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
-    }
-
-    function daysUntilIso(iso: string): number {
-        const now = new Date();
-        const todayUtc = Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate()
-        );
-        const target = new Date(iso + "T00:00:00Z");
-        const targetUtc = Date.UTC(
-            target.getUTCFullYear(),
-            target.getUTCMonth(),
-            target.getUTCDate()
-        );
-        return Math.max(0, Math.ceil((targetUtc - todayUtc) / 86400000));
-    }
-
     const statePensionApplyInfo = $derived.by(() => {
         if (!spaDateIso || hasPassedSpa) return null;
         const applyFromIso = subtractMonthsFromIso(spaDateIso, 4);
         const applyNow = applyFromIso <= new Date().toISOString().slice(0, 10);
-        const countdownDays = applyNow ? 0 : daysUntilIso(applyFromIso);
         return {
             applyFromIso,
             applyFromFormatted: formatIsoDateLong(applyFromIso),
-            countdownDays,
+            countdownDays: applyNow ? 0 : daysUntilIso(applyFromIso),
             applyNow,
         };
     });
@@ -234,18 +173,6 @@
         if (!spaDateIso || hasPassedSpa) return false;
         return daysUntilIso(spaDateIso) <= 92;
     });
-
-    let darkMode: boolean = $state(readDarkModeFromStorage());
-    let hasLoadedPersistedInputs: boolean = $state(false);
-    let hasUserCommittedInputs: boolean = $state(false);
-    let isFacebookInAppBrowser: boolean = $state(false);
-    let isAndroid: boolean = $state(false);
-    let isStandalone: boolean = $state(false);
-    let canInstallPwa: boolean = $state(false);
-    let showInstallHelpModal: boolean = $state(false);
-    let showIosInstallHelp: boolean = $state(false);
-    let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
-    let hasCapturedInstallAccepted: boolean = $state(false);
 
     const showInstallCta = $derived.by(
         () =>
@@ -262,41 +189,13 @@
         isAndroid ? "Get the Android app on Google Play" : "Install app"
     );
 
-    function captureInstallAcceptedOnce() {
-        if (hasCapturedInstallAccepted) return;
-        hasCapturedInstallAccepted = true;
-        capturePosthog("install_prompt_accepted");
-    }
-
-    // --- Input persistence logic ---
-    function persistInputs(): void {
-        if (typeof window === "undefined") return;
-        if (!hasLoadedPersistedInputs) return;
-        hasUserCommittedInputs = true;
-        const payload = {
-            ni,
-            dob,
-            startYear: Number(startYear),
-            numberOfYears: Number(numberOfYears),
-            cycleDays: Number(cycleDays),
-            showBankHolidays,
-            csvDateFormat,
-            icsEventName,
-            icsCategory,
-            icsColor,
-            selectedCountry,
-        };
-        // Ignore storage quota / private mode errors.
-        savePersistedInputs(localStorage, PERSIST_KEY, payload);
-    }
-
+    // --- Lifecycle ---
     onMount(() => {
         const ua = navigator.userAgent ?? "";
         isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
         isAndroid = isAndroidUserAgent(ua);
 
         const mq =
-            typeof window !== "undefined" &&
             typeof window.matchMedia === "function"
                 ? window.matchMedia("(display-mode: standalone)")
                 : null;
@@ -333,10 +232,7 @@
         window.addEventListener("appinstalled", onAppInstalled);
 
         // On iOS there's no `beforeinstallprompt`. Offer help instead.
-        showIosInstallHelp = shouldShowIosInstallHelp({
-            userAgent: ua,
-            isStandalone,
-        });
+        showIosInstallHelp = shouldShowIosInstallHelp({ userAgent: ua, isStandalone });
 
         try {
             migrateLegacyUkRegion(localStorage, PERSIST_KEY);
@@ -347,24 +243,17 @@
 
             if (persisted.ni !== undefined) ni = persisted.ni;
             if (persisted.dob !== undefined) dob = persisted.dob;
-            if (persisted.startYear !== undefined)
-                startYear = persisted.startYear;
-            if (persisted.numberOfYears !== undefined) {
+            if (persisted.startYear !== undefined) startYear = persisted.startYear;
+            if (persisted.numberOfYears !== undefined)
                 numberOfYears = Number(persisted.numberOfYears);
-            }
-            if (persisted.cycleDays !== undefined)
-                cycleDays = persisted.cycleDays;
+            if (persisted.cycleDays !== undefined) cycleDays = persisted.cycleDays;
             if (persisted.showBankHolidays !== undefined)
                 showBankHolidays = persisted.showBankHolidays;
-            if (persisted.csvDateFormat !== undefined)
-                csvDateFormat = persisted.csvDateFormat;
-            if (persisted.icsEventName !== undefined)
-                icsEventName = persisted.icsEventName;
-            if (persisted.icsCategory !== undefined)
-                icsCategory = persisted.icsCategory;
+            if (persisted.csvDateFormat !== undefined) csvDateFormat = persisted.csvDateFormat;
+            if (persisted.icsEventName !== undefined) icsEventName = persisted.icsEventName;
+            if (persisted.icsCategory !== undefined) icsCategory = persisted.icsCategory;
             if (persisted.icsColor !== undefined) icsColor = persisted.icsColor;
-            if (persisted.selectedCountry !== undefined)
-                selectedCountry = persisted.selectedCountry;
+            if (persisted.selectedCountry !== undefined) selectedCountry = persisted.selectedCountry;
         } catch {
             // Ignore invalid/corrupt stored values.
         } finally {
@@ -373,60 +262,166 @@
 
         return () => {
             mq?.removeEventListener?.("change", onMqChange);
-            window.removeEventListener(
-                "beforeinstallprompt",
-                onBeforeInstallPrompt
-            );
+            window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
             window.removeEventListener("appinstalled", onAppInstalled);
         };
     });
 
-    // Share handled by ShareButton component
-
-    import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
-
-    type PageProps = {
-        bankHolidays?: Record<string, string>;
-    };
-    const { bankHolidays: initialBankHolidays = {} }: PageProps = $props();
-    let bankHolidays: Record<string, string> = $state({});
+    // --- Effects ---
 
     $effect.pre(() => {
         bankHolidays = initialBankHolidays;
     });
 
-    // Fetch UK holidays for the selected region and year range
+    // Sync string inputs for year-range selects
+    $effect.pre(() => {
+        startYearSelect = String(startYear);
+        numberOfYearsInput = String(numberOfYears);
+    });
+
+    // Fetch UK bank holidays for the selected region and year range.
+    // Note: `ukRegion` is intentionally NOT persisted — always defaults to GB-ENG+GB-WLS.
     $effect.pre(() => {
         if (!ukRegion || !hasLoadedPersistedInputs) return;
-        const years = Array.from({ length: numberOfYears }, (_, i) => startYear + i);
+        const yrs = Array.from({ length: numberOfYears }, (_, i) => startYear + i);
         const requestId = ++ukHolidaysRequestSeq;
         (async () => {
-            // Always use countryCode GB for UK, and pass region code for filtering
-            const holidays = await fetchHolidaysForCountryAndYears("GB", years, ukRegion);
+            const holidays = await fetchHolidaysForCountryAndYears("GB", yrs, ukRegion);
             if (requestId !== ukHolidaysRequestSeq) return;
             bankHolidays = holidays;
         })();
     });
 
-    // Note: `ukRegion` is intentionally NOT persisted or restored.
-    // The app defaults to England & Wales (`GB-ENG+GB-WLS`) for all
-    // payment/early-payment calculations regardless of any prior
-    // saved value.
-
-    let error = $state("");
-
-    let currentCalendarMonth = $state(new Date().getMonth());
-    let currentCalendarYear = $state(new Date().getFullYear());
-
-    let pendingCalendarFocusIso = $state<string | null>(null);
-
-    let minPaymentIso = $state<string | null>(null);
-    let lastFirstPaymentAfterSpaKey = $state<string | null>(null);
-
+    // Fetch additional (non-UK) holidays when year range or country changes
     $effect.pre(() => {
-        startYearSelect = String(startYear);
-        numberOfYearsInput = String(numberOfYears);
+        if (!hasLoadedPersistedInputs) return;
+        if (selectedCountry === "none") {
+            additionalHolidaysRequestSeq += 1;
+            isLoadingAdditionalHolidays = false;
+            additionalHolidays = {};
+            additionalHolidaysError = "";
+            lastAdditionalHolidaysKey = "";
+            return;
+        }
+        const key = `${selectedCountry}:${startYear}:${numberOfYears}`;
+        if (key === lastAdditionalHolidaysKey) return;
+        lastAdditionalHolidaysKey = key;
+        handleCountryChange(selectedCountry);
     });
+
+    // Persist dark mode preference and apply CSS class
+    $effect.pre(() => {
+        if (typeof window !== "undefined") {
+            persistDarkModeToStorage(darkMode);
+            applyDarkModeClass(darkMode);
+        }
+    });
+
+    // --- Helper functions ---
+
+    function captureInstallAcceptedOnce() {
+        if (hasCapturedInstallAccepted) return;
+        hasCapturedInstallAccepted = true;
+        capturePosthog("install_prompt_accepted");
+    }
+
+    function isoYear(iso: string): number {
+        return Number(iso.slice(0, 4));
+    }
+
+    // Persistence is triggered only on commit/blur/change, not on every keystroke.
+    function persistInputs(): void {
+        if (typeof window === "undefined" || !hasLoadedPersistedInputs) return;
+        hasUserCommittedInputs = true;
+        savePersistedInputs(localStorage, PERSIST_KEY, {
+            ni,
+            dob,
+            startYear: Number(startYear),
+            numberOfYears: Number(numberOfYears),
+            cycleDays: Number(cycleDays),
+            showBankHolidays,
+            csvDateFormat,
+            icsEventName,
+            icsCategory,
+            icsColor,
+            selectedCountry,
+        });
+    }
+
+    function generate(source: string = "auto") {
+        error = "";
+        if (!/^\d{2}[A-D]$/i.test(ni)) {
+            error =
+                "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
+            result = null;
+            capturePosthog("schedule_generate_validation_failed", {
+                source,
+                reason: "invalid_ni",
+            });
+            return;
+        }
+        const generated = generatePayments(
+            ni,
+            startYear,
+            startYear + numberOfYears - 1,
+            cycleDays,
+            bankHolidays
+        );
+        const filteredPayments = minPaymentIso
+            ? generated.payments.filter((p) => p.paid >= minPaymentIso!)
+            : generated.payments;
+        result = { ...generated, payments: filteredPayments };
+        capturePosthog("schedule_generated", {
+            source,
+            cycle_days: cycleDays,
+            start_year: startYear,
+            number_of_years: numberOfYears,
+            payments_count: result.payments.length,
+        });
+        // Reset calendar to the requested focus date (if set), otherwise first payment.
+        if (result.payments.length > 0) {
+            const focusIso = pendingCalendarFocusIso ?? result.payments[0].paid;
+            const focusDate = new Date(focusIso + "T00:00:00Z");
+            currentCalendarMonth = focusDate.getUTCMonth();
+            currentCalendarYear = focusDate.getUTCFullYear();
+        }
+        pendingCalendarFocusIso = null;
+    }
+
+    // --- Event handlers ---
+
+    function handleResetAll() {
+        clearAllAppStorage();
+        ni = "";
+        dob = "";
+        startYear = new Date().getFullYear();
+        numberOfYears = 5;
+        cycleDays = 28;
+        showBankHolidays = true;
+        csvDateFormat = "dd/mm/yyyy";
+        icsEventName = "UK State Pension Payment";
+        icsCategory = "Finance";
+        icsColor = "#22c55e";
+        selectedCountry = "none";
+        ukRegion = "GB-ENG+GB-WLS";
+        additionalHolidays = {};
+        isLoadingAdditionalHolidays = false;
+        additionalHolidaysError = "";
+        lastAdditionalHolidaysKey = "";
+        additionalHolidaysRequestSeq = 0;
+        ukHolidaysRequestSeq = 0;
+        pendingCalendarFocusIso = null;
+        minPaymentIso = null;
+        lastFirstPaymentAfterSpaKey = null;
+        currentCalendarMonth = new Date().getMonth();
+        currentCalendarYear = new Date().getFullYear();
+        // Follow saved preference if present, otherwise device setting.
+        darkMode = readDarkModeFromStorage();
+        result = null;
+        error = "";
+        hasUserCommittedInputs = false;
+        hasLoadedPersistedInputs = true;
+    }
 
     function applyStartYear() {
         const n = Number.parseInt(startYearSelect, 10);
@@ -456,9 +451,6 @@
         return true;
     }
 
-    /**
-     * Handle country selection change
-     */
     async function handleCountryChange(country: string) {
         selectedCountry = country;
         persistInputs();
@@ -470,162 +462,20 @@
             additionalHolidays = {};
             return;
         }
+
         const requestId = ++additionalHolidaysRequestSeq;
-
-        // For regional UK overlays (GB-SCT, GB-NIR) use countryCode "GB"
-        // and pass the region code to the holiday service. Keep the cache
-        // key as the selected value (e.g., "GB-SCT") so overlays are cached
-        // separately.
-        const isGbRegion = typeof country === "string" && country.startsWith("GB-");
-        const cacheKey = country;
-
-        // Try to load from cache first
-        let cached = loadHolidaysFromCache(cacheKey);
-        // If a cache entry exists but its `data` is empty (e.g. stale or malformed
-        // save), invalidate it so we fetch fresh data. This addresses cases where
-        // localStorage contains a years list but no holiday keys.
-        try {
-            if (cached && Object.keys(cached.data || {}).length === 0) {
-                if (typeof window !== 'undefined') localStorage.removeItem(`holiday_cache_${cacheKey}`);
-                cached = null;
-            }
-        } catch {
-            // ignore inspection errors
-        }
-
-        const yearsToFetch = Array.from(
-            { length: numberOfYears },
-            (_, i) => startYear + i
-        );
-
-        // If cache covers all needed years, use it
-        if (cached && yearsToFetch.every((y) => cached.years.includes(y))) {
-            if (requestId !== additionalHolidaysRequestSeq) return;
-            isLoadingAdditionalHolidays = false;
-            additionalHolidays = cached.data;
-            return;
-        }
-
-        // Fetch from API (only missing years if cache exists)
         isLoadingAdditionalHolidays = true;
-        const missingYears = cached
-            ? yearsToFetch.filter((y) => !cached.years.includes(y))
-            : yearsToFetch;
-        try {
-            let holidays: Record<string, string> = {};
-            if (isGbRegion) {
-                // country is like "GB-SCT"; fetch with countryCode "GB" and region
-                const regionCode = country; // e.g., "GB-SCT"
-                holidays = await fetchHolidaysForCountryAndYears(
-                    "GB",
-                    missingYears,
-                    regionCode
-                );
-                // fetched GB region holidays
-            } else {
-                holidays = await fetchHolidaysForCountryAndYears(
-                    country,
-                    missingYears
-                );
-                // fetched country holidays
-            }
-            const merged = cached ? { ...cached.data, ...holidays } : holidays;
-            const mergedYears = cached
-                ? [...new Set([...cached.years, ...missingYears])]
-                : yearsToFetch;
-
-            if (requestId !== additionalHolidaysRequestSeq) return;
-            additionalHolidays = merged;
-            saveHolidaysToCache(cacheKey, merged, mergedYears);
-        } catch (error) {
-            if (requestId !== additionalHolidaysRequestSeq) return;
-            console.error(`Error fetching holidays for ${country}:`, error);
-            additionalHolidays = {};
-            additionalHolidaysError =
-                "Couldn't load additional holidays right now. Try again.";
-        } finally {
-            if (requestId !== additionalHolidaysRequestSeq) return;
-            isLoadingAdditionalHolidays = false;
-        }
-    }
-
-    // Fetch holidays when app loads or when year range changes with a selected country
-    $effect.pre(() => {
-        if (!hasLoadedPersistedInputs) return;
-        if (selectedCountry === "none") {
-            additionalHolidaysRequestSeq += 1;
-            isLoadingAdditionalHolidays = false;
-            additionalHolidays = {};
-            additionalHolidaysError = "";
-            lastAdditionalHolidaysKey = "";
-            return;
-        }
-
-        const key = `${selectedCountry}:${startYear}:${numberOfYears}`;
-        if (key === lastAdditionalHolidaysKey) return;
-        lastAdditionalHolidaysKey = key;
-        handleCountryChange(selectedCountry);
-    });
-
-    // Dark mode effect
-    $effect.pre(() => {
-        if (typeof window !== "undefined") {
-            persistDarkModeToStorage(darkMode);
-            applyDarkModeClass(darkMode);
-        }
-    });
-
-    // Note: persistence is intentionally triggered only on commit/blur/change
-    // from input components (see `persistInputs()`), to avoid per-keystroke writes.
-
-    // Generate pension schedule
-    function generate(source: string = "auto") {
-        error = "";
-
-        if (!/^\d{2}[A-D]$/i.test(ni)) {
-            error =
-                "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
-            result = null;
-            capturePosthog("schedule_generate_validation_failed", {
-                source,
-                reason: "invalid_ni",
-            });
-            return;
-        }
-
-        const endYear = startYear + numberOfYears - 1;
-        const generated = generatePayments(
-            ni,
+        const result = await loadAdditionalHolidays(
+            country,
             startYear,
-            endYear,
-            cycleDays,
-            bankHolidays
+            numberOfYears,
+            requestId,
+            () => additionalHolidaysRequestSeq
         );
-
-        const minIso = minPaymentIso;
-
-        const filteredPayments = minIso
-            ? generated.payments.filter((p) => p.paid >= minIso)
-            : generated.payments;
-
-        result = { ...generated, payments: filteredPayments };
-        capturePosthog("schedule_generated", {
-            source,
-            cycle_days: cycleDays,
-            start_year: startYear,
-            number_of_years: numberOfYears,
-            payments_count: result.payments.length,
-        });
-
-        // Reset calendar to a requested focus date (if set), otherwise first payment.
-        if (result && result.payments.length > 0) {
-            const focusIso = pendingCalendarFocusIso ?? result.payments[0].paid;
-            const focusDate = new Date(focusIso + "T00:00:00Z");
-            currentCalendarMonth = focusDate.getUTCMonth();
-            currentCalendarYear = focusDate.getUTCFullYear();
-        }
-
-        pendingCalendarFocusIso = null;
+        if (result === null) return; // superseded by a newer request
+        additionalHolidays = result.holidays;
+        additionalHolidaysError = result.error;
+        isLoadingAdditionalHolidays = false;
     }
 
     function handleFirstPaymentAfterSpa(payment: Payment | null) {
@@ -634,27 +484,16 @@
             lastFirstPaymentAfterSpaKey = null;
             return;
         }
-
         const key = `${payment.due}|${payment.paid}`;
         if (key === lastFirstPaymentAfterSpaKey) return;
         lastFirstPaymentAfterSpaKey = key;
-
         // Auto-start calendar from the first payment after SPA (use paid date so early payments still show).
         minPaymentIso = payment.paid;
-
-        const start = Math.min(isoYear(payment.due), isoYear(payment.paid));
-        startYear = start;
-
+        startYear = Math.min(isoYear(payment.due), isoYear(payment.paid));
         pendingCalendarFocusIso = payment.paid;
         generate("spa_auto_focus");
-
-        // This handler runs as a consequence of user commits (NI/DOB/cycle changes).
         // Persist the auto-adjusted year range so the UI comes back the same next time.
         if (hasUserCommittedInputs) persistInputs();
-    }
-
-    function isoYear(iso: string): number {
-        return Number(iso.slice(0, 4));
     }
 
     async function handleInstallClick() {
@@ -665,14 +504,12 @@
             is_standalone: isStandalone,
             in_app_browser: isFacebookInAppBrowser,
         });
-        if (isFacebookInAppBrowser) return;
-        if (isStandalone) return;
+        if (isFacebookInAppBrowser || isStandalone) return;
         if (isAndroid) {
             capturePosthog("install_play_store_opened");
             window.location.assign(ANDROID_PLAY_STORE_URL);
             return;
         }
-
         if (canInstallPwa && deferredInstallPrompt) {
             await deferredInstallPrompt.prompt();
             // Clear prompt either way; browser usually only allows it once.
@@ -683,14 +520,11 @@
                 } else {
                     capturePosthog("install_prompt_dismissed");
                 }
-            } catch {
-                // Ignore
-            }
+            } catch { /* ignore */ }
             deferredInstallPrompt = null;
             canInstallPwa = false;
             return;
         }
-
         if (showIosInstallHelp) {
             showInstallHelpModal = true;
             capturePosthog("install_help_opened");
@@ -763,7 +597,7 @@
                 <span class="font-semibold">Add to Home Screen</span>.
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-                If you’re viewing inside an in-app browser, use “Open in browser” first.
+                If you're viewing inside an in-app browser, use "Open in browser" first.
             </p>
             <div class="flex justify-end">
                 <Button
@@ -830,7 +664,6 @@
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
                         onPersist={persistInputs}
                         onRecalculate={handleInputsRecalculate}
-                        
                     />
                 </div>
 
@@ -842,7 +675,7 @@
                             embedded
                             spaDate={firstPaymentDateFormatted}
                             nextPaymentDate={nextPaymentDateFormatted}
-                            statePensionApplyInfo={statePensionApplyInfo}
+                            {statePensionApplyInfo}
                             {spaDateIso}
                             {isWithinThreeMonthsOfSpa}
                         />
@@ -875,7 +708,6 @@
                         size="xl"
                         class="card-surface w-full calendar-print-wrapper"
                     >
-                        
                         <CalendarView
                             {result}
                             payments={result.payments}

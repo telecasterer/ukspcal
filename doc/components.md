@@ -4,11 +4,15 @@
 
 - **AppFooter.svelte** — Footer with links and disclosures.
 - **CalendarMonth.svelte** — Renders a single month’s payment calendar grid.
-- **CalendarView.svelte** — Main calendar view; handles navigation and layouts.
+- **CalendarView.svelte** — Main calendar view; handles navigation, layout, and print controls.
   - `Previous`/`Next` move in 6-month steps.
   - If `Next` reaches the end of generated months, it requests a one-year extension from the parent and regenerates.
+  - Export and country-selector UI is delegated to sub-components (see below).
 - **CalendarPager.svelte** — Reusable previous/next/today pager row used above and below the month grid.
+- **CountryHolidaySelector.svelte** — Checkbox + country dropdown for optional non-UK holiday overlays, including loading/error states.
+- **CsvExportModal.svelte** — Modal for CSV export with date-format selection.
 - **IcsAlarmDialog.svelte** — Modal to configure ICS alarm settings.
+- **IcsExportModal.svelte** — Modal for ICS export with event name, category, colour, time, and reminder settings.
 - **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options.
 - **SummaryCard.svelte** — Summary panel (first payment, pension age, normal weekday).
 - **SummaryCardContent.svelte** — Shared markup for summary content (used by SummaryCard).
@@ -18,10 +22,9 @@
 ## Core logic (src/lib)
 
 - **pensionEngine.ts** — Generates payment schedules and applies holiday adjustments.
-- **bankHolidays.ts** — Types for bank holiday responses and maps.
+- **config.ts** — Shared app constants: `PERSIST_KEY`, `ANDROID_PLAY_STORE_URL`, `ALLOWED_CYCLE_DAYS`, `ALLOWED_DATE_FORMATS`.
 - **buildInfo.ts** — Build metadata used in the UI.
 - **services/nagerHolidayService.ts** — Optional public holiday overlay for non-UK calendars.
-	- Used for additional holiday overlays and country-level holiday lookup.
 
 ## Utilities (src/lib/utils)
 
@@ -35,7 +38,10 @@
 - **icsAlarmPersistence.ts** — Persist ICS alarm settings.
 - **icsEventTimePersistence.ts** — Persist ICS event time selection.
 - **inputPersistence.ts** — Persisting form state in local storage.
+- **isoDateHelpers.ts** — Shared ISO date utilities: `isIsoDate`, `subtractMonthsFromIso`, `formatIsoDateLong`, `daysUntilIso`.
+- **loadAdditionalHolidays.ts** — Fetches and caches additional (non-UK) public holidays for a given country and year range, with stale-cache invalidation, incremental year fetching, and race-condition guarding.
 - **persistedInputsMigration.ts** — One-time migration for legacy persisted input keys.
+- **posthog.ts** — Analytics event helpers.
 - **statePensionAge.ts** — State Pension age calculation.
 - **pwaInstall.ts** — PWA install prompt helpers.
 - **inAppBrowser.ts** — In-app browser detection.
