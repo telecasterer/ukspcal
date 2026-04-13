@@ -10,13 +10,32 @@
         applyNow: boolean;
     };
 
-    export let result: PensionResult;
+    type SpaPreviewData = {
+        spaDateFormatted: string;
+        spaAgeYears: number;
+        spaAgeMonths: number;
+        spaSource: string;
+        showPre2016Warning: boolean;
+        firstPayment: {
+            dueFormatted: string;
+            paidFormatted: string;
+            isEarly: boolean;
+            comprisingText: string;
+        } | null;
+        secondPayment: {
+            dueFormatted: string;
+            paidFormatted: string;
+            isEarly: boolean;
+        } | null;
+    };
+
+    export let result: PensionResult | null = null;
     export let embedded: boolean = false;
-    export let spaDate: string = "";
     export let nextPaymentDate: string = "";
     export let statePensionApplyInfo: StatePensionApplyInfo | null = null;
     export let spaDateIso: string = "";
     export let isWithinThreeMonthsOfSpa: boolean = false;
+    export let spaPreviewData: SpaPreviewData | null = null;
 </script>
 
 {#if embedded}
@@ -24,11 +43,11 @@
     <div class="p-6 summary-section">
         <SummaryCardContent
             {result}
-            {spaDate}
             {nextPaymentDate}
             {statePensionApplyInfo}
             {spaDateIso}
             {isWithinThreeMonthsOfSpa}
+            {spaPreviewData}
         />
     </div>
 {:else}
@@ -39,11 +58,11 @@
         <div class="p-6">
             <SummaryCardContent
                 {result}
-                {spaDate}
                 {nextPaymentDate}
                 {statePensionApplyInfo}
                 {spaDateIso}
                 {isWithinThreeMonthsOfSpa}
+                {spaPreviewData}
             />
         </div>
     </div>

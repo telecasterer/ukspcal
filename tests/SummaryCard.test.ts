@@ -14,7 +14,7 @@ describe("SummaryCard", () => {
 
     it("renders embedded summary", () => {
         const { getByText } = render(SummaryCard, {
-            props: { result, embedded: true, spaDate: "2026-01-05" },
+            props: { result, embedded: true },
         });
         expect(getByText("Schedule summary")).toBeInTheDocument();
         expect(getByText("00A")).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe("SummaryCard", () => {
 
     it("renders standalone summary", () => {
         const { getByText } = render(SummaryCard, {
-            props: { result, embedded: false, spaDate: "2026-01-05" },
+            props: { result, embedded: false },
         });
         expect(getByText("Schedule summary")).toBeInTheDocument();
         expect(getByText("00A")).toBeInTheDocument();

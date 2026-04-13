@@ -74,26 +74,6 @@ describe("PensionInputsCard", () => {
         expect(getByDisplayValue(expectedDefaultDob)).toBeInTheDocument();
     });
 
-    it("shows invalid-date alert when dob is present but invalid", () => {
-        const { getByText } = renderCard({
-            props: { dob: "not-a-date" },
-        } as any);
-        expect(getByText(/Please enter a valid date/i)).toBeInTheDocument();
-    });
-
-    it("shows a warning when SPA is before 6 April 2016", () => {
-        const { getByRole } = renderCard({
-            props: {
-                ni: "29B",
-                dob: "1950-01-01",
-            },
-        } as any);
-
-        expect(getByRole("alert")).toHaveTextContent(
-            /on or after\s+6 April 2016/i
-        );
-    });
-
     it("calls onFirstPaymentAfterSpa when it can compute the first payment", async () => {
         const onFirstPaymentAfterSpa = vi.fn();
 
@@ -119,15 +99,4 @@ describe("PensionInputsCard", () => {
         expect(arg).toHaveProperty("paid");
     });
 
-    it("shows first-payment proportion as a percentage of the full payment", () => {
-        const { getByText } = renderCard({
-            props: {
-                ni: "29B",
-                dob: "1956-03-15",
-                cycleDays: 28,
-            },
-        } as any);
-
-        expect(getByText(/% of a full 28-day payment\)/i)).toBeInTheDocument();
-    });
 });

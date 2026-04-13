@@ -13,9 +13,9 @@
 - **CsvExportModal.svelte** — Modal for CSV export with date-format selection.
 - **IcsAlarmDialog.svelte** — Modal to configure ICS alarm settings.
 - **IcsExportModal.svelte** — Modal for ICS export with event name, category, colour, time, and reminder settings.
-- **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options.
-- **SummaryCard.svelte** — Summary panel (first payment, pension age, normal weekday).
-- **SummaryCardContent.svelte** — Shared markup for summary content (used by SummaryCard).
+- **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options. Computes a mini SPA schedule internally and emits the result upward via the `onSpaPreviewData` callback prop; it no longer renders the SPA preview itself.
+- **SummaryCard.svelte** — Summary panel wrapper. Accepts a nullable `result` (renders before a full schedule is generated) and a `spaPreviewData` prop forwarded from the page.
+- **SummaryCardContent.svelte** — Summary panel content. Renders in three layers: (1) SPA details block (age, first/second payment, comprising text) driven by `spaPreviewData`; (2) coloured info grid (NI code, payment day, cycle, next payment) driven by `result`; (3) collapsible payment date list with copy/save/print actions. The panel header also has copy/save/print icon buttons for the full summary.
 - **ShareButton.svelte** — Share/copy action button with optional size.
 - **TopBar.svelte** — App header with title, icon, and action slot.
 
@@ -57,9 +57,11 @@
 ## Data flow overview
 
 1. User inputs are persisted to local storage.
-2. `pensionEngine.generatePayments` generates a schedule and flags early payments.
-3. Calendar components render the schedule with export options.
-4. Help content is rendered from markdown with bank holiday metadata injected.
+2. `PensionInputsCard` computes a mini schedule for the SPA year and emits `SpaPreviewData` via `onSpaPreviewData`; the page stores this in state and passes it down to `SummaryCard`/`SummaryCardContent`.
+3. `pensionEngine.generatePayments` generates the full schedule and flags early payments.
+4. Calendar components render the full schedule with export options.
+5. `SummaryCardContent` renders the SPA details block as soon as `spaPreviewData` is available (before the full schedule), then adds the coloured grid and payment list once `result` is set.
+6. Help content is rendered from markdown with bank holiday metadata injected.
 
 ## External dependencies (at a glance)
 

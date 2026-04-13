@@ -58,6 +58,25 @@
 
     // --- Props ---
     type PageProps = { bankHolidays?: Record<string, string> };
+
+    type SpaPreviewData = {
+        spaDateFormatted: string;
+        spaAgeYears: number;
+        spaAgeMonths: number;
+        spaSource: string;
+        showPre2016Warning: boolean;
+        firstPayment: {
+            dueFormatted: string;
+            paidFormatted: string;
+            isEarly: boolean;
+            comprisingText: string;
+        } | null;
+        secondPayment: {
+            dueFormatted: string;
+            paidFormatted: string;
+            isEarly: boolean;
+        } | null;
+    };
     const { bankHolidays: initialBankHolidays = {} }: PageProps = $props();
 
     // --- State: core inputs ---
@@ -76,6 +95,7 @@
     let result: PensionResult | null = $state(null);
     let error: string = $state("");
     let hasUserCommittedInputs: boolean = $state(false);
+    let spaPreviewData: SpaPreviewData | null = $state(null);
     let hasLoadedPersistedInputs: boolean = $state(false);
 
     // --- State: calendar navigation ---
@@ -478,6 +498,10 @@
         isLoadingAdditionalHolidays = false;
     }
 
+    function handleSpaPreviewData(data: SpaPreviewData | null): void {
+        spaPreviewData = data;
+    }
+
     function handleFirstPaymentAfterSpa(payment: Payment | null) {
         if (!payment) {
             minPaymentIso = null;
@@ -636,7 +660,7 @@
                     </p>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                         Privacy: your details stay on this device and are not sent to a server.
-                        Read our <a href="/privacy" class="underline hover:no-underline">Privacy Policy</a>.
+                        Read the <a href="/privacy" class="underline hover:no-underline">Privacy Policy</a>.
                     </p>
                 </div>
             </div>
@@ -662,6 +686,7 @@
                         {bankHolidays}
                         onRestoreDefaults={handleResetAll}
                         onFirstPaymentAfterSpa={handleFirstPaymentAfterSpa}
+                        onSpaPreviewData={handleSpaPreviewData}
                         onPersist={persistInputs}
                         onRecalculate={handleInputsRecalculate}
                     />
@@ -669,32 +694,15 @@
 
                 <!-- Summary card -->
                 <div class="lg:col-span-4 space-y-4">
-                    {#if result}
-                        <SummaryCard
-                            {result}
-                            embedded
-                            spaDate={firstPaymentDateFormatted}
-                            nextPaymentDate={nextPaymentDateFormatted}
-                            {statePensionApplyInfo}
-                            {spaDateIso}
-                            {isWithinThreeMonthsOfSpa}
-                        />
-                    {:else}
-                        <div class="p-6">
-                            <div class="mb-2">
-                                <h2
-                                    class="text-lg font-semibold text-gray-900 dark:text-white"
-                                >
-                                    Schedule summary
-                                </h2>
-                                <p
-                                    class="text-xs text-gray-500 dark:text-gray-400"
-                                >
-                                    Generate a schedule to see a summary here.
-                                </p>
-                            </div>
-                        </div>
-                    {/if}
+                    <SummaryCard
+                        {result}
+                        embedded
+                        nextPaymentDate={nextPaymentDateFormatted}
+                        {statePensionApplyInfo}
+                        {spaDateIso}
+                        {isWithinThreeMonthsOfSpa}
+                        {spaPreviewData}
+                    />
                 </div>
             </div>
         </Card>

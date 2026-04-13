@@ -44,7 +44,7 @@ describe("SummaryCardContent", () => {
         const { getByRole, findByText } = render(SummaryCardContent, {
             props: {
                 result: baseResult,
-                spaDate: "Tue, 5 Aug 2026",
+
                 nextPaymentDate: "",
             },
         });
@@ -59,7 +59,7 @@ describe("SummaryCardContent", () => {
         const { getByRole, findByText } = render(SummaryCardContent, {
             props: {
                 result: baseResult,
-                spaDate: "Tue, 5 Aug 2026",
+
                 nextPaymentDate: "",
             },
         });
@@ -82,7 +82,7 @@ describe("SummaryCardContent", () => {
         const { getByRole, findByText } = render(SummaryCardContent, {
             props: {
                 result: baseResult,
-                spaDate: "Tue, 5 Aug 2026",
+
                 nextPaymentDate: "",
             },
         });
@@ -107,7 +107,7 @@ describe("SummaryCardContent", () => {
         const { getByRole, findByText } = render(SummaryCardContent, {
             props: {
                 result: baseResult,
-                spaDate: "Tue, 5 Aug 2026",
+
                 nextPaymentDate: "",
             },
         });
@@ -126,7 +126,7 @@ describe("SummaryCardContent", () => {
         const { getByText, getByRole } = render(SummaryCardContent, {
             props: {
                 result: baseResult,
-                spaDate: "Tue, 5 Aug 2026",
+
                 nextPaymentDate: "",
                 statePensionApplyInfo: {
                     applyFromIso: "2026-04-05",
@@ -151,7 +151,7 @@ describe("SummaryCardContent", () => {
         const { findByText } = render(SummaryCardContent, {
             props: {
                 result: baseResult,
-                spaDate: "Tue, 5 Aug 2026",
+
                 nextPaymentDate: "",
                 statePensionApplyInfo: {
                     applyFromIso: "2026-04-05",

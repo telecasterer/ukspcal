@@ -24,6 +24,25 @@
 
     // --- Props ---
 
+    type SpaPreviewData = {
+        spaDateFormatted: string;
+        spaAgeYears: number;
+        spaAgeMonths: number;
+        spaSource: string;
+        showPre2016Warning: boolean;
+        firstPayment: {
+            dueFormatted: string;
+            paidFormatted: string;
+            isEarly: boolean;
+            comprisingText: string;
+        } | null;
+        secondPayment: {
+            dueFormatted: string;
+            paidFormatted: string;
+            isEarly: boolean;
+        } | null;
+    };
+
     type Props = {
         ni: string;
         dob: string;
@@ -36,6 +55,7 @@
         onFirstPaymentAfterSpa?: (payment: Payment | null) => void;
         onPersist?: () => void;
         onRecalculate?: () => void;
+        onSpaPreviewData?: (data: SpaPreviewData | null) => void;
     };
     let {
         ni = $bindable(),
@@ -49,6 +69,7 @@
         onFirstPaymentAfterSpa,
         onPersist,
         onRecalculate,
+        onSpaPreviewData,
     }: Props = $props();
 
     const currentYear: number = new Date().getFullYear();
@@ -253,6 +274,39 @@
         onFirstPaymentAfterSpa?.(firstPaymentAfterSpa);
     });
 
+    $effect.pre(() => {
+        if (!spa) {
+            onSpaPreviewData?.(null);
+            return;
+        }
+        onSpaPreviewData?.({
+            spaDateFormatted,
+            spaAgeYears: spa.spaAgeYears,
+            spaAgeMonths: spa.spaAgeMonths ?? 0,
+            spaSource: spa.source,
+            showPre2016Warning: showPre2016SpaWarning,
+            firstPayment: firstPaymentAfterSpa
+                ? {
+                      dueFormatted: firstPaymentDueFormatted,
+                      paidFormatted: firstPaymentPaidFormatted,
+                      isEarly:
+                          firstPaymentAfterSpa.early &&
+                          firstPaymentAfterSpa.paid !== firstPaymentAfterSpa.due,
+                      comprisingText,
+                  }
+                : null,
+            secondPayment: secondPaymentAfterSpa
+                ? {
+                      dueFormatted: secondPaymentDueFormatted,
+                      paidFormatted: secondPaymentPaidFormatted,
+                      isEarly:
+                          secondPaymentAfterSpa.early &&
+                          secondPaymentAfterSpa.paid !== secondPaymentAfterSpa.due,
+                  }
+                : null,
+        });
+    });
+
     function focusDobInput() {
         const el = document.getElementById("dob");
         if (el instanceof HTMLElement) el.focus();
@@ -307,9 +361,7 @@
             </div>
         </div>
     </Modal>
-    <div class="grid grid-cols-1 2xl:grid-cols-2 gap-8 items-start">
-        <div class="space-y-5">
-            <div class="space-y-3">
+    <div class="space-y-3">
                 <!-- NI code input -->
                 <div>
                     <Label for="ni-code" class="block mb-1 text-sm"
@@ -412,114 +464,5 @@
                         {error}
                     </Alert>
                 {/if}
-            </div>
-        </div>
-
-        <div class="space-y-3">
-            <!-- SPA calculation and payment preview -->
-            {#if dob && !spa}
-                <Alert color="red" class="text-sm"
-                    >Please enter a valid date.</Alert
-                >
-            {/if}
-
-            {#if spa}
-                <div
-                    class="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50/90 dark:bg-gray-900/30 p-4"
-                >
-                    <!-- Pre-2016 SPA warning -->
-                    {#if showPre2016SpaWarning}
-                        <div
-                            role="alert"
-                            class="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100"
-                        >
-                            This calculator assumes your State Pension age (SPA)
-                            is on or after <strong>6 April 2016</strong>. Your
-                            SPA appears to be earlier than that, so results may
-                            be inaccurate.
-                        </div>
-                    {/if}
-                    <div
-                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-200"
-                    >
-                        You reach State Pension age (SPA) on
-                    </div>
-                    <div
-                        class="mt-1 text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
-                    >
-                        {spaDateFormatted}
-                    </div>
-                    {#if spa.source !== "fixed"}
-                        <div
-                            class="mt-1 text-sm text-gray-600 dark:text-gray-200"
-                        >
-                            Based on an age of {spa.spaAgeYears}{#if spa.spaAgeMonths}{" "}years
-                                {spa.spaAgeMonths} months{/if}.
-                        </div>
-                    {/if}
-
-                    <!-- First payment after SPA -->
-                    {#if firstPaymentAfterSpa}
-                        <div
-                            class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
-                        >
-                            <div
-                                class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-200"
-                            >
-                                First payment after reaching pension age
-                            </div>
-                            <div
-                                class="mt-1 text-lg sm:text-xl font-bold text-gray-900 dark:text-white"
-                            >
-                                {firstPaymentDueFormatted}
-                            </div>
-                                <div
-                                    class="mt-1 text-sm text-gray-600 dark:text-gray-200"
-                                >
-                                    {comprisingText}
-                                </div>
-
-                            {#if firstPaymentAfterSpa.early && firstPaymentAfterSpa.paid !== firstPaymentAfterSpa.due}
-                                        <div
-                                            class="mt-1 text-sm text-gray-600 dark:text-gray-200"
-                                        >
-                                            Paid early on {firstPaymentPaidFormatted}.
-                                        </div>
-                            {/if}
-
-                            <!-- Second payment after SPA -->
-                            {#if secondPaymentAfterSpa}
-                                <div class="mt-3">
-                                    <div
-                                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-200"
-                                    >
-                                        Second payment
-                                    </div>
-                                    <div
-                                        class="mt-1 text-sm font-semibold text-gray-900 dark:text-white"
-                                    >
-                                        {secondPaymentDueFormatted}
-                                    </div>
-                                    {#if secondPaymentAfterSpa.early && secondPaymentAfterSpa.paid !== secondPaymentAfterSpa.due}
-                                        <div
-                                            class="mt-1 text-sm text-gray-600 dark:text-gray-200"
-                                        >
-                                            Paid early on {secondPaymentPaidFormatted}.
-                                        </div>
-                                    {/if}
-                                </div>
-                            {/if}
-                        </div>
-                    {:else if ni}
-                        <div
-                            class="mt-4 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400"
-                        >
-                            Enter a valid NI code to estimate your first payment
-                            date.
-                        </div>
-                    {/if}
-                </div>
-            {/if}
-        </div>
     </div>
 </div>

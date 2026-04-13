@@ -17,6 +17,18 @@ A free, privacy-first tool to calculate your UK State Pension payment dates, exp
 4. Review the calendar. Early payments (due to weekends/bank holidays) are highlighted.
 5. Export or print as needed.
 
+## Schedule summary panel
+
+The summary panel updates as you type. As soon as you enter a valid NI code and date of birth, it shows:
+
+- Your **State Pension age** and the date you will reach it.
+- Your **first payment** after State Pension age, including how much of a full payment it comprises (pro-rated from your SPA date to the payment date).
+- Your **second payment**, including an early-payment note if it falls on a bank holiday or weekend.
+
+Once a full schedule is generated the panel also shows your NI code, payment weekday, cycle length, and next payment date (if you are already past State Pension age).
+
+Use the **copy**, **save**, and **print** icons in the top-right of the panel to export the full summary. The **Show payment dates** section within the panel lists every payment date and has its own copy, save, and print icons.
+
 ## Calendar navigation
 
 - `Previous` and `Next` move the calendar in 6-month steps.

@@ -77,9 +77,11 @@ app/build/outputs/bundle/release/app-release.aab
 ## How data flows
 
 1. **Layout/load** (`src/routes/+layout.ts`) exposes initial holiday data to the app.
-2. **Main page** (`src/routes/+page.svelte`) loads persisted inputs, computes state pension age, and calls `generatePayments` from `src/lib/pensionEngine.ts`.
-3. **Calendar + summary UI** renders payments, highlights early payments, supports CSV/ICS export, and auto-extends duration by one year when `Next` reaches the end of range.
-4. **Help page** (`src/routes/help/+page.svelte`) renders markdown with dynamic bank holiday placeholders.
+2. **Main page** (`src/routes/+page.svelte`) loads persisted inputs and wires together the input and summary components.
+3. **PensionInputsCard** computes a mini SPA-year schedule internally and emits `SpaPreviewData` upward via the `onSpaPreviewData` callback. The page stores this and passes it to `SummaryCard` → `SummaryCardContent`, so the summary panel shows State Pension age and first/second payment details as soon as a valid NI code and date of birth are entered — before the full schedule is generated.
+4. The page calls `generatePayments` from `src/lib/pensionEngine.ts` to produce the full schedule, which is passed as `result` to `SummaryCard` and the calendar components.
+5. **Calendar + summary UI** renders payments, highlights early payments, supports CSV/ICS export, and auto-extends duration by one year when `Next` reaches the end of range.
+6. **Help page** (`src/routes/help/+page.svelte`) renders markdown with dynamic bank holiday placeholders.
 
 ## Core logic modules
 
