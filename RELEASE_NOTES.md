@@ -1,6 +1,13 @@
 # Release Notes
 
-This changelog was backfilled from git history on 2026-02-22 to capture missing release notes.
+## 2026-04-13 (unreleased)
+
+### Refactors
+
+- Moved the State Pension age preview out of the inputs panel and into the summary panel, where it belongs. The summary panel now shows SPA date, first/second payment, and pro-rated comprising text as soon as a valid NI code and date of birth are entered — before a full schedule is generated.
+- The coloured info grid and payment date list continue to appear once the full schedule is generated.
+- Removed the payment count from the "Show payment dates" disclosure label.
+- Added copy, save, and print icon buttons to the payment date list (matching the existing icon buttons on the summary panel header). Both sets of buttons are right-aligned.
 
 ## 2026-04-08 (v0.5.5)
 
