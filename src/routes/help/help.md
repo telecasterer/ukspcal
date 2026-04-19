@@ -39,14 +39,28 @@ The tool is designed to help you plan ahead and keep your likely payment dates i
   - These additional holidays are informational only and do not change DWP payment dates.
   - They can still be useful if your bank account is outside the UK and local holidays may affect when funds appear.
 
+### Profiles
+
+- Use **Profiles** in the input form to save and reload your NI suffix and date of birth.
+- Give each profile a name, then use the load/delete buttons to manage them.
+- Profiles are stored locally in your browser — nothing is sent to a server.
+- Useful if more than one person uses the same device.
+
+### Summary Panel
+
+The summary panel shows your SPA date, first payment date, and related information. From here you can:
+
+- **Export SPA date** or **Export claiming date** as a single-event ICS file to add to your calendar app.
+- **Copy**, **Save**, or **Print** the summary text or payment list.
+
 ### Exporting and Printing
 
-- Use **Export** to download:
+- Use **Export** in the calendar toolbar to download:
   - **CSV** for spreadsheet apps.
   - **ICS** for calendar apps (Apple, Google, Outlook, etc.).
 - Use **Print** for a paper/PDF version of the calendar.
 
-When exporting ICS:
+When exporting ICS from the calendar toolbar:
 
 - Regular payments are exported as a recurring event.
 - Early payments (due to bank holidays) are exported as individual events.
