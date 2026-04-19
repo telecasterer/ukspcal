@@ -1,5 +1,19 @@
 # Release Notes
 
+## 2026-04-19 (v0.6.0)
+
+### Features
+
+- add profiles, single-date ICS export, offline page, and footer links (e339c73)
+
+### Refactors
+
+- move SPA preview to summary panel; add copy/save/print actions (2f2bfc0)
+
+### Chores
+
+- updated release notes (3bca84e)
+
 ## 2026-04-13 (unreleased)
 
 ### Refactors
