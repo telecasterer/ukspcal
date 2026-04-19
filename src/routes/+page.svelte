@@ -642,40 +642,26 @@
 >
     <div class="page-container-app">
         <!-- Header section -->
-        <div class="mb-6 sm:mb-8 print-hide">
-            <div
-                class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
-            >
-                <div>
-                    <h1
-                        class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white mb-2"
-                    >
-                        UK State Pension Payment Calendar
-                    </h1>
-                    <p class="text-sm sm:text-base leading-relaxed text-gray-700 dark:text-gray-300">
-                        Check your State Pension age and expected payment dates using your NI code and date of birth.
-                    </p>
-                    <p class="mt-1 text-xs sm:text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-                        Print or export your payment calendar when you&rsquo;re ready.
-                    </p>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                        Privacy: your details stay on this device and are not sent to a server.
-                        Read the <a href="/privacy" class="underline hover:no-underline">Privacy Policy</a>.
-                    </p>
-                </div>
-            </div>
+        <div class="mb-6 sm:mb-8 print-hide max-w-3xl">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3">
+                UK State Pension Payment Calendar
+            </h1>
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
+                Calculate your State Pension age and generate a personalized schedule of expected payment dates. 
+                All data stays safely on your device.
+            </p>
         </div>
 
         <!-- Inputs + Summary (single cohesive card) -->
         <Card
             size="xl"
-            class="card-surface w-full mb-6 sm:mb-8 input-section"
+            class="card-surface w-full mb-6 sm:mb-8 input-section overflow-hidden"
         >
             <div
                 class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700"
             >
                 <!-- Pension input form -->
-                <div class="lg:col-span-8">
+                <div class="lg:col-span-7">
                     <PensionInputsCard
                         bind:ni
                         bind:dob
@@ -693,7 +679,7 @@
                 </div>
 
                 <!-- Summary card -->
-                <div class="lg:col-span-4 space-y-4">
+                <div class="lg:col-span-5 bg-gray-50/30 dark:bg-gray-800/20">
                     <SummaryCard
                         {result}
                         embedded

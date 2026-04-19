@@ -143,7 +143,7 @@ describe("SummaryCardContent", () => {
             )
         ).toBeInTheDocument();
 
-        const link = getByRole("link", { name: "Claiming your State Pension" });
+        const link = getByRole("link", { name: /claiming your state pension/i });
         expect(link).toHaveAttribute("href", "/claiming");
     });
 

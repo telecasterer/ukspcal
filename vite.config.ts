@@ -80,13 +80,14 @@ export default defineConfig({
         SvelteKitPWA({
             registerType: "autoUpdate",
             devOptions: {
-                enabled: true,
+                enabled: false,
                 suppressWarnings: true,
             },
             workbox: {
                 clientsClaim: true,
                 skipWaiting: true,
                 cleanupOutdatedCaches: true,
+                navigateFallback: "/offline",
             },
             manifestFilename: "manifest.webmanifest",
             includeAssets: [

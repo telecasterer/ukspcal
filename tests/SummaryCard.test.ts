@@ -17,7 +17,7 @@ describe("SummaryCard", () => {
             props: { result, embedded: true },
         });
         expect(getByText("Schedule summary")).toBeInTheDocument();
-        expect(getByText("00A")).toBeInTheDocument();
+        expect(getByText("Monday")).toBeInTheDocument();
     });
 
     it("renders standalone summary", () => {
@@ -25,6 +25,6 @@ describe("SummaryCard", () => {
             props: { result, embedded: false },
         });
         expect(getByText("Schedule summary")).toBeInTheDocument();
-        expect(getByText("00A")).toBeInTheDocument();
+        expect(getByText("Monday")).toBeInTheDocument();
     });
 });

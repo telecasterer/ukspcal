@@ -8,7 +8,7 @@
         Modal,
         Select,
     } from "flowbite-svelte";
-    import { DownloadOutline, PrinterOutline } from "flowbite-svelte-icons";
+    import { DownloadOutline, PrinterOutline, ArrowLeftOutline, ArrowRightOutline } from "flowbite-svelte-icons";
     import { previousMonth } from "$lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
     import CalendarPager from "./CalendarPager.svelte";
@@ -263,11 +263,12 @@
 </script>
 
 <div class="space-y-3">
-    <div class="w-full calendar-controls">
+    <div class="w-full calendar-controls print-hide">
         <div
-            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3 space-y-3"
+            class="bg-white/95 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3 lg:p-4 space-y-4"
         >
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <!-- Top Row: Title & Export -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div class="text-center sm:text-left">
                     <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                         Payment calendar
@@ -318,54 +319,84 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-end gap-3">
-                <div>
-                    <Label
-                        for="start-year"
-                        class="block mb-1 text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
+            <!-- Middle Row: Navigation and Settings -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <!-- Navigation -->
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <Button
+                        onclick={handlePreviousMonth}
+                        color="light"
+                        class="w-auto min-w-[2.5rem] px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        disabled={!(focusedIndex > 0)}
+                        title="Previous"
+                        aria-label="Previous"
                     >
-                        Start year
-                    </Label>
-                    <Select
-                        id="start-year"
-                        bind:value={startYearSelect}
-                        oninput={applyStartYear}
-                        onchange={applyStartYear}
-                        class="w-24"
-                        classes={{
-                            select: "text-xs min-[390px]:text-sm !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
-                        }}
+                        <ArrowLeftOutline class="h-4 w-4" ariaLabel="Previous" />
+                    </Button>
+                    <div
+                        class="flex-1 min-w-[140px] px-2.5 h-9 inline-flex items-center justify-center whitespace-nowrap overflow-hidden text-ellipsis rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs min-[390px]:text-sm font-semibold text-gray-900 dark:text-white"
                     >
-                        {#each years as year}
-                            <option value={String(year)}>{year}</option>
-                        {/each}
-                    </Select>
+                        {visibleRangeLabel}
+                    </div>
+                    <Button
+                        onclick={handleNextMonth}
+                        color="light"
+                        class="w-auto min-w-[2.5rem] px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        disabled={!(focusedIndex !== -1 && focusedIndex < allMonths.length - 1)}
+                        title="Next"
+                        aria-label="Next"
+                    >
+                        <ArrowRightOutline class="h-4 w-4" ariaLabel="Next" />
+                    </Button>
+                    <Button
+                        onclick={handleJumpToToday}
+                        color="light"
+                        class="w-auto px-3 py-2 text-xs min-[390px]:text-sm"
+                        disabled={!canJumpToToday}
+                        title={canJumpToToday ? "Jump to current month" : "Current month is outside this calendar range"}
+                        aria-label="Today"
+                    >
+                        Today
+                    </Button>
                 </div>
-                <div>
-                    <Label
-                        for="number-of-years"
-                        class="block mb-1 text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
-                    >
-                        Duration
-                    </Label>
-                    <Select
-                        id="number-of-years"
-                        bind:value={numberOfYearsInput}
-                        oninput={applyNumberOfYears}
-                        onchange={applyNumberOfYears}
-                        class="w-24"
-                        classes={{
-                            select: "text-xs min-[390px]:text-sm !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
-                        }}
-                    >
-                        {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
-                            <option value={String(y)}>{y} years</option>
-                        {/each}
-                    </Select>
+
+                <!-- Settings -->
+                <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <div class="flex items-center gap-2">
+                        <Label for="start-year" class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300">Start year</Label>
+                        <Select
+                            id="start-year"
+                            bind:value={startYearSelect}
+                            oninput={applyStartYear}
+                            onchange={applyStartYear}
+                            class="w-24"
+                            classes={{ select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
+                        >
+                            {#each years as year}
+                                <option value={String(year)}>{year}</option>
+                            {/each}
+                        </Select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Label for="number-of-years" class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300">Duration</Label>
+                        <Select
+                            id="number-of-years"
+                            bind:value={numberOfYearsInput}
+                            oninput={applyNumberOfYears}
+                            onchange={applyNumberOfYears}
+                            class="w-24"
+                            classes={{ select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
+                        >
+                            {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
+                                <option value={String(y)}>{y} years</option>
+                            {/each}
+                        </Select>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-4 items-center">
+            <!-- Bottom Row: Holiday toggles -->
+            <div class="flex flex-wrap items-center gap-4 pt-1">
                 <Label class="flex items-center gap-2 cursor-pointer text-xs min-[390px]:text-sm">
                     <FlowbiteCheckbox
                         bind:checked={showBankHolidays}
@@ -402,16 +433,6 @@
         bind:icsCategory
         bind:icsColor
         {onPersist}
-    />
-
-    <CalendarPager
-        {visibleRangeLabel}
-        {canJumpToToday}
-        canGoPrevious={focusedIndex > 0}
-        canGoNext={focusedIndex !== -1 && focusedIndex < allMonths.length - 1}
-        onPrevious={handlePreviousMonth}
-        onNext={handleNextMonth}
-        onToday={handleJumpToToday}
     />
 
     <!-- --- Multiple Month Calendar Grid (screen) --- -->

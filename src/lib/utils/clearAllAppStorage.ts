@@ -6,6 +6,7 @@ export function clearAllAppStorage() {
 
     // Main input persistence
     localStorage.removeItem("ukspcal.inputs.v1");
+    localStorage.removeItem("ukspcal.profiles.v1");
     // ICS alarm settings
     localStorage.removeItem("ukspcal_ics_alarm_settings");
     // ICS event time

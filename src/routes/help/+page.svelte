@@ -130,22 +130,20 @@
         class="app-page-bg page-bottom-safe-area py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
         <div class="page-container-help w-full">
+            <header class="mb-6 sm:mb-8 max-w-3xl">
+                <h1
+                    class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3"
+                >
+                    Help & guidance
+                </h1>
+                <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
+                    Expand a section below for setup steps, privacy details, and
+                    troubleshooting.
+                </p>
+            </header>
             <div
                 class="card-surface w-full summary-section p-5 sm:p-6 space-y-2 help-top-container"
             >
-                <header class="mb-3 sm:mb-4">
-                    <h1
-                        class="text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
-                    >
-                        Help & guidance
-                    </h1>
-                    <p
-                        class="text-sm sm:text-base leading-relaxed text-gray-600 dark:text-gray-300 mt-1"
-                    >
-                        Expand a section below for setup steps, privacy details, and
-                        troubleshooting.
-                    </p>
-                </header>
                 {#each sections as section, i}
                     <details class="custom-details group" open={i === 0}>
                         <summary

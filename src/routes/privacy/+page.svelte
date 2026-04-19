@@ -77,30 +77,28 @@
     <main
         class="app-page-bg page-bottom-safe-area py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
     >
-        <article
-            class="card-surface w-full page-container-doc p-5 sm:p-6 space-y-5"
-        >
-            <header class="border-b border-gray-200 dark:border-gray-700 pb-4 sm:pb-5">
-                <p
-                    class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium uppercase tracking-wide text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-200"
-                >
-                    Data handling
-                </p>
+        <div class="page-container-doc w-full">
+            <header class="mb-6 sm:mb-8 max-w-3xl">
                 <h1
-                    class="mt-2 text-2xl min-[390px]:text-[1.75rem] sm:text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
+                    class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3"
                 >
                     Privacy Policy
                 </h1>
-                <p class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
                     How this app uses local storage, analytics, and exported data.
                 </p>
             </header>
-            <section
-                class="doc-markdown policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
+
+            <article
+                class="card-surface w-full p-5 sm:p-6"
             >
-                {@html privacyHtml}
-            </section>
-        </article>
+                <section
+                    class="doc-markdown policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
+                >
+                    {@html privacyHtml}
+                </section>
+            </article>
+        </div>
     </main>
 
     <AppFooter />

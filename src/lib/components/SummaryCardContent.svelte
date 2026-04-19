@@ -1,14 +1,16 @@
 <script lang="ts">
-    import { Card } from "flowbite-svelte";
     import {
         ChevronDownOutline,
         ClipboardOutline,
         DownloadOutline,
         PrinterOutline,
+        InfoCircleOutline,
     } from "flowbite-svelte-icons";
+    import { Tooltip } from "flowbite-svelte";
     import type { Payment, PensionResult } from "$lib/pensionEngine";
     import { formatDateForCSV } from "$lib/utils/dateFormatting";
     import { copyTextToClipboard } from "$lib/utils/clipboard";
+    import { exportSingleDateICS } from "$lib/utils/exportHelpers";
 
     type StatePensionApplyInfo = {
         applyFromIso: string;
@@ -375,14 +377,26 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
 
 <!-- SPA details block -->
 {#if spaPreviewData}
-    <div class="mb-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/90 dark:bg-gray-900/30 p-3">
+    <div class="mb-4">
         {#if spaPreviewData.showPre2016Warning}
             <div role="alert" class="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs min-[390px]:text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100">
                 This calculator assumes your State Pension age is on or after <strong>6 April 2016</strong>. Your SPA appears to be earlier, so results may be inaccurate.
             </div>
         {/if}
-        <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">State Pension Age</p>
-        <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">{spaPreviewData.spaDateFormatted}</p>
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">State Pension Age</p>
+                <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">{spaPreviewData.spaDateFormatted}</p>
+            </div>
+            {#if spaDateIso}
+                <button
+                    onclick={() => exportSingleDateICS(spaDateIso, "State Pension Age", "Reached UK State Pension Age")}
+                    class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-2"
+                >
+                    Add to calendar
+                </button>
+            {/if}
+        </div>
         {#if spaPreviewData.spaSource !== "fixed"}
             <p class="mt-0.5 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300">
                 Age {spaPreviewData.spaAgeYears}{#if spaPreviewData.spaAgeMonths} years {spaPreviewData.spaAgeMonths} months{/if}
@@ -390,14 +404,23 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
         {/if}
         {#if spaPreviewData.firstPayment}
             <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">First payment</p>
+                <div class="flex items-center gap-1.5">
+                    <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">First payment</p>
+                    <button id="first-payment-info" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <InfoCircleOutline class="w-3.5 h-3.5 outline-none" />
+                        <span class="sr-only">Info about first payment</span>
+                    </button>
+                    <Tooltip triggeredBy="#first-payment-info" placement="top" class="max-w-xs z-50 font-normal text-xs">
+                        The UK State Pension is paid in arrears. Your first payment typically arrives at the end of your first full payment cycle after your State Pension Age.
+                    </Tooltip>
+                </div>
                 <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">{spaPreviewData.firstPayment.dueFormatted}</p>
                 <p class="mt-0.5 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300">{spaPreviewData.firstPayment.comprisingText}</p>
                 {#if spaPreviewData.firstPayment.isEarly}
                     <p class="mt-0.5 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300">Paid early on {spaPreviewData.firstPayment.paidFormatted}.</p>
                 {/if}
                 {#if spaPreviewData.secondPayment}
-                    <div class="mt-2">
+                    <div class="mt-3">
                         <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Second payment</p>
                         <p class="mt-0.5 text-sm font-semibold text-gray-900 dark:text-white">{spaPreviewData.secondPayment.dueFormatted}</p>
                         {#if spaPreviewData.secondPayment.isEarly}
@@ -411,112 +434,91 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
 {/if}
 
 {#if result}
-<div class="grid grid-cols-2 gap-2">
-    <!-- NI Code -->
-    <Card
-        size="xl"
-        class="p-2 bg-blue-50/90 dark:bg-blue-900/60 border-blue-200 dark:border-blue-700"
-    >
-        <p class="text-xs min-[390px]:text-sm font-semibold text-blue-600 dark:text-blue-300 uppercase">
-            NI Code
-        </p>
-        <p class="text-sm font-bold text-blue-700 dark:text-blue-100">
-            {result.ni}
-        </p>
-    </Card>
+<div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
     <!-- Payment Day -->
-    <Card
-        size="xl"
-        class="p-2 bg-emerald-50/90 dark:bg-emerald-900/60 border-emerald-200 dark:border-emerald-700"
-    >
-        <p class="text-xs min-[390px]:text-sm font-semibold text-emerald-600 dark:text-emerald-300 uppercase">
+    <div>
+        <p class="text-xs min-[390px]:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             Payment Day
         </p>
-        <p class="text-sm font-bold text-emerald-700 dark:text-emerald-100">
+        <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
             {result.normalDay}
         </p>
-    </Card>
-    <!-- Cycle — spans both columns when there is no next payment -->
-    <Card
-        size="xl"
-        class="p-2 bg-violet-50/90 dark:bg-violet-900/60 border-violet-200 dark:border-violet-700 {nextPaymentDate ? '' : 'col-span-2'}"
-    >
-        <p class="text-xs min-[390px]:text-sm font-semibold text-violet-600 dark:text-violet-300 uppercase">
-            Cycle
-        </p>
-        <p class="text-sm font-bold text-violet-700 dark:text-violet-100">
-            {result.cycleDays}d
-        </p>
-    </Card>
+    </div>
     {#if nextPaymentDate}
         <!-- Next Payment Date (only shown when user is already past SPA) -->
-        <Card
-            size="xl"
-            class="p-2 bg-cyan-50/90 dark:bg-cyan-900/60 border-cyan-200 dark:border-cyan-700"
-        >
-            <p class="text-xs min-[390px]:text-sm font-semibold text-cyan-600 dark:text-cyan-300 uppercase">
+        <div>
+            <p class="text-xs min-[390px]:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                 Next Payment
             </p>
-            <p class="text-sm font-bold text-cyan-700 dark:text-cyan-100">
+            <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
                 {nextPaymentDate}
             </p>
-        </Card>
+        </div>
     {/if}
 </div>
 {/if}
 {#if statePensionApplyInfo}
     {#if statePensionApplyInfo.applyNow}
-        <!-- Eligible now: amber card (red if within 3 months of SPA) -->
-        <Card
-            size="xl"
-            class="mt-2 p-2 {isWithinThreeMonthsOfSpa
-                ? 'bg-red-50/90 dark:bg-red-900/60 border-red-300 dark:border-red-700'
-                : 'bg-amber-50/90 dark:bg-amber-900/60 border-amber-300 dark:border-amber-700'}"
-        >
-            <p class="text-xs min-[390px]:text-sm font-semibold uppercase {isWithinThreeMonthsOfSpa
-                ? 'text-red-700 dark:text-red-200'
-                : 'text-amber-700 dark:text-amber-200'}">
-                Apply for your State Pension
-            </p>
-            <p class="mt-1 text-sm min-[390px]:text-base font-semibold {isWithinThreeMonthsOfSpa
-                ? 'text-red-900 dark:text-red-100'
-                : 'text-amber-900 dark:text-amber-100'}">
-                You can apply now (from {statePensionApplyInfo.applyFromFormatted}).
-            </p>
+        <!-- Eligible now -->
+        <div class="mt-4 p-3 rounded-lg {isWithinThreeMonthsOfSpa ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide {isWithinThreeMonthsOfSpa ? 'text-red-800 dark:text-red-400' : 'text-amber-800 dark:text-amber-400'}">
+                        Apply for your State Pension
+                    </p>
+                    <p class="mt-1 text-sm min-[390px]:text-base font-medium {isWithinThreeMonthsOfSpa ? 'text-red-900 dark:text-red-100' : 'text-amber-900 dark:text-amber-100'}">
+                        You can apply now (from {statePensionApplyInfo.applyFromFormatted}).
+                    </p>
+                </div>
+                {#if statePensionApplyInfo.applyFromIso}
+                    <button
+                        onclick={() => exportSingleDateICS(statePensionApplyInfo!.applyFromIso, "Claim UK State Pension", "Eligible to claim UK State Pension")}
+                        class="text-xs underline underline-offset-2 shrink-0 ml-2 mt-1 {isWithinThreeMonthsOfSpa ? 'text-red-700 hover:text-red-900 dark:text-red-400' : 'text-amber-700 hover:text-amber-900 dark:text-amber-400'}"
+                    >
+                        Add to calendar
+                    </button>
+                {/if}
+            </div>
             {#if isWithinThreeMonthsOfSpa}
-                <p class="mt-1 text-sm text-red-800 dark:text-red-200">
-                    You are within 3 months of your State Pension age. If you have
-                    not claimed yet, claim as soon as possible.
+                <p class="mt-1 text-xs min-[390px]:text-sm text-red-800 dark:text-red-300">
+                    You are within 3 months of your State Pension age. If you have not claimed yet, claim as soon as possible.
                 </p>
             {/if}
             <a
-                class="mt-2 inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-medium {isWithinThreeMonthsOfSpa
-                    ? 'border-red-400 bg-red-100 text-red-800 hover:bg-red-200 dark:border-red-600 dark:bg-red-900/80 dark:text-red-100 dark:hover:bg-red-800'
-                    : 'border-amber-400 bg-amber-100 text-amber-800 hover:bg-amber-200 dark:border-amber-600 dark:bg-amber-900/80 dark:text-amber-100 dark:hover:bg-amber-800'}"
+                class="mt-3 inline-block font-medium text-xs min-[390px]:text-sm underline {isWithinThreeMonthsOfSpa ? 'text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300' : 'text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300'}"
                 href={spaDateIso ? `/claiming?spaDate=${encodeURIComponent(spaDateIso)}` : "/claiming"}
             >
-                How to claim your State Pension
+                How to claim your State Pension &rarr;
             </a>
-        </Card>
+        </div>
     {:else}
-        <!-- Not yet eligible: indigo countdown card -->
-        <Card
-            size="xl"
-            class="mt-2 p-2 bg-indigo-50/90 dark:bg-indigo-900/60 border-indigo-200 dark:border-indigo-700"
-        >
-            <p class="text-xs min-[390px]:text-sm font-semibold text-indigo-700 dark:text-indigo-200">
-                State Pension claim date
-            </p>
-            <p class="mt-1 text-sm text-indigo-900 dark:text-indigo-100">
-                You can apply from {statePensionApplyInfo.applyFromFormatted} ({statePensionApplyInfo.countdownDays} day{statePensionApplyInfo.countdownDays === 1 ? "" : "s"} to go).
-            </p>
+        <!-- Not yet eligible -->
+        <div class="mt-4 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-indigo-800 dark:text-indigo-400">
+                        State Pension claim date
+                    </p>
+                    <p class="mt-1 text-sm min-[390px]:text-base font-medium text-indigo-900 dark:text-indigo-100">
+                        You can apply from {statePensionApplyInfo.applyFromFormatted} ({statePensionApplyInfo.countdownDays} day{statePensionApplyInfo.countdownDays === 1 ? "" : "s"} to go).
+                    </p>
+                </div>
+                {#if statePensionApplyInfo.applyFromIso}
+                    <button
+                        onclick={() => exportSingleDateICS(statePensionApplyInfo!.applyFromIso, "Claim UK State Pension", "Eligible to claim UK State Pension from today")}
+                        class="text-xs text-indigo-700 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 underline underline-offset-2 shrink-0 ml-2 mt-1"
+                    >
+                        Add to calendar
+                    </button>
+                {/if}
+            </div>
             <a
-                class="mt-2 inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                class="mt-3 inline-block font-medium text-xs min-[390px]:text-sm underline text-indigo-700 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                 href={spaDateIso ? `/claiming?spaDate=${encodeURIComponent(spaDateIso)}` : "/claiming"}
             >
-                Claiming your State Pension
+                Claiming your State Pension &rarr;
             </a>
-        </Card>
+        </div>
     {/if}
 {/if}
 {#if result}

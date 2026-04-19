@@ -44,7 +44,7 @@ it("generateICS includes VALARM when alarm options are set", async () => {
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { exportCSV, generateICS } from "../src/lib/utils/exportHelpers";
+import { exportCSV, exportSingleDateICS, generateICS } from "../src/lib/utils/exportHelpers";
 import type { Payment, PensionResult } from "../src/lib/pensionEngine";
 
 function blobToText(blob: Blob): Promise<string> {
@@ -169,5 +169,52 @@ describe("export helpers", () => {
         expect(ics).toContain("X-APPLE-CALENDAR-COLOR:#22c55e");
 
         dl.restore();
+    });
+
+    describe("exportSingleDateICS", () => {
+        it("downloads a valid ICS file with correct event details", async () => {
+            const dl = setupDownloadMocks();
+
+            exportSingleDateICS("2027-06-15", "State Pension Age", "Reached UK State Pension Age");
+
+            expect(dl.blobs.length).toBe(1);
+            const ics = await blobToText(dl.blobs[0]!);
+
+            expect(ics).toContain("BEGIN:VCALENDAR");
+            expect(ics).toContain("BEGIN:VEVENT");
+            expect(ics).toContain("DTSTART;VALUE=DATE:20270615");
+            expect(ics).toContain("SUMMARY:State Pension Age");
+            expect(ics).toContain("DESCRIPTION:Reached UK State Pension Age");
+            expect(ics).toContain("END:VEVENT");
+            expect(ics).toContain("END:VCALENDAR");
+
+            dl.restore();
+        });
+
+        it("uses a slugified filename derived from the event name", () => {
+            const dl = setupDownloadMocks();
+            const anchorSpy = vi.spyOn(HTMLAnchorElement.prototype, "setAttribute");
+
+            exportSingleDateICS("2027-06-15", "State Pension Age", "desc");
+
+            const downloadCall = anchorSpy.mock.calls.find(([attr]) => attr === "download");
+            expect(downloadCall?.[1]).toBe("state-pension-age.ics");
+
+            dl.restore();
+        });
+
+        it("does nothing when dateIso is empty", () => {
+            const dl = setupDownloadMocks();
+            exportSingleDateICS("", "Event", "desc");
+            expect(dl.blobs.length).toBe(0);
+            dl.restore();
+        });
+
+        it("does nothing when dateIso is not a valid date", () => {
+            const dl = setupDownloadMocks();
+            exportSingleDateICS("not-a-date", "Event", "desc");
+            expect(dl.blobs.length).toBe(0);
+            dl.restore();
+        });
     });
 });

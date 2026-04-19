@@ -59,36 +59,12 @@ describe("AppFooter", () => {
         expect(feedbackLink).toHaveAttribute("rel", "noopener noreferrer");
     });
 
-    it("has a GitHub link", () => {
+    it("does not have a GitHub link", () => {
         const { container } = render(AppFooter);
         const githubLink = container.querySelector(
             'a[href="https://github.com/telecasterer/ukspcal"]'
         );
-        expect(githubLink).toBeInTheDocument();
-    });
-
-    it("GitHub link has correct text", () => {
-        const { getByText } = render(AppFooter);
-        expect(getByText(/View on GitHub/i)).toBeInTheDocument();
-    });
-
-    it("GitHub link opens in new tab", () => {
-        const { container } = render(AppFooter);
-        const githubLinks = Array.from(
-            container.querySelectorAll(
-                'a[href="https://github.com/telecasterer/ukspcal"]'
-            )
-        );
-        githubLinks.forEach((link) => {
-            expect(link).toHaveAttribute("target", "_blank");
-            expect(link).toHaveAttribute("rel", "noopener noreferrer");
-        });
-    });
-
-    it("has GitHub icon SVG", () => {
-        const { container } = render(AppFooter);
-        const svgs = container.querySelectorAll("svg");
-        expect(svgs.length).toBeGreaterThan(0);
+        expect(githubLink).toBeNull();
     });
 
     it("has dark mode styling classes", () => {

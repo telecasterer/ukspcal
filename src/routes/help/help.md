@@ -1,3 +1,12 @@
+## What This App Does
+
+- Calculates your State Pension Age (SPA) date from your date of birth.
+- Builds a payment schedule from your NI suffix and selected cycle.
+- Adjusts payments that fall on UK bank holidays to the previous working day.
+- Lets you export, print, share, and install the app for easier repeat use.
+
+The tool is designed to help you plan ahead and keep your likely payment dates in one place.
+
 ## Quick Start
 
 1. Enter your National Insurance (NI) code suffix (the last 3 characters of your NI number, for example **35C**) and your date of birth.
@@ -8,22 +17,6 @@
 
 - Want to share the app with someone else?
 - Use the **Share** button in the top toolbar.
-
-## What This App Does
-
-- Calculates your State Pension Age (SPA) date from your date of birth.
-- Builds a payment schedule from your NI suffix and selected cycle.
-- Adjusts payments that fall on UK bank holidays to the previous working day.
-- Lets you export, print, share, and install the app for easier repeat use.
-
-The tool is designed to help you plan ahead and keep your likely payment dates in one place.
-
-## Data Privacy
-
-- **Your data stays on your device.** Nothing you enter is sent to a server.
-- **Settings are saved locally** in your browser storage so the app remembers your choices next time.
-- To remove saved data, use **Restore defaults** in the input form.
-- Full policy: [Privacy Policy](/privacy).
 
 ## Using the App
 
@@ -69,17 +62,18 @@ This keeps your imported calendar both compact and accurate for early-payment ex
 - ![Example](/help/images/install.png)
 - Once installed, updates are delivered automatically through Google Play on Android or through your browser for PWA installs.
 
-## UK Holiday Data
+## How Calculations Work
 
-The app uses public holiday data to determine early-payment adjustments.
-
-England & Wales is the default UK holiday set for calculation purposes. Scotland and Northern Ireland are available in additional holidays for reference display.
-
-## About State Pension Age
+### About State Pension Age
 
 - The SPA calculation follows published UK government policy.
 - If your SPA is before **6 April 2016**, results may be less reliable and a warning is shown.
 - Need claim guidance? See the app page: [Claiming your State Pension](/claiming).
+
+### UK Holiday Data
+
+The app uses public holiday data to determine early-payment adjustments.
+England & Wales is the default UK holiday set for calculation purposes. Scotland and Northern Ireland are available in additional holidays for reference display.
 
 ## Troubleshooting
 
@@ -89,12 +83,15 @@ England & Wales is the default UK holiday set for calculation purposes. Scotland
 - For best results, open in Safari/Chrome/Edge/Firefox or install the app.
 - If install/print options are missing, use your app/browser menu and choose an option such as **Open in browser**.
 
-## Disclaimer
+## Data Privacy & Disclaimer
+
+- **Your data stays on your device.** Nothing you enter is sent to a server.
+- **Settings are saved locally** in your browser storage so the app remembers your choices next time.
+- To remove saved data, use **Restore defaults** in the input form.
+- Full policy: [Privacy Policy](/privacy).
 
 This is an unofficial calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK**.
-
 Dates and calculations use publicly available information and may change over time.
-
 **No warranty is provided.** Use at your own risk and verify with official sources when you need a definitive answer.
 
 ## Official Sources
@@ -115,6 +112,8 @@ Useful details to include:
 - What actually happened.
 
 ## Version Information
+
+[Source Code on GitHub](https://github.com/telecasterer/ukspcal)
 
 |                 |                           |
 | --------------- | ------------------------- |

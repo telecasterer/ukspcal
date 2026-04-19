@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: March 2, 2026
+Last updated: April 19, 2026
 
 UK State Pension Calendar is designed to work primarily on your device. This page explains what data is used by the app and why.
 
@@ -14,7 +14,7 @@ The app stores settings and recent inputs in your browser local storage so your 
 
 ## Analytics and technical data
 
-The app uses anonymous analytics to aggregate usage metrics and facilitate product improvement. These services may process technical information such as pages viewed, device/browser details, and interaction events. **Your input data is not part this information**.
+This app is hosted on Vercel and uses standard, privacy-friendly Vercel Analytics to measure overall site traffic (such as aggregate page views and general browser/device types). We do not track individual users or complex interaction events. **Your input data is not part of this information**.
 
 The app does not require account registration, and we do not collect or share your NI code or date of birth.
 
@@ -28,7 +28,7 @@ If you choose CSV/ICS export, print, or share actions, the generated content is 
 
 ## Changes to this policy
 
-This policy may be updated from time to time, for example to ensure we are fully transparent and complant, but we will never share your date of birth or NI code. Updates will be posted on this page with a revised "Last updated" date. 
+This policy may be updated from time to time, for example to ensure we are fully transparent and compliant, but we will never share your date of birth or NI code. Updates will be posted on this page with a revised "Last updated" date. 
 
 ## Contact
 

@@ -82,6 +82,28 @@ function foldICSLine(line: string, maxOctets = 75): string[] {
 }
 
 /**
+ * Download a generated ICS file to the user's device
+ */
+function downloadIcsFile(icsLines: string[], filename: string): void {
+    const foldedLines = icsLines.flatMap((line) => foldICSLine(line));
+    const icsContent = foldedLines.join("\r\n");
+    const blob = new Blob([icsContent], {
+        type: "text/calendar;charset=utf-8;",
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+/**
  * Get payment status description
  */
 function getPaymentStatus(payment: Payment, result: PensionResult): string {
@@ -331,22 +353,7 @@ export function generateICS(
 
     icsLines.push("END:VCALENDAR");
 
-    const foldedLines = icsLines.flatMap((line) => foldICSLine(line));
-    const icsContent = foldedLines.join("\r\n");
-    const blob = new Blob([icsContent], {
-        type: "text/calendar;charset=utf-8;",
-    });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute("href", url);
-    link.setAttribute("download", "pension-calendar.ics");
-    link.style.visibility = "hidden";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadIcsFile(icsLines, "pension-calendar.ics");
 }
 
 /**
@@ -354,4 +361,40 @@ export function generateICS(
  */
 export function printCalendar(): void {
     window.print();
+}
+
+/**
+ * Generate a single-event ICS file (for SPA or Claiming Date)
+ */
+export function exportSingleDateICS(
+    dateIso: string,
+    eventName: string,
+    description: string
+): void {
+    if (!dateIso) return;
+    const date = new Date(dateIso + "T00:00:00Z");
+    if (isNaN(date.getTime())) return;
+
+    const now = new Date();
+    const dtstamp = formatUtcTimestampYYYYMMDDTHHMMSSZ(now);
+    const dtstart = formatDateYYYYMMDD(date);
+
+    const icsLines: string[] = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//UK State Pension Calendar//NONSGML v1.0//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        `UID:uksp-event-${dtstart}@ukspcal`,
+        `DTSTAMP:${dtstamp}`,
+        `DTSTART;VALUE=DATE:${dtstart}`,
+        `SUMMARY:${escapeICSText(eventName)}`,
+        `DESCRIPTION:${escapeICSText(description)}`,
+        "END:VEVENT",
+        "END:VCALENDAR"
+    ];
+
+    const safeName = eventName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    downloadIcsFile(icsLines, `${safeName}.ics`);
 }

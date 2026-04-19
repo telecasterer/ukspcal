@@ -21,6 +21,8 @@
     }
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
+    import { loadSavedProfiles, saveProfiles, generateId, type SavedProfile } from "$lib/utils/profilePersistence";
+    import { onMount } from "svelte";
 
     // --- Props ---
 
@@ -87,6 +89,60 @@
     let isEditingNi: boolean = $state(false);
     let cycleDaysSelect: string = $state(String(cycleDays ?? 28));
     let dobDate: Date | undefined = $state<Date | undefined>(undefined);
+    let savedProfiles: SavedProfile[] = $state([]);
+    let isNamingProfile: boolean = $state(false);
+    let profileNameDraft: string = $state("");
+
+    onMount(() => {
+        savedProfiles = loadSavedProfiles();
+    });
+
+    function startSaveProfile() {
+        profileNameDraft = "";
+        isNamingProfile = true;
+        // Focus the input after it renders
+        queueMicrotask(() => {
+            const el = document.getElementById("profile-name-input");
+            if (el instanceof HTMLElement) el.focus();
+        });
+    }
+
+    function commitSaveProfile() {
+        const name = profileNameDraft.trim();
+        if (!name) {
+            isNamingProfile = false;
+            return;
+        }
+        const newProfile: SavedProfile = {
+            id: generateId(),
+            name,
+            ni,
+            dob
+        };
+        savedProfiles = [...savedProfiles, newProfile];
+        saveProfiles(savedProfiles);
+        isNamingProfile = false;
+        profileNameDraft = "";
+    }
+
+    function cancelSaveProfile() {
+        isNamingProfile = false;
+        profileNameDraft = "";
+    }
+
+    function loadProfile(p: SavedProfile) {
+        ni = p.ni;
+        dob = p.dob;
+        niDraft = p.ni;
+        isNamingProfile = false;
+        onPersist?.();
+        onRecalculate?.();
+    }
+
+    function deleteProfile(id: string) {
+        savedProfiles = savedProfiles.filter(p => p.id !== id);
+        saveProfiles(savedProfiles);
+    }
 
     /**
      * Convert ISO date string (YYYY-MM-DD) to local Date
@@ -361,6 +417,78 @@
             </div>
         </div>
     </Modal>
+
+    <!-- Profiles UI -->
+    {#if savedProfiles.length > 0 || (ni.trim() && dob)}
+        <div class="pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex flex-wrap gap-2 items-center">
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide mr-2">Profiles:</span>
+                {#each savedProfiles as p}
+                    <div class="inline-flex rounded-lg shadow-xs">
+                        <button
+                            type="button"
+                            class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-gray-200 rounded-s-lg hover:bg-blue-50 hover:text-blue-800 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-blue-400 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
+                            onclick={() => loadProfile(p)}
+                            title="Load profile: {p.name}"
+                        >
+                            {p.name}
+                        </button>
+                        <button
+                            type="button"
+                            class="px-2 py-1.5 text-xs font-medium text-gray-400 bg-white border border-s-0 border-gray-200 rounded-e-lg hover:bg-red-50 hover:text-red-600 focus:z-10 focus:ring-2 focus:ring-red-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-500"
+                            onclick={() => deleteProfile(p.id)}
+                            title="Delete profile {p.name}"
+                            aria-label="Delete profile {p.name}"
+                        >
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                {/each}
+                {#if ni.trim() && dob && !isNamingProfile}
+                    <button
+                        type="button"
+                        class="px-3 py-1.5 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                        onclick={startSaveProfile}
+                    >
+                        + Save current
+                    </button>
+                {/if}
+            </div>
+            {#if isNamingProfile}
+                <div class="flex gap-2 items-center mt-2">
+                    <input
+                        id="profile-name-input"
+                        type="text"
+                        bind:value={profileNameDraft}
+                        placeholder="Profile name (e.g. Partner)"
+                        maxlength={30}
+                        class="px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white w-48"
+                        onkeydown={(e) => {
+                            if (e.key === 'Enter') { e.preventDefault(); commitSaveProfile(); }
+                            if (e.key === 'Escape') { e.preventDefault(); cancelSaveProfile(); }
+                        }}
+                    />
+                    <button
+                        type="button"
+                        class="px-2.5 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600"
+                        onclick={commitSaveProfile}
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="button"
+                        class="px-2.5 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                        onclick={cancelSaveProfile}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            {/if}
+        </div>
+    {/if}
+
     <div class="space-y-3">
                 <!-- NI code input -->
                 <div>
