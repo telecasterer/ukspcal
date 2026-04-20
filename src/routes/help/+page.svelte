@@ -10,7 +10,6 @@
     import TopBar from "$lib/components/TopBar.svelte";
     import ShareButton from "$lib/components/ShareButton.svelte";
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
-    import { capturePosthog } from "$lib/utils/posthog";
     import { goto } from "$app/navigation";
 
     let isFacebookInAppBrowser: boolean = $state(false);
@@ -18,7 +17,6 @@
 
     onMount(() => {
         isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
-        capturePosthog("help_opened");
     });
 
     async function handleCopyLink() {
@@ -57,6 +55,7 @@
     import {
         ArrowLeftOutline,
         ChevronDownOutline,
+        GithubSolid,
         MoonOutline,
         SunOutline,
     } from "flowbite-svelte-icons";
@@ -193,6 +192,18 @@
                         {/if}
                     </details>
                 {/each}
+                <div class="pt-3 mt-1 border-t border-gray-200 dark:border-gray-700 flex justify-end px-3">
+                    <a
+                        href="https://github.com/telecasterer/ukspcal"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                        aria-label="View source code on GitHub"
+                    >
+                        <GithubSolid class="h-4 w-4" />
+                        <span>Source code</span>
+                    </a>
+                </div>
             </div>
         </div>
     </main>

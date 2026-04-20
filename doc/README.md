@@ -31,7 +31,7 @@ A modern, privacy-focused web app to calculate and export your UK State Pension 
 
 - `src/` — Application source (SvelteKit + TypeScript).
     - `lib/` — Core business logic, components, and utilities.
-    - `routes/` — Pages (main calculator, help page, sitemap).
+    - `routes/` — Pages (main calculator, help, claiming, privacy, sitemap).
     - `styles/` — Print styles and global CSS.
 - `tests/` — Vitest unit tests.
 - `static/` — Static assets (manifest, icons, robots).
@@ -43,8 +43,6 @@ A modern, privacy-focused web app to calculate and export your UK State Pension 
 - [Developer Guide](developer-guide.md): Architecture, data flow, and dev workflow.
 - [Component Reference](components.md): UI components, utilities, services.
 - [Maintenance Guide](maintenance.md): Releases, deployment, and operational care.
-- [Contributing](CONTRIBUTING.md): How to contribute changes.
-
 ## Release notes
 
 See `RELEASE_NOTES.md` at the repo root for release details.

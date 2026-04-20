@@ -32,7 +32,6 @@
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
     import { loadAdditionalHolidays } from "$lib/utils/loadAdditionalHolidays";
     import { detectCountryFromTimezone } from "$lib/utils/timezoneDetection";
-    import { capturePosthog } from "$lib/utils/posthog";
     import {
         subtractMonthsFromIso,
         formatIsoDateLong,
@@ -128,7 +127,6 @@
     let showInstallHelpModal: boolean = $state(false);
     let showIosInstallHelp: boolean = $state(false);
     let deferredInstallPrompt: BeforeInstallPromptEvent | null = $state(null);
-    let hasCapturedInstallAccepted: boolean = $state(false);
 
     // --- Derived values ---
     const spaDateIso = $derived.by(() => {
@@ -237,15 +235,12 @@
             e.preventDefault?.();
             deferredInstallPrompt = e as BeforeInstallPromptEvent;
             canInstallPwa = true;
-            hasCapturedInstallAccepted = false;
-            capturePosthog("install_prompt_shown");
         };
 
         const onAppInstalled = () => {
             deferredInstallPrompt = null;
             canInstallPwa = false;
             computeStandalone();
-            captureInstallAcceptedOnce();
         };
 
         window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
@@ -339,12 +334,6 @@
 
     // --- Helper functions ---
 
-    function captureInstallAcceptedOnce() {
-        if (hasCapturedInstallAccepted) return;
-        hasCapturedInstallAccepted = true;
-        capturePosthog("install_prompt_accepted");
-    }
-
     function isoYear(iso: string): number {
         return Number(iso.slice(0, 4));
     }
@@ -368,16 +357,12 @@
         });
     }
 
-    function generate(source: string = "auto") {
+    function generate() {
         error = "";
         if (!/^\d{2}[A-D]$/i.test(ni)) {
             error =
                 "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
             result = null;
-            capturePosthog("schedule_generate_validation_failed", {
-                source,
-                reason: "invalid_ni",
-            });
             return;
         }
         const generated = generatePayments(
@@ -391,13 +376,6 @@
             ? generated.payments.filter((p) => p.paid >= minPaymentIso!)
             : generated.payments;
         result = { ...generated, payments: filteredPayments };
-        capturePosthog("schedule_generated", {
-            source,
-            cycle_days: cycleDays,
-            start_year: startYear,
-            number_of_years: numberOfYears,
-            payments_count: result.payments.length,
-        });
         // Reset calendar to the requested focus date (if set), otherwise first payment.
         if (result.payments.length > 0) {
             const focusIso = pendingCalendarFocusIso ?? result.payments[0].paid;
@@ -448,7 +426,7 @@
         if (Number.isFinite(n)) {
             startYear = n;
             persistInputs();
-            generate("range_start_year");
+            generate();
         }
     }
 
@@ -457,7 +435,7 @@
         if (Number.isFinite(n) && n > 0 && n <= 50) {
             numberOfYears = n;
             persistInputs();
-            generate("range_duration");
+            generate();
         }
     }
 
@@ -467,7 +445,7 @@
         numberOfYears += 1;
         numberOfYearsInput = String(numberOfYears);
         persistInputs();
-        generate("range_extend_one_year");
+        generate();
         return true;
     }
 
@@ -515,35 +493,21 @@
         minPaymentIso = payment.paid;
         startYear = Math.min(isoYear(payment.due), isoYear(payment.paid));
         pendingCalendarFocusIso = payment.paid;
-        generate("spa_auto_focus");
+        generate();
         // Persist the auto-adjusted year range so the UI comes back the same next time.
         if (hasUserCommittedInputs) persistInputs();
     }
 
     async function handleInstallClick() {
-        capturePosthog("install_click", {
-            is_android: isAndroid,
-            can_install_pwa: canInstallPwa,
-            show_ios_help: showIosInstallHelp,
-            is_standalone: isStandalone,
-            in_app_browser: isFacebookInAppBrowser,
-        });
         if (isFacebookInAppBrowser || isStandalone) return;
         if (isAndroid) {
-            capturePosthog("install_play_store_opened");
             window.location.assign(ANDROID_PLAY_STORE_URL);
             return;
         }
         if (canInstallPwa && deferredInstallPrompt) {
             await deferredInstallPrompt.prompt();
-            // Clear prompt either way; browser usually only allows it once.
             try {
-                const choice = await deferredInstallPrompt.userChoice;
-                if (choice.outcome === "accepted") {
-                    captureInstallAcceptedOnce();
-                } else {
-                    capturePosthog("install_prompt_dismissed");
-                }
+                await deferredInstallPrompt.userChoice;
             } catch { /* ignore */ }
             deferredInstallPrompt = null;
             canInstallPwa = false;
@@ -551,17 +515,15 @@
         }
         if (showIosInstallHelp) {
             showInstallHelpModal = true;
-            capturePosthog("install_help_opened");
         }
     }
 
     function handleHelpClick() {
-        capturePosthog("help_opened");
         goto("/help");
     }
 
     function handleInputsRecalculate() {
-        generate("inputs_commit");
+        generate();
     }
 </script>
 

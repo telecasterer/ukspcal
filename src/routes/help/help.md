@@ -126,8 +126,6 @@ Useful details to include:
 
 ## Version Information
 
-[Source Code on GitHub](https://github.com/telecasterer/ukspcal)
-
 |                 |                           |
 | --------------- | ------------------------- |
 | **Developer**   | Paul Robins               |

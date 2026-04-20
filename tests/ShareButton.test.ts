@@ -6,10 +6,6 @@ import { fireEvent, render } from "@testing-library/svelte";
 vi.mock("../src/lib/utils/clipboard", () => ({
     copyLinkToClipboard: vi.fn().mockResolvedValue(true),
 }));
-vi.mock("../src/lib/utils/posthog", () => ({
-    capturePosthog: vi.fn(),
-}));
-
 import ShareButton from "../src/lib/components/ShareButton.svelte";
 import { copyLinkToClipboard } from "../src/lib/utils/clipboard";
 

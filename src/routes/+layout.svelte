@@ -3,8 +3,6 @@
     import { injectAnalytics } from "@vercel/analytics/sveltekit";
     import { onMount } from "svelte";
     import { registerSW } from "virtual:pwa-register";
-    import { initPosthog } from "$lib/utils/posthog";
-
     let { children } = $props();
 
     onMount(() => {
@@ -15,7 +13,6 @@
         if (!isLocalPreview) {
             injectAnalytics();
         }
-        initPosthog();
         const updateSW = registerSW({
             immediate: true,
             onNeedRefresh() {

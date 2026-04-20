@@ -7,7 +7,6 @@
         type IcsAlarmSettings,
     } from "$lib/utils/icsAlarmPersistence";
     import { loadIcsEventTime, saveIcsEventTime } from "$lib/utils/icsEventTimePersistence";
-    import { capturePosthog } from "$lib/utils/posthog";
     import type { Payment, PensionResult } from "$lib/pensionEngine";
     import type { DateFormat } from "$lib/utils/dateFormatting";
     import IcsReminderDialog from "./IcsAlarmDialog.svelte";
@@ -55,12 +54,6 @@
     $effect(() => { if (!isEditingIcsColorText) icsColorDraft = icsColor; });
 
     function handleExport() {
-        capturePosthog("export_ics", {
-            payments_count: payments.length,
-            alarm_enabled: reminderSettings.alarmEnabled,
-            alarm_days_before: reminderSettings.daysBefore,
-            event_time: icsEventTime,
-        });
         generateICS(payments, result, {
             csvDateFormat,
             icsEventName,

@@ -44,4 +44,5 @@
 
 - Monitor GitHub issues for bug reports.
 - Use Vercel/Netlify dashboards for deployment status and logs.
-- Validate analytics and PWA install metrics as part of release checks.
+- Check Vercel Analytics for anomalies after a release.
+- Check Vercel deployment logs for build or runtime errors.

@@ -81,7 +81,7 @@ app/build/outputs/bundle/release/app-release.aab
 3. **PensionInputsCard** computes a mini SPA-year schedule internally and emits `SpaPreviewData` upward via the `onSpaPreviewData` callback. The page stores this and passes it to `SummaryCard` → `SummaryCardContent`, so the summary panel shows State Pension age and first/second payment details as soon as a valid NI code and date of birth are entered — before the full schedule is generated.
 4. The page calls `generatePayments` from `src/lib/pensionEngine.ts` to produce the full schedule, which is passed as `result` to `SummaryCard` and the calendar components.
 5. **Calendar + summary UI** renders payments, highlights early payments, supports CSV/ICS export, and auto-extends duration by one year when `Next` reaches the end of range.
-6. **Help page** (`src/routes/help/+page.svelte`) renders markdown with dynamic bank holiday placeholders.
+6. **Help page** (`src/routes/help/+page.svelte`) renders markdown with dynamic build info placeholders (version, release, build date).
 
 ## Core logic modules
 
@@ -117,5 +117,5 @@ Note: UK bank-holiday adjustments use the app default baseline for England & Wal
 
 ## Contributing
 
-- Follow the repo’s `doc/CONTRIBUTING.md`.
-- Keep docs updated alongside behavior changes.
+- Keep docs in `doc/` updated alongside behaviour changes.
+- Follow Conventional Commits for commit messages.

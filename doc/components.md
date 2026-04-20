@@ -41,17 +41,19 @@
 - **isoDateHelpers.ts** — Shared ISO date utilities: `isIsoDate`, `subtractMonthsFromIso`, `formatIsoDateLong`, `daysUntilIso`.
 - **loadAdditionalHolidays.ts** — Fetches and caches additional (non-UK) public holidays for a given country and year range, with stale-cache invalidation, incremental year fetching, and race-condition guarding.
 - **persistedInputsMigration.ts** — One-time migration for legacy persisted input keys.
-- **posthog.ts** — Analytics event helpers.
 - **statePensionAge.ts** — State Pension age calculation.
 - **pwaInstall.ts** — PWA install prompt helpers.
 - **inAppBrowser.ts** — In-app browser detection.
+- **profilePersistence.ts** — Save, load, and deduplicate named profiles (NI code + date of birth) in local storage.
 - **timezoneDetection.ts** — Uses time zone for optional country defaults.
 
 ## Routes (src/routes)
 
 - **+layout.ts** — Exposes holiday data for the app (sourced via Nager.Date service).
 - **+page.svelte** — Main calculator UI and data flow.
-- **help/+page.svelte** — Help page (markdown rendered with dynamic placeholders).
+- **help/+page.svelte** — Help page (markdown rendered with build info placeholders).
+- **claiming/+page.svelte** — State Pension claim guidance with UK and international contact details.
+- **privacy/+page.svelte** — Privacy policy.
 - **sitemap.xml** — Generated sitemap endpoint.
 
 ## Data flow overview
@@ -61,7 +63,7 @@
 3. `pensionEngine.generatePayments` generates the full schedule and flags early payments.
 4. Calendar components render the full schedule with export options.
 5. `SummaryCardContent` renders the SPA details block as soon as `spaPreviewData` is available (before the full schedule), then adds the coloured grid and payment list once `result` is set.
-6. Help content is rendered from markdown with bank holiday metadata injected.
+6. Help content is rendered from markdown with build info placeholders injected.
 
 ## External dependencies (at a glance)
 

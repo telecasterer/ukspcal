@@ -50,6 +50,16 @@ The app supports:
 - You can optionally overlay additional public holidays for another country using Nager.Date.
 - When additional holiday data is loading, the calendar options panel shows a loading status. If the fetch fails, an inline warning is shown and you can try again.
 
+## Profiles
+
+The input form supports named profiles for saving and quickly switching between different NI codes and dates of birth — useful if more than one person uses the same device.
+
+- Click **+ Save current** to save your current NI code and date of birth under a name.
+- Click a profile name to load it.
+- Click the **×** next to a profile to delete it.
+- Saving a profile with a name that already exists overwrites the previous entry.
+- Profiles are stored locally in your browser; nothing is sent to a server.
+
 ## Sharing
 
 - Use the **Share** button in the top bar to share the app link or copy it to your clipboard.

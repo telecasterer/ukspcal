@@ -18,7 +18,6 @@
     import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
     import type { DateFormat } from "$lib/utils/dateFormatting";
     import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
-    import { capturePosthog } from "$lib/utils/posthog";
     import { onMount, tick } from "svelte";
     import CsvExportModal from "./CsvExportModal.svelte";
     import IcsExportModal from "./IcsExportModal.svelte";
@@ -197,17 +196,14 @@
     async function handlePrint() {
         // Facebook/Messenger iOS in-app browsers frequently block print dialogs.
         if (isFacebookInAppBrowser) {
-            capturePosthog("print_blocked", { reason: "in_app_browser" });
             printUnsupportedOpen = true;
             return;
         }
         renderPrintAllMonths = true;
         await tick();
         try {
-            capturePosthog("print_attempt", { payments_count: payments.length });
             window.print();
         } catch {
-            capturePosthog("print_failed");
             printUnsupportedOpen = true;
         }
     }
@@ -242,7 +238,6 @@
         const todayYear = now.getUTCFullYear();
         currentMonth = todayMonth;
         currentYear = todayYear;
-        capturePosthog("calendar_jump_today", { month: todayMonth + 1, year: todayYear });
         void scrollTodayMonthIntoView(todayMonth, todayYear);
     }
 

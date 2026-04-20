@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Button, Label, Modal, Select } from "flowbite-svelte";
     import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
-    import { capturePosthog } from "$lib/utils/posthog";
     import { exportCSV } from "$lib/utils/exportHelpers";
     import type { Payment, PensionResult } from "$lib/pensionEngine";
 
@@ -22,10 +21,6 @@
     }: Props = $props();
 
     function handleExport() {
-        capturePosthog("export_csv", {
-            payments_count: payments.length,
-            date_format: csvDateFormat,
-        });
         exportCSV(payments, result, csvDateFormat);
         open = false;
     }

@@ -6,7 +6,6 @@ import { waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import Page from "../src/routes/+page.svelte";
 import { goto } from "$app/navigation";
-import { capturePosthog } from "../src/lib/utils/posthog";
 
 vi.mock("$app/navigation", () => ({
     goto: vi.fn(),
@@ -25,10 +24,6 @@ vi.mock("../src/lib/utils/inAppBrowser", async (importOriginal) => {
         detectFacebookInAppBrowserFromWindow: vi.fn(() => false),
     };
 });
-
-vi.mock("../src/lib/utils/posthog", () => ({
-    capturePosthog: vi.fn(),
-}));
 
 function setUserAgent(userAgent: string) {
     Object.defineProperty(window.navigator, "userAgent", {
@@ -52,7 +47,6 @@ describe("+page toolbar and install", () => {
 
         await fireEvent.click(getByRole("button", { name: "Help" }));
 
-        expect(vi.mocked(capturePosthog)).toHaveBeenCalledWith("help_opened");
         expect(vi.mocked(goto)).toHaveBeenCalledWith("/help");
     });
 
@@ -89,8 +83,6 @@ describe("+page toolbar and install", () => {
                 queryByText(/In Safari, tap the Share button, then choose/i)
             ).toBeInTheDocument();
         });
-        expect(vi.mocked(capturePosthog)).toHaveBeenCalledWith("install_help_opened");
-
         const closeButton = Array.from(document.querySelectorAll("button")).find(
             (button) => /Close/i.test(button.textContent ?? "")
         );
