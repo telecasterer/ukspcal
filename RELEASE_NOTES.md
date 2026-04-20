@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2026-04-20 (v0.6.2)
+
+### Chores
+
+- remove PostHog tracking; update docs (0c92208)
+
 ## 2026-04-20 (v0.6.1)
 
 ### Fixes
