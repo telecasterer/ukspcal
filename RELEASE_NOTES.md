@@ -1,5 +1,12 @@
 # Release Notes
 
+## 2026-04-20 (v0.6.1)
+
+### Fixes
+
+- enforce unique profile names; polish UI text and content (4fee716)
+- update help.md (d90aabc)
+
 ## 2026-04-19 (v0.6.0)
 
 ### Features
