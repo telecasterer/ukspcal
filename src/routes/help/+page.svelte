@@ -202,8 +202,8 @@
 </div>
 
 <svelte:head>
-    <title>Help - UK State Pension Calculator</title>
-    <meta property="og:title" content="Help - UK State Pension Calculator" />
+    <title>Help - UK State Pension Calendar</title>
+    <meta property="og:title" content="Help - UK State Pension Calendar" />
     <meta
         property="og:description"
         content="Learn how to use the UK State Pension Calculator. Get answers to frequently asked questions and understand how to calculate your pension dates."

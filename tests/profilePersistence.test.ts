@@ -65,6 +65,16 @@ describe("profilePersistence", () => {
         expect(loadSavedProfiles()).toEqual([]);
     });
 
+    it("deduplicates by name, keeping the last entry for each name", () => {
+        const older = makeProfile({ name: "Me", ni: "11A", dob: "1958-01-01" });
+        const newer = makeProfile({ name: "Me", ni: "22B", dob: "1960-06-15" });
+        localStorage.setItem(PROFILES_KEY, JSON.stringify([older, newer]));
+
+        const loaded = loadSavedProfiles();
+        expect(loaded).toHaveLength(1);
+        expect(loaded[0].ni).toBe("22B");
+    });
+
     // --- saveProfiles ---
 
     it("persists profiles to localStorage", () => {

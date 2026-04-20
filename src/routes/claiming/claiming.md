@@ -32,16 +32,18 @@ If you were sent an invitation letter, keep your claim code ready. If you are wi
 
 **Tip:** Ask the agent for a callback to reduce international phone charges.
 
-**Planning ahead (more than 4 months away from SPA):** Future Pension Centre (DWP).
-
-**Call:** [+44 191 218 3600](tel:+441912183600)
-
 ## What to have ready
 
 - Your National Insurance number
 - Your bank or building society account details
-- If you want payment to a non-UK account: the IBAN and BIC (SWIFT/BIC)
+- If you want payment to a non-UK account: the IBAN and BIC/SWIFT code
 - Your marriage or civil partnership details (if relevant)
 - Dates you lived or worked abroad, if relevant
 - Any social security numbers used for overseas state pensions, if relevant
 - Your invitation/claim code, if you have one
+
+## Planning ahead
+
+If you are more than 4 months away from your State Pension age and want to check your State Pension forecast, contact the Future Pension Centre (DWP).
+
+**Call:** [0800 731 0175](tel:08007310175) (UK, free) / [+44 191 218 3600](tel:+441912183600) (international)

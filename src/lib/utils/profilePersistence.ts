@@ -24,7 +24,7 @@ export function loadSavedProfiles(): SavedProfile[] {
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
-        return parsed.filter(
+        const valid = parsed.filter(
             (p) =>
                 typeof p === "object" &&
                 p !== null &&
@@ -33,6 +33,10 @@ export function loadSavedProfiles(): SavedProfile[] {
                 typeof p.ni === "string" &&
                 typeof p.dob === "string"
         ) as SavedProfile[];
+        // Deduplicate by name, keeping the last (latest) entry for each name
+        const seen = new Map<string, SavedProfile>();
+        for (const p of valid) seen.set(p.name, p);
+        return Array.from(seen.values());
     } catch {
         return [];
     }

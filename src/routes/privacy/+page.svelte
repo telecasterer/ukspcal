@@ -85,7 +85,7 @@
                     Privacy Policy
                 </h1>
                 <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
-                    How this app uses local storage, analytics, and exported data.
+                    How this app handles your data — local storage, analytics, and exports.
                 </p>
             </header>
 

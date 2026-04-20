@@ -56,7 +56,7 @@ describe("SEO - Meta Tags and Schema", () => {
 
     it("should have page-specific title on help page", () => {
         expect(helpPageContent).toContain(
-            "<title>Help - UK State Pension Calculator"
+            "<title>Help - UK State Pension Calendar"
         );
     });
 

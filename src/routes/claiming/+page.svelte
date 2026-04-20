@@ -87,13 +87,11 @@
                     State Pension Claim Guidance
                 </h1>
                 <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
-                    Claim routes and key contact numbers for UK and non-UK residents.
+                    Claim links and key contact numbers for UK and non-UK residents.
                 </p>
             </header>
 
-            <div
-                class="card-surface w-full p-5 sm:p-6 space-y-5"
-            >
+            <div class="card-surface w-full p-5 sm:p-6 space-y-5">
                 <section
                     class="doc-markdown policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
                 >

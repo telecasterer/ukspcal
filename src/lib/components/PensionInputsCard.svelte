@@ -113,13 +113,14 @@
             isNamingProfile = false;
             return;
         }
+        const existing = savedProfiles.find((p) => p.name === name);
         const newProfile: SavedProfile = {
-            id: generateId(),
+            id: existing ? existing.id : generateId(),
             name,
             ni,
             dob
         };
-        savedProfiles = [...savedProfiles, newProfile];
+        savedProfiles = [...savedProfiles.filter((p) => p.name !== name), newProfile];
         saveProfiles(savedProfiles);
         isNamingProfile = false;
         profileNameDraft = "";
@@ -292,7 +293,10 @@
         const weeks = Math.floor(days / 7);
         const rem = days % 7;
         const pctText = formatPaymentPercentage(days, cycleDays);
-        return `Comprising ${weeks} week(s) and ${rem} day(s) pension (${pctText} of a full ${cycleDays}-day payment)`;
+        const weekStr = weeks === 1 ? "1 week" : `${weeks} weeks`;
+        const dayStr = rem === 1 ? "1 day" : `${rem} days`;
+        const durationStr = weeks === 0 ? dayStr : rem === 0 ? weekStr : `${weekStr} and ${dayStr}`;
+        return `Comprising ${durationStr} pension (${pctText} of a full ${cycleDays}-day payment)`;
     });
 
     const firstPaymentDueFormatted = $derived.by(() => {
@@ -384,7 +388,7 @@
     <div class="flex items-center justify-between mb-2">
         <div>
             <p class="text-sm text-gray-600 dark:text-gray-300">
-                Enter your NI code and date of birth to see your expected payment dates.
+                Enter your NI code and date of birth to generate your payment schedule.
             </p>
         </div>
         <Button
@@ -503,7 +507,7 @@
                         autocomplete="off"
                         autocapitalize="characters"
                         spellcheck={false}
-                        placeholder="e.g., 22D"
+                        placeholder="e.g. 22D"
                         class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         onfocus={() => {
                             isEditingNi = true;
@@ -561,7 +565,7 @@
                 <!-- Payment frequency select -->
                 <div>
                     <Label for="cycle-days" class="block mb-1 text-sm"
-                        >Payment Frequency</Label
+                        >Payment frequency</Label
                     >
                     <Select
                         id="cycle-days"

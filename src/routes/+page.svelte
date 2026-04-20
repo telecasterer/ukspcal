@@ -647,7 +647,7 @@
                 UK State Pension Payment Calendar
             </h1>
             <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
-                Calculate your State Pension age and generate a personalized schedule of expected payment dates. 
+                Calculate your State Pension age and generate a personalised payment schedule.
                 All data stays safely on your device.
             </p>
         </div>

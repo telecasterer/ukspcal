@@ -9,14 +9,13 @@ The tool is designed to help you plan ahead and keep your likely payment dates i
 
 ## Quick Start
 
-1. Enter your National Insurance (NI) code suffix (the last 3 characters of your NI number, for example **35C**) and your date of birth.
+1. Enter your National Insurance (NI) code suffix (the last 3 characters of your NI number, for example **22D**) and your date of birth.
 2. Choose your payment cycle and the calendar year range you want to generate.
 3. Review your personalised State Pension payment calendar.
 4. Export as CSV/ICS or print the calendar if you want to keep a copy.
 5. (Optional, recommended) Install the app.
 
-- Want to share the app with someone else?
-- Use the **Share** button in the top toolbar.
+To share the app with someone else, use the **Share** button in the top toolbar.
 
 ## Using the App
 
@@ -42,7 +41,7 @@ The tool is designed to help you plan ahead and keep your likely payment dates i
 ### Profiles
 
 - Use **Profiles** in the input form to save and reload your NI suffix and date of birth.
-- Give each profile a name, then use the load/delete buttons to manage them.
+- Give each profile a name, then use the load/delete buttons to manage them. Saving a profile with a name that already exists will overwrite the previous entry.
 - Profiles are stored locally in your browser — nothing is sent to a server.
 - Useful if more than one person uses the same device.
 
@@ -82,7 +81,7 @@ This keeps your imported calendar both compact and accurate for early-payment ex
 
 - The SPA calculation follows published UK government policy.
 - If your SPA is before **6 April 2016**, results may be less reliable and a warning is shown.
-- Need claim guidance? See the app page: [Claiming your State Pension](/claiming).
+- Need guidance on how to claim? See [Claiming your State Pension](/claiming).
 
 ### UK Holiday Data
 
