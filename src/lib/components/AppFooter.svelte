@@ -2,7 +2,7 @@
 </script>
 
 <footer
-    class="safe-area-bottom print-hide border-t border-gray-200 dark:border-gray-800 bg-transparent py-6 px-4"
+    class="safe-area-bottom print-hide border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-6 px-4"
 >
     <div
         class="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 sm:gap-6"

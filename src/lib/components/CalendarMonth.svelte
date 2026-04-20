@@ -452,6 +452,24 @@
                     <div class="flex items-start">
                         <div class={`calendar-day-number text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0 ${isToday ? "today-number" : ""}`}>{day}</div>
                     </div>
+                    {#if payment}
+                        <svg
+                            class="absolute bottom-0.5 right-0.5 pointer-events-none select-none"
+                            style="width:clamp(0.7rem,24%,1.1rem);height:auto;opacity:0.82;"
+                            viewBox="0 0 12 14"
+                            aria-hidden="true"
+                        >
+                            <text
+                                x="6"
+                                y="13"
+                                text-anchor="middle"
+                                font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
+                                font-weight="bold"
+                                font-size="13"
+                                fill="currentColor"
+                            >£</text>
+                        </svg>
+                    {/if}
                     {#if additionalHoliday && !payment && flagSvg}
                         <img
                             src={flagSvg}
