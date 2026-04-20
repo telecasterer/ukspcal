@@ -4,11 +4,15 @@ You will not receive your State Pension automatically. You need to make a claim.
 
 ## Planning ahead
 
-If you are more than 4 months away from your State Pension age and want to check your State Pension forecast, contact the Future Pension Centre (DWP).
+If you are more than 4 months away from your State Pension age and want to check your State Pension forecast:
+
+**Check online:** [GOV.UK: Check your State Pension forecast](https://www.gov.uk/check-state-pension) — you will need your National Insurance number and a Government Gateway or One Login account.
+
+If you cannot use the online service, contact the Future Pension Centre (DWP).
 
 **Call:** [0800 731 0175](tel:08007310175) (UK, free) / [+44 191 218 3600](tel:+441912183600) (international)
 
-## What to have ready
+## What to have ready when making your claim
 
 - Your National Insurance number
 - Your bank or building society account details
