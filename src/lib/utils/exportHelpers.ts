@@ -149,7 +149,7 @@ export function exportCSV(
 
     payments.forEach((payment) => {
         const date = new Date(payment.paid + "T00:00:00Z");
-        const dayName = date.toLocaleDateString("en-GB", { weekday: "long" });
+        const dayName = date.toLocaleDateString("en-GB", { weekday: "long", timeZone: "UTC" });
         const status = payment.early ? "Early" : "On Time";
         const notes = getPaymentStatus(payment, result);
 

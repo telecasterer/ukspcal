@@ -152,6 +152,7 @@
                 year: "numeric",
                 month: "short",
                 day: "numeric",
+                timeZone: "UTC",
             });
         } catch {
             return "";
@@ -169,6 +170,7 @@
                 year: "numeric",
                 month: "short",
                 day: "numeric",
+                timeZone: "UTC",
             });
         } catch {
             return "";
