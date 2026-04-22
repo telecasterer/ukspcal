@@ -21,10 +21,10 @@ export function formatDateForCSV(dateStr: string, format: DateFormat): string {
     const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
     const year = date.getUTCFullYear();
     const monthName = date
-        .toLocaleDateString("en-GB", { month: "short" })
+        .toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" })
         .toUpperCase();
-    const dayName = date.toLocaleDateString("en-GB", { weekday: "short" });
-    const fullMonthName = date.toLocaleDateString("en-GB", { month: "long" });
+    const dayName = date.toLocaleDateString("en-GB", { weekday: "short", timeZone: "UTC" });
+    const fullMonthName = date.toLocaleDateString("en-GB", { month: "long", timeZone: "UTC" });
     switch (format) {
         case "dd/mm/yyyy":
             return `${day}/${month}/${year}`;

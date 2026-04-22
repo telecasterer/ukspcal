@@ -13,6 +13,7 @@
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
         "test": "vitest run",
+        "test:tz": "TZ=America/Toronto vitest run",
         "test:watch": "vitest --watch",
         "test:ui": "vitest --ui",
         "test:coverage": "vitest run --coverage",

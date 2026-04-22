@@ -26,4 +26,19 @@ describe("formatDateForCSV", () => {
             "Fri, 2 January 2026"
         );
     });
+
+    it("uses UTC day name for a Monday midnight UTC date (timezone regression)", () => {
+        // 2026-03-02 is Monday in UTC. Without timeZone:"UTC" in toLocaleDateString,
+        // a device in UTC-1 or earlier (e.g. Canada) would render it as "Sun, 1 March 2026".
+        expect(formatDateForCSV("2026-03-02", "ddd, d mmmm yyyy")).toBe(
+            "Mon, 2 March 2026"
+        );
+    });
+
+    it("uses UTC month name for a date at midnight UTC (timezone regression)", () => {
+        // 2026-03-01 00:00 UTC is 2026-02-28 in UTC-1 — would give wrong month without timeZone:"UTC".
+        expect(formatDateForCSV("2026-03-01", "ddd, d mmmm yyyy")).toBe(
+            "Sun, 1 March 2026"
+        );
+    });
 });

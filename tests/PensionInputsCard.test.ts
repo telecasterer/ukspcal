@@ -141,6 +141,38 @@ describe("PensionInputsCard", () => {
         });
     });
 
+    it("formats SPA and payment dates using UTC, not local timezone (timezone regression)", async () => {
+        // DOB 1960-02-23 → SPA 2026-02-23 (Monday in UTC).
+        // NI 17B, 28-day cycle → first payment due 2026-03-02 (Monday in UTC).
+        // Without timeZone:"UTC" in toLocaleDateString, a UTC-negative device
+        // (e.g. Canada, UTC-5) sees midnight UTC as the previous evening, shifting
+        // every displayed date back one day — showing Sunday instead of Monday.
+        const onSpaPreviewData = vi.fn();
+        renderCard({
+            props: {
+                ni: "17B",
+                dob: "1960-02-23",
+                startYear: 2026,
+                numberOfYears: 5,
+                cycleDays: 28,
+                bankHolidays: {},
+                onSpaPreviewData,
+            },
+        } as any);
+
+        await tick();
+
+        expect(onSpaPreviewData).toHaveBeenCalled();
+        const data = onSpaPreviewData.mock.calls.at(-1)?.[0];
+        expect(data).toBeTruthy();
+        expect(data.spaDateFormatted).toContain("Monday");
+        expect(data.spaDateFormatted).toContain("23 February 2026");
+        expect(data.firstPayment?.dueFormatted).toContain("Monday");
+        expect(data.firstPayment?.dueFormatted).toContain("2 March 2026");
+        expect(data.secondPayment?.dueFormatted).toContain("Monday");
+        expect(data.secondPayment?.dueFormatted).toContain("30 March 2026");
+    });
+
     it("calls onFirstPaymentAfterSpa when it can compute the first payment", async () => {
         const onFirstPaymentAfterSpa = vi.fn();
 
