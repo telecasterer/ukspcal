@@ -1,5 +1,38 @@
 # Release Notes
 
+## 2026-05-24 (v0.6.3)
+
+### Fixes
+
+- standardise terminology and UI copy from user feedback (2fd5f34)
+- more fixes for timezone issues (2a40ec7)
+- update pension inputs and date formatting to ensure correct handling of timezones. All date-related functions now account for timezone differences, preventing issues with date calculations and display. This includes updates to the PensionInputsCard component and associated tests to verify correct functionality across different timezones. (8cc381a)
+- updated claiming information (537f1a4)
+- fixed footer darkmode, updated claiming page flow, added pounf icon to calendar payment days (cc528eb)
+- updated clai (e7ad722)
+
+### Chores
+
+- updated package-lock.json after dependabot commits (2edcde5)
+- bump @sveltejs/kit from 2.55.0 to 2.60.1 (07f741a)
+- bump svelte from 5.53.6 to 5.55.7 (1bb3459)
+- bump devalue from 5.6.4 to 5.8.1 (f59661b)
+- bump @babel/plugin-transform-modules-systemjs (1b7b611)
+- bump fast-uri from 3.1.0 to 3.1.2 (c8064d6)
+- bump vite from 7.3.1 to 7.3.2 (36cb741)
+- removed  vscode settings file created by error (94d5a1d)
+- bump lodash from 4.17.23 to 4.18.1 (22b5a56)
+
+### Other
+
+- Merge pull request #26 from telecasterer/dependabot/npm_and_yarn/sveltejs/kit-2.60.1 (7c68b9c)
+- Merge pull request #25 from telecasterer/dependabot/npm_and_yarn/svelte-5.55.7 (812d335)
+- Merge pull request #24 from telecasterer/dependabot/npm_and_yarn/devalue-5.8.1 (62af485)
+- Merge pull request #19 from telecasterer/dependabot/npm_and_yarn/lodash-4.18.1 (ffb1a9a)
+- Merge pull request #23 from telecasterer/dependabot/npm_and_yarn/babel/plugin-transform-modules-systemjs-7.29.4 (f5893fe)
+- Merge pull request #22 from telecasterer/dependabot/npm_and_yarn/fast-uri-3.1.2 (c091d8b)
+- Merge pull request #18 from telecasterer/dependabot/npm_and_yarn/vite-7.3.2 (a8a1080)
+
 ## 2026-04-20 (v0.6.2)
 
 ### Chores
