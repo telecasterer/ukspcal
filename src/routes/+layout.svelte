@@ -53,7 +53,7 @@
     />
     <meta
         name="description"
-        content="Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export."
+        content="Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export."
     />
     <meta
         name="keywords"
@@ -82,7 +82,7 @@
             "@context": "https://schema.org",
             "@type": "WebApplication",
             "name": "UK State Pension Calendar",
-            "description": "Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export.",
+            "description": "Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export.",
             "url": "https://ukspcal.vercel.app",
             "applicationCategory": "FinanceApplication",
             "offers": {
@@ -114,7 +114,7 @@
             "@context": "https://schema.org",
             "@type": "Calculator",
             "name": "UK State Pension Calendar",
-            "description": "Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export.",
+            "description": "Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export.",
             "url": "https://ukspcal.vercel.app",
             "applicationCategory": "FinanceApplication"
         }

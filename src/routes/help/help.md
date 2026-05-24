@@ -1,7 +1,7 @@
 ## What This App Does
 
 - Calculates your State Pension Age (SPA) date from your date of birth.
-- Builds a payment schedule from your NI suffix and selected cycle.
+- Builds a payment schedule from your NI number suffix and selected cycle.
 - Adjusts payments that fall on UK bank holidays to the previous working day.
 - Lets you export, print, share, and install the app for easier repeat use.
 
@@ -9,7 +9,7 @@ The tool is designed to help you plan ahead and keep your likely payment dates i
 
 ## Quick Start
 
-1. Enter your National Insurance (NI) code suffix (the last 3 characters of your NI number, for example **22D**) and your date of birth.
+1. Enter the last 3 characters of your National Insurance (NI) number (for example **22D**) and your date of birth.
 2. Choose your payment cycle and the calendar year range you want to generate.
 3. Review your personalised State Pension payment calendar.
 4. Export as CSV/ICS or print the calendar if you want to keep a copy.
@@ -21,9 +21,9 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 
 ### Inputs
 
-- **NI code suffix:** Enter the last 3 characters (2 digits and a letter, for example **22D**).
+- **NI number suffix:** The last 3 characters of your NI number — 2 digits and a letter A–D, for example **22D**.
 - **Date of birth:** Used to calculate your SPA and estimate your first payment date.
-- **Payment frequency:** Choose 28-day (default), 7-day, 14-day, or 91-day cycles.
+- **Payment frequency:** Choose 4 weeks (default), 1 week, 2 weeks, or 13 weeks.
 
 ### Calendar Range and Navigation
 
@@ -40,7 +40,7 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 
 ### Profiles
 
-- Use **Profiles** in the input form to save and reload your NI suffix and date of birth.
+- Use **Profiles** in the input form to save and reload your NI number suffix and date of birth.
 - Give each profile a name, then use the load/delete buttons to manage them. Saving a profile with a name that already exists will overwrite the previous entry.
 - Profiles are stored locally in your browser — nothing is sent to a server.
 - Useful if more than one person uses the same device.
@@ -70,7 +70,7 @@ This keeps your imported calendar both compact and accurate for early-payment ex
 ### Installing as an App
 
 - On **Android**, use **Get Android app** to install from **Google Play**.
-- On **iPhone/iPad**, use Safari’s **Share -> Add to Home Screen** option.
+- On **iPhone/iPad**, use Safari’s **Share > Add to Home Screen** option.
 - On **desktop browsers**, use the **Install** button when available, or your browser’s **Install App** option.
 - ![Example](/help/images/install.png)
 - Once installed, updates are delivered automatically through Google Play on Android or through your browser for PWA installs.
@@ -120,6 +120,7 @@ Dates and calculations use publicly available information and may change over ti
 Found a bug or have a suggestion? [Send feedback](https://tally.so/r/q4Vbq2).
 
 Useful details to include:
+
 - Which device/browser you were using.
 - What you expected to happen.
 - What actually happened.

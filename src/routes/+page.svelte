@@ -363,7 +363,7 @@
         error = "";
         if (!/^\d{2}[A-D]$/i.test(ni)) {
             error =
-                "NI code (last 3 characters of your NI number) must be 2 digits followed by A–D (e.g. 22D)";
+                "NI number suffix must be 2 digits followed by a letter A–D (e.g. 22D)";
             result = null;
             return;
         }
@@ -704,13 +704,13 @@
     <title>UK State Pension Payment Dates & Age Calculator</title>
 
     <meta name="description"
-        content="Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export." />
+        content="Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export." />
 
     <meta property="og:title"
         content="UK State Pension Payment Dates & Age Calculator" />
 
     <meta property="og:description"
-        content="Calculate your UK State Pension age and payment dates from your date of birth and NI suffix, with UK bank holiday adjustments and CSV/ICS export." />
+        content="Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export." />
 
     <meta property="og:url" content="https://ukspcal.vercel.app" />
 

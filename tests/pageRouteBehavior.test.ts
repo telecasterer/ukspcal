@@ -218,7 +218,7 @@ describe("+page route behavior", () => {
         });
         await user.click(restoreButtons.at(-1)!);
 
-        const niInput = getByLabelText(/NI code/i) as HTMLInputElement;
+        const niInput = getByLabelText(/NI number suffix/i) as HTMLInputElement;
         await waitFor(() => {
             expect(niInput.value).toBe("");
         });

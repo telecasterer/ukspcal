@@ -34,7 +34,7 @@ describe("PensionInputsCard", () => {
 
     it("uppercases NI input on blur", async () => {
         const { getByLabelText } = renderCard();
-        const input = getByLabelText(/NI code/i) as HTMLInputElement;
+        const input = getByLabelText(/NI number suffix/i) as HTMLInputElement;
 
         await fireEvent.focus(input);
         await fireEvent.input(input, { target: { value: "12d" } });
@@ -46,7 +46,7 @@ describe("PensionInputsCard", () => {
 
     it("commits NI and focuses DoB on Enter", async () => {
         const { getByLabelText } = renderCard();
-        const niInput = getByLabelText(/NI code/i) as HTMLInputElement;
+        const niInput = getByLabelText(/NI number suffix/i) as HTMLInputElement;
         const dobInput = document.getElementById(
             "dob"
         ) as HTMLInputElement | null;

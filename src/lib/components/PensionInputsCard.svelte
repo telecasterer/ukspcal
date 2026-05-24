@@ -390,7 +390,7 @@
     <div class="flex items-center justify-between mb-2">
         <div>
             <p class="text-sm text-gray-600 dark:text-gray-300">
-                Enter your NI code and date of birth to generate your payment schedule.
+                Enter your NI number suffix and date of birth to generate your payment schedule.
             </p>
         </div>
         <Button
@@ -499,7 +499,7 @@
                 <!-- NI code input -->
                 <div>
                     <Label for="ni-code" class="block mb-1 text-sm"
-                        >NI code (last 3 characters of NI number)</Label
+                        >NI number suffix</Label
                     >
                     <input
                         id="ni-code"
@@ -526,8 +526,7 @@
                         }}
                     />
                     <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Use the last 3 characters of your National Insurance number
-                        (2 digits and a letter A–D), for example 22D.
+                        Last 3 characters of your NI number — 2 digits and a letter A–D, for example 22D.
                     </p>
                     {#if niDraft.trim() && !isValidNiCode(niDraft)}
                         <p
@@ -576,13 +575,13 @@
                         onchange={applyCycleDays}
                         class="w-full sm:max-w-[12rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     >
-                        <option value="7">7 days</option>
-                        <option value="14">14 days</option>
-                        <option value="28">28 days (default)</option>
+                        <option value="7">1 week</option>
+                        <option value="14">2 weeks</option>
+                        <option value="28">4 weeks (default)</option>
                         <option value="91">13 weeks</option>
                     </Select>
                     <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Payment frequency is normally every 28 days.
+                        Payment frequency is normally every 4 weeks.
                     </p>
                 </div>
 

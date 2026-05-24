@@ -92,7 +92,7 @@
         }
         if (result) {
             if (spaPreviewData) lines.push("");
-            lines.push(`NI code:            ${result.ni}`);
+            lines.push(`NI number suffix:   ${result.ni}`);
             lines.push(`Payment day:        ${result.normalDay}`);
             lines.push(`Payment cycle:      ${result.cycleDays} days`);
             if (nextPaymentDate) {
@@ -154,7 +154,7 @@
         }
         if (result) {
             rows.push(`<tr class="section-head"><th colspan="2">Payment schedule</th></tr>`);
-            rows.push(`<tr><th>NI code</th><td>${escapeHtml(result.ni)}</td></tr>`);
+            rows.push(`<tr><th>NI number suffix</th><td>${escapeHtml(result.ni)}</td></tr>`);
             rows.push(`<tr><th>Payment day</th><td>${escapeHtml(result.normalDay)}</td></tr>`);
             rows.push(`<tr><th>Payment cycle</th><td>${result.cycleDays} days</td></tr>`);
             if (nextPaymentDate) {
@@ -371,13 +371,38 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
 
 {#if !spaPreviewData && !result}
     <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
-        Enter your NI code and date of birth to see your schedule summary.
+        Enter your NI number suffix and date of birth to see your schedule summary.
     </p>
+{/if}
+
+{#if result}
+<div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <!-- Payment Day -->
+    <div>
+        <p class="text-xs min-[390px]:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            Payment Day
+        </p>
+        <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
+            {result.normalDay}
+        </p>
+    </div>
+    {#if nextPaymentDate}
+        <!-- Next Payment Date (only shown when user is already past SPA) -->
+        <div>
+            <p class="text-xs min-[390px]:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                Next Payment
+            </p>
+            <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
+                {nextPaymentDate}
+            </p>
+        </div>
+    {/if}
+</div>
 {/if}
 
 <!-- SPA details block -->
 {#if spaPreviewData}
-    <div class="mb-4">
+    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         {#if spaPreviewData.showPre2016Warning}
             <div role="alert" class="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs min-[390px]:text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100">
                 This calculator assumes your State Pension age is on or after <strong>6 April 2016</strong>. Your SPA appears to be earlier, so results may be inaccurate.
@@ -431,31 +456,6 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
             </div>
         {/if}
     </div>
-{/if}
-
-{#if result}
-<div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-    <!-- Payment Day -->
-    <div>
-        <p class="text-xs min-[390px]:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-            Payment Day
-        </p>
-        <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
-            {result.normalDay}
-        </p>
-    </div>
-    {#if nextPaymentDate}
-        <!-- Next Payment Date (only shown when user is already past SPA) -->
-        <div>
-            <p class="text-xs min-[390px]:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                Next Payment
-            </p>
-            <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
-                {nextPaymentDate}
-            </p>
-        </div>
-    {/if}
-</div>
 {/if}
 {#if statePensionApplyInfo}
     {#if statePensionApplyInfo.applyNow}

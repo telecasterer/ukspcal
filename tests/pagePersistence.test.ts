@@ -149,7 +149,7 @@ describe("+page persistence", () => {
         await tick();
 
         // Trigger a commit (blur) to force a write of the current in-memory state.
-        const niInput = getByLabelText(/NI code/i);
+        const niInput = getByLabelText(/NI number suffix/i);
         await fireEvent.focus(niInput);
         await fireEvent.blur(niInput);
         await tick();
