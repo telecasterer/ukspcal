@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vitest/config";
 import { execSync } from "child_process";
@@ -76,6 +77,7 @@ function getBuildInfo() {
 
 export default defineConfig({
     plugins: [
+        tailwindcss(),
         sveltekit(),
         SvelteKitPWA({
             registerType: "autoUpdate",
