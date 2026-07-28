@@ -24,15 +24,15 @@
 </script>
 
 <svelte:head>
-    <title>Privacy Policy - UK State Pension Calendar</title>
+    <title>Privacy Policy - UK Pension Calendar</title>
     <meta
         name="description"
-        content="Privacy Policy for UK State Pension Age and Payments Calendar."
+        content="Privacy Policy for UK Pension Calendar."
     />
-    <meta property="og:title" content="Privacy Policy - UK State Pension Calendar" />
+    <meta property="og:title" content="Privacy Policy - UK Pension Calendar" />
     <meta
         property="og:description"
-        content="How UK State Pension Age and Payments Calendar handles your data."
+        content="How UK Pension Calendar handles your data."
     />
     <meta property="og:url" content="https://ukspcal.vercel.app/privacy" />
     <meta property="og:type" content="website" />

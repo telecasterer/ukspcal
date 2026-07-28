@@ -530,7 +530,7 @@
 </script>
 
 <!-- --- Navigation Bar --- -->
-<TopBar title="UK State Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
+<TopBar title="UK Pension Calendar" showInAppBanner={isFacebookInAppBrowser}>
     <svelte:fragment slot="actions">
         <Button
             color="light"
@@ -608,7 +608,7 @@
         <!-- Header section -->
         <div class="mb-6 sm:mb-8 print-hide max-w-3xl">
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3">
-                UK State Pension Payment Calendar
+                UK Pension Calendar
             </h1>
             <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
                 Calculate your State Pension age and generate a personalised payment schedule.
@@ -701,13 +701,13 @@
 
 
 <svelte:head>
-    <title>UK State Pension Payment Dates & Age Calculator</title>
+    <title>UK Pension Calendar</title>
 
     <meta name="description"
         content="Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export." />
 
     <meta property="og:title"
-        content="UK State Pension Payment Dates & Age Calculator" />
+        content="UK Pension Calendar" />
 
     <meta property="og:description"
         content="Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export." />

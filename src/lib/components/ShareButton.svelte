@@ -3,7 +3,7 @@
     import { Button } from "flowbite-svelte";
     import { ShareNodesOutline } from "flowbite-svelte-icons";
 
-    export let shareTitle = "UK State Pension Payment Calendar";
+    export let shareTitle = "UK Pension Calendar";
     export let shareText =
         "Calculate your State Pension Age and payment calendar.";
     export let shareUrl: string | null = null;

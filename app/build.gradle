@@ -24,7 +24,7 @@ def twaManifest = [
     applicationId: 'app.vercel.ukspcal.twa',
     hostName: 'ukspcal.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
-    name: 'UK State Pension Age and Payments Calendar', // The application name.
+    name: 'UK Pension Calendar', // The application name.
     launcherName: 'UKSPCal', // The name shown on the Android Launcher.
     themeColor: '#2563EB', // The color used for the status bar.
     themeColorDark: '#000000', // The color used for the dark status bar.
@@ -32,7 +32,7 @@ def twaManifest = [
     navigationColorDark: '#000000', // The color used for the dark navbar.
     navigationDividerColor: '#000000', // The navbar divider color.
     navigationDividerColorDark: '#000000', // The dark navbar divider color.
-    backgroundColor: '#7CC0FF', // The color used for the splash screen background.
+    backgroundColor: '#2563EB', // The color used for the splash screen background.
     enableNotifications: true, // Set to true to enable notification delegation.
     // Every shortcut must include the following fields:
     // - name: String that will show up in the shortcut.
@@ -55,10 +55,10 @@ android {
     namespace "app.vercel.ukspcal.twa"
     defaultConfig {
         applicationId "app.vercel.ukspcal.twa"
-        minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 2
-        versionName "1.1"
+        minSdkVersion 23
+        targetSdkVersion 36
+        versionCode 4
+        versionName "1.2.1"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name
@@ -150,9 +150,18 @@ android {
 
         
     }
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("ANDROID_KEYSTORE_PATH") ?: "${rootDir}/artifacts/android/android.keystore")
+            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias "android"
+            keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -208,6 +217,6 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     
-        implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.6.2'
+        implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.7.2'
     
 }

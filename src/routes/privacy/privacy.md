@@ -2,7 +2,7 @@
 
 Last updated: April 20, 2026
 
-UK State Pension Calendar is designed to work primarily on your device. This page explains what data is used by the app and why.
+UK Pension Calendar is designed to work primarily on your device. This page explains what data is used by the app and why.
 
 ## Data you enter in the app
 

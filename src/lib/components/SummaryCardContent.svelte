@@ -69,7 +69,7 @@
     }
 
     function buildSummaryText(): string {
-        const lines: string[] = ["UK State Pension Schedule Summary", ""];
+        const lines: string[] = ["Schedule Summary - UK Pension Calendar", ""];
         if (spaPreviewData) {
             lines.push(`State Pension age:  ${spaPreviewData.spaDateFormatted}`);
             if (spaPreviewData.spaSource !== "fixed") {
@@ -174,7 +174,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>UK State Pension Schedule Summary</title>
+<title>Schedule Summary - UK Pension Calendar</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 24px; color: #111827; }
 h1 { font-size: 18px; margin: 0 0 16px; }
@@ -185,7 +185,7 @@ tr.section-head th { padding-top: 14px; color: #111827; font-weight: bold; font-
 </style>
 </head>
 <body>
-<h1>UK State Pension Schedule Summary</h1>
+<h1>Schedule Summary - UK Pension Calendar</h1>
 <table>${rows.join("")}</table>
 </body>
 </html>`;
@@ -212,7 +212,7 @@ tr.section-head th { padding-top: 14px; color: #111827; font-weight: bold; font-
 
     function buildPaymentListText(payments: Payment[]): string {
         const lines: string[] = [
-            "UK State Pension Payment Dates",
+            "Payment Dates - UK Pension Calendar",
             `Total payments: ${payments.length}`,
             "",
         ];
@@ -275,7 +275,7 @@ tr.section-head th { padding-top: 14px; color: #111827; font-weight: bold; font-
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>UK State Pension Payment Dates</title>
+<title>Payment Dates - UK Pension Calendar</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 24px; color: #111827; }
 h1 { font-size: 18px; margin: 0 0 12px; }
@@ -283,7 +283,7 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
 </style>
 </head>
 <body>
-<h1>UK State Pension Payment Dates</h1>
+<h1>Payment Dates - UK Pension Calendar</h1>
 <pre>${escapeHtml(text)}</pre>
 </body>
 </html>`;
