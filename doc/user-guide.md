@@ -1,4 +1,4 @@
-# User Guide: UK Pension Calendar App
+# User Guide: UK State Pension Calendar App
 
 ## What is this app?
 

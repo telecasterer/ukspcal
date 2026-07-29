@@ -1,4 +1,4 @@
-# Developer Guide: UK Pension Calendar App
+# Developer Guide: UK State Pension Calendar App
 
 ## Project structure
 

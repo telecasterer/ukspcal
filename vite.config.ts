@@ -5,7 +5,7 @@ import { execSync } from "child_process";
 import { readFileSync } from "fs";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 const isVitest = Boolean(process.env.VITEST);
-const APP_NAME = "UK Pension Calendar";
+const APP_NAME = "UK State Pension Calendar";
 
 function safeExec(command: string): string | undefined {
     try {

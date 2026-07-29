@@ -213,11 +213,11 @@
 </div>
 
 <svelte:head>
-    <title>Help - UK Pension Calendar</title>
-    <meta property="og:title" content="Help - UK Pension Calendar" />
+    <title>Help - UK State Pension Calendar</title>
+    <meta property="og:title" content="Help - UK State Pension Calendar" />
     <meta
         property="og:description"
-        content="Learn how to use the UK Pension Calendar. Get answers to frequently asked questions and understand how to calculate your pension dates."
+        content="Learn how to use the UK State Pension Calendar. Get answers to frequently asked questions and understand how to calculate your pension dates."
     />
     <meta property="og:url" content="https://ukspcal.vercel.app/help" />
     <link rel="canonical" href="https://ukspcal.vercel.app/help" />

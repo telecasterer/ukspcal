@@ -1,4 +1,4 @@
-# UK Pension Calendar App
+# UK State Pension Calendar App
 
 A modern, privacy-focused web app to calculate and export your UK State Pension payment calendar. Built with SvelteKit, TypeScript, Tailwind CSS, and Flowbite-Svelte components.
 

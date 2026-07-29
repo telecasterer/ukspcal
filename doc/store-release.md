@@ -2,6 +2,43 @@
 
 Use this checklist before producing store packages.
 
+## Play Store screenshots
+
+Whenever the UI changes enough to make existing store screenshots stale, regenerate
+them instead of retaking manually:
+
+```bash
+node scripts/store-screenshots/capture.mjs            # all devices/themes/screens
+node scripts/store-screenshots/capture.mjs --list      # preview targets, no capture
+node scripts/store-screenshots/capture.mjs --only phone,dark   # filter by device/theme/screen name
+```
+
+Edit `scripts/store-screenshots/definitions.mjs` to add/change screens, devices, or
+the sample profile (a near-SPA example seeded directly into localStorage so the
+calendar is pre-generated — no manual form-filling). Output lands in
+`artifacts/play-store/screenshots/<device>/<theme>/<screen>.png` (gitignored) at
+the exact pixel dimensions Play Console expects for phone / 7-inch tablet /
+10-inch tablet / Chromebook, ready to upload as-is.
+
+Requires a local Chrome install (script defaults to `/usr/bin/google-chrome-stable`;
+override with `CHROME_PATH` if yours lives elsewhere) since Playwright's own
+browser download isn't available on every OS.
+
+## Play Store feature graphic
+
+Regenerate the same way whenever the app's name/branding/copy changes:
+
+```bash
+node scripts/feature-graphic/render.mjs
+```
+
+Edit `scripts/feature-graphic/feature-graphic.html` directly (a standalone,
+self-contained page — inlined fonts, canvas-drawn background grid, no build
+step or dev server needed) then rerun. Output:
+`artifacts/play-store/feature-graphic-1024x500.png` (gitignored) — exactly
+1024x500, 24-bit PNG with no alpha channel, ready to upload as-is. Same
+Chrome/`CHROME_PATH` requirement as the screenshot script above.
+
 ## Baseline PWA checks
 
 1. Deploy latest `main` to production.

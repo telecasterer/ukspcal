@@ -1,4 +1,4 @@
-# UK Pension Calendar
+# UK State Pension Calendar
 
 SvelteKit web app for calculating UK State Pension age and payment dates, with calendar exports and print-ready views.
 

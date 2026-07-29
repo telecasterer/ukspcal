@@ -24,7 +24,7 @@ def twaManifest = [
     applicationId: 'app.vercel.ukspcal.twa',
     hostName: 'ukspcal.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
-    name: 'UK Pension Calendar', // The application name.
+    name: 'UK State Pension Calendar', // The application name.
     launcherName: 'UKSPCal', // The name shown on the Android Launcher.
     themeColor: '#2563EB', // The color used for the status bar.
     themeColorDark: '#000000', // The color used for the dark status bar.
@@ -57,8 +57,8 @@ android {
         applicationId "app.vercel.ukspcal.twa"
         minSdkVersion 23
         targetSdkVersion 36
-        versionCode 4
-        versionName "1.2.1"
+        versionCode 5
+        versionName "1.2.2"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name

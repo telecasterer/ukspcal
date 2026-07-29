@@ -1,7 +1,7 @@
 {
   "packageId": "app.vercel.ukspcal.twa",
   "host": "ukspcal.vercel.app",
-  "name": "UK Pension Calendar",
+  "name": "UK State Pension Calendar",
   "launcherName": "UKSPCal",
   "display": "standalone",
   "themeColor": "#2563EB",
@@ -20,8 +20,8 @@
     "path": "/home/paul/projects/ukspcal/artifacts/android/android.keystore",
     "alias": "android"
   },
-  "appVersionName": "1.2.1",
-  "appVersionCode": 4,
+  "appVersionName": "1.2.2",
+  "appVersionCode": 5,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://ukspcal.vercel.app/manifest.webmanifest",
@@ -47,5 +47,5 @@
     "minimal-ui",
     "browser"
   ],
-  "appVersion": "1.2.1"
+  "appVersion": "1.2.2"
 }
