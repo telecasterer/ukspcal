@@ -113,9 +113,12 @@ describe("+page persistence", () => {
         const beforeEndYear = endYearFrom(before);
         expect(Number.isFinite(beforeEndYear)).toBe(true);
 
+        // Past-SPA dob already auto-grows the range to reach today (see
+        // handleFirstPaymentAfterSpa), so pick a duration well beyond that
+        // auto-computed baseline to still demonstrate an explicit increase.
         const durationSelect = getByLabelText("Duration") as HTMLSelectElement;
-        await fireEvent.input(durationSelect, { target: { value: "5" } });
-        await fireEvent.change(durationSelect, { target: { value: "5" } });
+        await fireEvent.input(durationSelect, { target: { value: "20" } });
+        await fireEvent.change(durationSelect, { target: { value: "20" } });
 
         await waitFor(() => {
             const after = getHeaderText();

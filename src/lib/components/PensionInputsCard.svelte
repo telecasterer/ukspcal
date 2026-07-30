@@ -14,6 +14,7 @@
 
     function handleRestoreDefaultsConfirm() {
         showRestoreModal = false;
+        loadedProfileName = null;
         onRestoreDefaults?.();
     }
 
@@ -94,18 +95,23 @@
     let savedProfiles: SavedProfile[] = $state([]);
     let isNamingProfile: boolean = $state(false);
     let profileNameDraft: string = $state("");
+    let loadedProfileName: string | null = $state(null);
 
     onMount(() => {
         savedProfiles = loadSavedProfiles();
     });
 
     function startSaveProfile() {
-        profileNameDraft = "";
+        profileNameDraft = loadedProfileName ?? "";
         isNamingProfile = true;
-        // Focus the input after it renders
+        // Focus the input after it renders, selecting any default name so
+        // typing replaces it, or Enter re-saves under the same name.
         queueMicrotask(() => {
             const el = document.getElementById("profile-name-input");
-            if (el instanceof HTMLElement) el.focus();
+            if (el instanceof HTMLInputElement) {
+                el.focus();
+                el.select();
+            }
         });
     }
 
@@ -124,6 +130,7 @@
         };
         savedProfiles = [...savedProfiles.filter((p) => p.name !== name), newProfile];
         saveProfiles(savedProfiles);
+        loadedProfileName = name;
         isNamingProfile = false;
         profileNameDraft = "";
     }
@@ -137,12 +144,17 @@
         ni = p.ni;
         dob = p.dob;
         niDraft = p.ni;
+        loadedProfileName = p.name;
         isNamingProfile = false;
         onPersist?.();
         onRecalculate?.();
     }
 
     function deleteProfile(id: string) {
+        const deleted = savedProfiles.find((p) => p.id === id);
+        if (deleted && deleted.name === loadedProfileName) {
+            loadedProfileName = null;
+        }
         savedProfiles = savedProfiles.filter(p => p.id !== id);
         saveProfiles(savedProfiles);
     }

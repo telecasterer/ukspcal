@@ -497,7 +497,19 @@
         // Auto-start calendar from the first payment after SPA (use paid date so early payments still show).
         minPaymentIso = payment.paid;
         startYear = Math.min(isoYear(payment.due), isoYear(payment.paid));
-        pendingCalendarFocusIso = payment.paid;
+        if (hasPassedSpa) {
+            // Already past SPA: default the view to today rather than the
+            // (possibly long-past) first payment. Grow the generated range
+            // if needed so today's month actually has data (and stays
+            // reachable via Next/Previous) — never shrinks an existing
+            // larger range. The user can still navigate back to the SPA
+            // month manually.
+            const todayYear = Number(todayStore.iso.slice(0, 4));
+            numberOfYears = Math.max(numberOfYears, todayYear - startYear + 1);
+            pendingCalendarFocusIso = todayStore.iso;
+        } else {
+            pendingCalendarFocusIso = payment.paid;
+        }
         generate();
         // Persist the auto-adjusted year range so the UI comes back the same next time.
         if (hasUserCommittedInputs) persistInputs();
