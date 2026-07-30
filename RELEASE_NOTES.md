@@ -1,5 +1,22 @@
 # Release Notes
 
+## 2026-07-30 (v0.6.4)
+
+### Performance
+
+- prerender all routes except /claiming (which needs its ?spaDate= query param), removing the per-request serverless SSR round-trip that was the main cause of slow first-load in the Android TWA
+
+### Fixes
+
+- keep calendar "today" highlighting, the DOB input's max date, and the start-year dropdown range live via a shared todayStore instead of freezing at component-mount/build time
+- fix typo in the Help page's disclaimer ("independant" -> "independent")
+
+### Chores
+
+- refresh stale PWA install screenshots (mobile-home/calendar/claiming, desktop-home) to match current branding
+- rename mobile-summary.png to mobile-claiming.png to match its actual content
+- redesign the Android splash screen to a flat white background with the icon centered, replacing bubblewrap's default decorative pattern/badge
+
 ## 2026-05-24 (v0.6.3)
 
 ### Fixes

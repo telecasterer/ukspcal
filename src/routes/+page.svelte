@@ -53,6 +53,7 @@
         type BeforeInstallPromptEvent,
     } from "$lib/utils/pwaInstall";
     import { onMount } from "svelte";
+    import { todayStore } from "$lib/utils/todayStore.svelte";
     import "../styles/calendarPrint.css";
 
     // --- Props ---
@@ -98,8 +99,10 @@
     let hasLoadedPersistedInputs: boolean = $state(false);
 
     // --- State: calendar navigation ---
-    const currentYear: number = new Date().getFullYear();
-    const years: number[] = Array.from({ length: 50 }, (_, i) => currentYear - 15 + i);
+    const currentYear = $derived(Number(todayStore.iso.slice(0, 4)));
+    const years = $derived(
+        Array.from({ length: 50 }, (_, i) => currentYear - 15 + i)
+    );
     let startYearSelect: string = $state("");
     let numberOfYearsInput: string = $state("");
     let currentCalendarMonth: number = $state(new Date().getMonth());

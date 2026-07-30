@@ -28,7 +28,7 @@
             </a>
         </div>
         <p class="text-xs text-gray-400 dark:text-gray-500 text-center">
-            Unofficial — not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK.
+            Not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK.
         </p>
     </div>
 </footer>

@@ -103,7 +103,7 @@ England & Wales is the default UK holiday set for calculation purposes. Scotland
 - To remove saved data, use **Restore defaults** in the input form.
 - Full policy: [Privacy Policy](/privacy).
 
-This is an unofficial calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK**.
+This is an independent calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK**.
 Dates and calculations use publicly available information and may change over time.
 **No warranty is provided.** Use at your own risk and verify with official sources when you need a definitive answer.
 

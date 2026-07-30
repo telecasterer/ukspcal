@@ -2,6 +2,7 @@
     // PensionInputsCard.svelte: Handles user input for pension calculation
     import { Alert, Label, Select, Button, Modal } from "flowbite-svelte";
     import { RefreshOutline } from "flowbite-svelte-icons";
+    import { todayStore } from "$lib/utils/todayStore.svelte";
 
     // Modal state for restore defaults
     let showRestoreModal = $state(false);
@@ -75,6 +76,7 @@
     }: Props = $props();
 
     const currentYear: number = new Date().getFullYear();
+    const todayIso = $derived(todayStore.iso);
 
     /**
      * Calculate default DOB as Jan 1 of (current year - 66)
@@ -548,7 +550,7 @@
                         name="dob"
                         bind:value={dob}
                         min="1900-01-01"
-                        max={new Date().toISOString().split("T")[0]}
+                        max={todayIso}
                         required
                         onchange={() => onPersist?.()}
                         class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

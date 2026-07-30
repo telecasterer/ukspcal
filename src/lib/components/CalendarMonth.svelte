@@ -5,6 +5,7 @@
         monthName,
     } from "$lib/utils/calendarHelpers";
     import { getFlagSvg } from "$lib/utils/countryFlags";
+    import { todayStore } from "$lib/utils/todayStore.svelte";
     import type { Payment } from "$lib/pensionEngine";
     import { onMount } from "svelte";
 
@@ -158,7 +159,7 @@
     const selectedCountryName = $derived.by(
         () => countryCodeToName[selectedCountry] ?? selectedCountry
     );
-    const todayIso = new Date().toISOString().slice(0, 10);
+    const todayIso = $derived(todayStore.iso);
     const hasPaymentInMonth = $derived.by(() =>
         calendarDays.some((day) => {
             if (!day) return false;
