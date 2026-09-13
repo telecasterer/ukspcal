@@ -1,3 +1,5 @@
+import { MIN_DOB_ISO } from "$lib/config";
+
 /**
  * Result of state pension age calculation.
  * - spaDate: ISO yyyy-mm-dd string
@@ -314,6 +316,9 @@ const RULES: Rule[] = [
 export function calculateStatePensionAge(dobIso: string): SpaResult {
     if (!isIsoDate(dobIso)) {
         throw new Error("DOB must be in YYYY-MM-DD format");
+    }
+    if (dobIso < MIN_DOB_ISO) {
+        throw new Error(`DOB must be on or after ${MIN_DOB_ISO}`);
     }
 
     const dob = parseIsoDate(dobIso);

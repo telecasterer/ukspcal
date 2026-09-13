@@ -8,6 +8,13 @@ describe("calculateStatePensionAge", () => {
         expect(() => calculateStatePensionAge("1960-1-1")).toThrow();
     });
 
+    it("rejects DOBs before 1900, including partial years typed into a date input", () => {
+        expect(() => calculateStatePensionAge("0001-05-15")).toThrow();
+        expect(() => calculateStatePensionAge("0196-05-15")).toThrow();
+        expect(() => calculateStatePensionAge("1899-12-31")).toThrow();
+        expect(calculateStatePensionAge("1900-01-01").spaDate).toBe("1965-01-01");
+    });
+
     it("returns a fixed SPA date for fixed-table ranges", () => {
         // In RULES: 1954-01-06..1954-02-05 -> fixed SPA 2019-05-06
         const res = calculateStatePensionAge("1954-01-06");

@@ -9,6 +9,8 @@ export type CachedHolidays = {
     data: Record<string, string>;
     timestamp: number;
     years: number[];
+    /** Years the holiday API has no data for, so they aren't re-requested each load. */
+    unsupportedYears?: number[];
 };
 
 /**
@@ -28,11 +30,14 @@ function isCacheValid(cached: CachedHolidays | null): boolean {
 }
 
 /**
- * Load holidays from cache
+ * Load holidays from cache.
+ * Expired entries are removed and treated as missing, unless `allowExpired` is set
+ * (an offline fallback), in which case they are kept and returned with `expired: true`.
  */
 export function loadHolidaysFromCache(
-    countryCode: string
-): CachedHolidays | null {
+    countryCode: string,
+    options: { allowExpired?: boolean } = {}
+): (CachedHolidays & { expired: boolean }) | null {
     if (typeof window === "undefined" || typeof localStorage === "undefined") {
         return null;
     }
@@ -43,17 +48,18 @@ export function loadHolidaysFromCache(
         if (!cached) return null;
 
         const parsed: CachedHolidays = JSON.parse(cached);
-        if (!isCacheValid(parsed)) {
+        if (!Array.isArray(parsed?.years)) {
             localStorage.removeItem(key);
             return null;
         }
 
-        if (!Array.isArray(parsed.years)) {
+        const expired = !isCacheValid(parsed);
+        if (expired && !options.allowExpired) {
             localStorage.removeItem(key);
             return null;
         }
 
-        return parsed;
+        return { ...parsed, expired };
     } catch (error) {
         console.error(`Error loading holiday cache for ${countryCode}:`, error);
         return null;
@@ -66,7 +72,8 @@ export function loadHolidaysFromCache(
 export function saveHolidaysToCache(
     countryCode: string,
     holidays: Record<string, string>,
-    years: number[]
+    years: number[],
+    unsupportedYears: number[] = []
 ): void {
     if (typeof window === "undefined" || typeof localStorage === "undefined") {
         return;
@@ -78,6 +85,7 @@ export function saveHolidaysToCache(
             data: holidays,
             timestamp: Date.now(),
             years: [...new Set(years)].sort((a, b) => a - b),
+            unsupportedYears: [...new Set(unsupportedYears)].sort((a, b) => a - b),
         };
         localStorage.setItem(key, JSON.stringify(cached));
     } catch (error) {

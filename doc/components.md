@@ -34,12 +34,12 @@
 - **darkMode.ts** — Dark mode persistence and DOM class helpers.
 - **dateFormatting.ts** — Date formatting utilities for display/export.
 - **exportHelpers.ts** — CSV and ICS export builders.
-- **holidayCache.ts** — Cache helpers for additional holiday data.
+- **holidayCache.ts** — Local storage cache for holiday data (UK and additional countries): 30-day expiry, with expired entries still readable as an offline fallback.
 - **icsAlarmPersistence.ts** — Persist ICS alarm settings.
 - **icsEventTimePersistence.ts** — Persist ICS event time selection.
 - **inputPersistence.ts** — Persisting form state in local storage.
 - **isoDateHelpers.ts** — Shared ISO date utilities: `isIsoDate`, `subtractMonthsFromIso`, `formatIsoDateLong`, `daysUntilIso`.
-- **loadAdditionalHolidays.ts** — Fetches and caches additional (non-UK) public holidays for a given country and year range, with stale-cache invalidation, incremental year fetching, and race-condition guarding.
+- **loadHolidays.ts** — Fetches and caches public holidays (UK bank holidays and additional countries) for a year range: incremental year fetching, caches only years that loaded (plus years the API doesn't cover), falls back to expired cache when offline, reports missing/unsupported years, and guards against races.
 - **persistedInputsMigration.ts** — One-time migration for legacy persisted input keys.
 - **statePensionAge.ts** — State Pension age calculation.
 - **pwaInstall.ts** — PWA install prompt helpers.
@@ -49,7 +49,7 @@
 
 ## Routes (src/routes)
 
-- **+layout.ts** — Exposes holiday data for the app (sourced via Nager.Date service).
+- **+layout.ts** — Enables prerendering for all routes (see the Prerendering section of `CLAUDE.md`).
 - **+page.svelte** — Main calculator UI and data flow.
 - **help/+page.svelte** — Help page (markdown rendered with build info placeholders).
 - **claiming/+page.svelte** — State Pension claim guidance with UK and international contact details.

@@ -30,7 +30,7 @@ describe("AppFooter", () => {
             container.querySelector('a[href="https://www.gov.uk/bank-holidays"]')
         ).toBeNull();
         expect(
-            container.querySelector('a[href="https://date.nager.at"]')
+            container.querySelector('a[href="https://nagerholidays.com"]')
         ).toBeNull();
     });
 

@@ -85,8 +85,12 @@ This keeps your imported calendar both compact and accurate for early-payment ex
 
 ### UK Holiday Data
 
-The app uses public holiday data to determine early-payment adjustments.
+The app uses public holiday data from Nager.Holidays (formerly Nager.Date) to determine early-payment adjustments.
 England & Wales is the default UK holiday set for calculation purposes. Scotland and Northern Ireland are available in additional holidays for reference display.
+
+- Holiday data is saved on your device, so payment dates are still adjusted when you're offline.
+- If UK bank holidays can't be loaded and none are saved yet, a warning appears in the calendar options. The app tries again when you're back online, or you can reload the page.
+- Holiday data only covers a limited range of years (currently up to 2076). For later years a warning is shown, and payments are only moved for weekends, not bank holidays.
 
 ## Troubleshooting
 
@@ -113,7 +117,7 @@ Dates and calculations use publicly available information and may change over ti
 - [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension)
 - [State Pension age timetable](https://www.gov.uk/government/publications/state-pension-age-timetable/state-pension-age-timetable)
 - [UK bank holidays](https://www.gov.uk/bank-holidays)
-- [Nager.Date worldwide public holidays](https://date.nager.at)
+- [Nager.Holidays (formerly Nager.Date) worldwide public holidays](https://nagerholidays.com)
 
 ## Feedback & Support
 

@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
     fetchHolidaysForCountryAndYear,
     fetchHolidaysForCountryAndYears,
+    HolidayFetchError,
+    UnsupportedHolidayYearError,
     type NagerHoliday,
 } from "../src/lib/services/nagerHolidayService";
 
@@ -46,28 +48,40 @@ describe("nagerHolidayService", () => {
             );
         });
 
-        it("returns empty array on API error", async () => {
+        it("throws on API error", async () => {
             global.fetch = vi.fn().mockResolvedValueOnce({
                 ok: false,
                 statusText: "Not Found",
             });
 
-            const result = await fetchHolidaysForCountryAndYear("XX", 2026);
-
-            expect(result).toEqual([]);
+            await expect(fetchHolidaysForCountryAndYear("XX", 2026)).rejects.toThrow(
+                "Not Found"
+            );
         });
 
-        it("returns empty array on network error", async () => {
+        it("throws UnsupportedHolidayYearError for a year outside the API's range", async () => {
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: false,
+                status: 400,
+                statusText: "Bad Request",
+            });
+
+            await expect(fetchHolidaysForCountryAndYear("GB", 2099)).rejects.toBeInstanceOf(
+                UnsupportedHolidayYearError
+            );
+        });
+
+        it("throws on network error", async () => {
             global.fetch = vi
                 .fn()
                 .mockRejectedValueOnce(new Error("Network error"));
 
-            const result = await fetchHolidaysForCountryAndYear("FR", 2026);
-
-            expect(result).toEqual([]);
+            await expect(fetchHolidaysForCountryAndYear("FR", 2026)).rejects.toThrow(
+                "Network error"
+            );
         });
 
-        it("handles malformed API response gracefully", async () => {
+        it("throws on a malformed API response", async () => {
             global.fetch = vi.fn().mockResolvedValueOnce({
                 ok: true,
                 json: async () => {
@@ -75,9 +89,20 @@ describe("nagerHolidayService", () => {
                 },
             });
 
-            const result = await fetchHolidaysForCountryAndYear("DE", 2026);
+            await expect(fetchHolidaysForCountryAndYear("DE", 2026)).rejects.toThrow(
+                "Invalid JSON"
+            );
+        });
 
-            expect(result).toEqual([]);
+        it("throws when the response is not a list", async () => {
+            global.fetch = vi.fn().mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ message: "rate limited" }),
+            });
+
+            await expect(fetchHolidaysForCountryAndYear("GB", 2026)).rejects.toThrow(
+                "Unexpected holiday response"
+            );
         });
     });
 
@@ -130,7 +155,7 @@ describe("nagerHolidayService", () => {
             expect(global.fetch).toHaveBeenCalledTimes(2);
         });
 
-        it("handles mixed success and failure for multiple years", async () => {
+        it("throws HolidayFetchError with the failed years and the holidays that loaded", async () => {
             global.fetch = vi
                 .fn()
                 .mockResolvedValueOnce({
@@ -152,27 +177,53 @@ describe("nagerHolidayService", () => {
                     statusText: "Not Found",
                 });
 
-            const result = await fetchHolidaysForCountryAndYears(
+            const error = await fetchHolidaysForCountryAndYears(
                 "ES",
                 [2026, 2027]
-            );
+            ).catch((e: unknown) => e);
 
-            expect(result).toEqual({
+            expect(error).toBeInstanceOf(HolidayFetchError);
+            expect((error as HolidayFetchError).holidays).toEqual({
                 "2026-01-01": "New Year",
             });
+            expect((error as HolidayFetchError).failedYears).toEqual([2027]);
+            expect((error as HolidayFetchError).unsupportedYears).toEqual([]);
         });
 
-        it("returns empty map if all years fail", async () => {
+        it("reports unsupported years separately from failed years", async () => {
+            global.fetch = vi.fn((url: string) =>
+                Promise.resolve(
+                    url.includes("/2077/")
+                        ? { ok: false, status: 400, statusText: "Bad Request" }
+                        : url.includes("/2076/")
+                          ? { ok: false, status: 503, statusText: "Unavailable" }
+                          : { ok: true, status: 200, json: async () => [] }
+                )
+            ) as unknown as typeof fetch;
+
+            const error = await fetchHolidaysForCountryAndYears(
+                "GB",
+                [2075, 2076, 2077]
+            ).catch((e: unknown) => e);
+
+            expect(error).toBeInstanceOf(HolidayFetchError);
+            expect((error as HolidayFetchError).failedYears).toEqual([2076]);
+            expect((error as HolidayFetchError).unsupportedYears).toEqual([2077]);
+        });
+
+        it("throws with every year failed when all requests fail", async () => {
             global.fetch = vi
                 .fn()
                 .mockRejectedValue(new Error("Network error"));
 
-            const result = await fetchHolidaysForCountryAndYears(
+            const error = await fetchHolidaysForCountryAndYears(
                 "IT",
                 [2026, 2027]
-            );
+            ).catch((e: unknown) => e);
 
-            expect(result).toEqual({});
+            expect(error).toBeInstanceOf(HolidayFetchError);
+            expect((error as HolidayFetchError).holidays).toEqual({});
+            expect((error as HolidayFetchError).failedYears).toEqual([2026, 2027]);
         });
 
         it("handles empty year array", async () => {

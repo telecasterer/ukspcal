@@ -24,6 +24,9 @@ export default defineConfig({
             name: "chromium",
             use: {
                 ...devices["Desktop Chrome"],
+                // Use the system Chrome: Playwright can't install its bundled
+                // Chromium on Ubuntu 26.04.
+                channel: "chrome",
                 viewport: { width: 1280, height: 1800 },
             },
         },

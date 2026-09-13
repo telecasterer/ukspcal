@@ -102,20 +102,19 @@
                     class="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/30 space-y-2"
                 >
                     <h2 class="text-lg font-semibold text-amber-900 dark:text-amber-200">
-                        The 3-Month Deadline
+                        No invitation letter?
                     </h2>
                     {#if showAsapWarning}
                         <p class="font-medium text-amber-900 dark:text-amber-200">
-                            You are within 3 months of your State Pension age. If you have not yet
-                            claimed or received an invitation letter, claim as soon as possible to
-                            reduce the risk of a payment delay.
+                            You are within 3 months of your State Pension age. If you have not
+                            claimed yet and have not received an invitation letter, request an
+                            invitation code on GOV.UK or call the relevant number above.
                         </p>
                     {:else}
                         <p>
-                            If you are within 3 months of your State Pension age and have not yet
-                            made a claim or received an invitation letter, call the relevant number
-                            above as soon as possible. Waiting longer may lead to a delay in your
-                            payments.
+                            If you are within 3 months of your State Pension age and have not
+                            received an invitation letter, you can request an invitation code on
+                            GOV.UK or call the relevant number above to claim.
                         </p>
                     {/if}
                 </div>

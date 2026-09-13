@@ -45,8 +45,10 @@ The app supports:
 
 ## Holidays and early payments
 
-- The calculator uses public holiday data from Nager.Date for regional holiday overlays.
+- The calculator uses public holiday data from Nager.Date for UK bank holidays and regional holiday overlays.
 - If a payment date falls on a weekend or bank holiday, it moves earlier.
+- Holiday data is saved on your device, so payment dates are still adjusted offline.
+- If UK bank holidays can't be loaded, or a year is outside the range Nager.Date covers (currently 1976–2076), a warning appears in the calendar options.
 - You can optionally overlay additional public holidays for another country using Nager.Date.
 - When additional holiday data is loading, the calendar options panel shows a loading status. If the fetch fails, an inline warning is shown and you can try again.
 

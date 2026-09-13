@@ -34,6 +34,15 @@ describe("holidayCache", () => {
             expect(parsed.years).toEqual([2026]);
         });
 
+        it("saves unsupported years sorted and de-duplicated", () => {
+            saveHolidaysToCache("GB-ENG", {}, [2076], [2078, 2077, 2078]);
+
+            const parsed: CachedHolidays = JSON.parse(
+                localStorage.getItem("holiday_cache_GB-ENG")!
+            );
+            expect(parsed.unsupportedYears).toEqual([2077, 2078]);
+        });
+
         it("handles empty holidays object", () => {
             const holidays: Record<string, string> = {};
             saveHolidaysToCache("FR", holidays, []);
@@ -90,6 +99,20 @@ describe("holidayCache", () => {
 
             // Verify the old cache was removed
             expect(localStorage.getItem("holiday_cache_ES")).toBeNull();
+        });
+
+        it("keeps and flags an expired cache when allowExpired is set", () => {
+            const oldCache: CachedHolidays = {
+                data: { "2026-01-01": "New Year" },
+                timestamp: Date.now() - 31 * 24 * 60 * 60 * 1000, // 31 days ago
+                years: [2026],
+            };
+            localStorage.setItem("holiday_cache_ES", JSON.stringify(oldCache));
+
+            const loaded = loadHolidaysFromCache("ES", { allowExpired: true });
+            expect(loaded?.data).toEqual(oldCache.data);
+            expect(loaded?.expired).toBe(true);
+            expect(localStorage.getItem("holiday_cache_ES")).not.toBeNull();
         });
 
         it("loads cache if still valid (< 30 days old)", () => {

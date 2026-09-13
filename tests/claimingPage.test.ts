@@ -37,10 +37,23 @@ describe("Claiming page", () => {
         );
         expect(getByText(/The Pension Service \(DWP\)\./)).toBeInTheDocument();
         expect(
-            getByText(/International Pension Centre \(DWP\)\./)
+            getByText(/International Pension Centre \(DWP\)/)
         ).toBeInTheDocument();
         expect(getByText(/Future Pension Centre \(DWP\)\./)).toBeInTheDocument();
         expect(getByText(/IBAN and BIC/i)).toBeInTheDocument();
+    });
+
+    it("sends Northern Ireland residents to nidirect and the NI Pension Centre", () => {
+        currentUrl = "https://ukspcal.vercel.app/claiming";
+        const { getByRole } = render(ClaimingPage);
+
+        expect(
+            getByRole("link", { name: "nidirect: Get your State Pension" })
+        ).toHaveAttribute("href", "https://www.nidirect.gov.uk/services/get-your-state-pension");
+        expect(getByRole("link", { name: "0808 100 2658" })).toHaveAttribute(
+            "href",
+            "tel:08081002658"
+        );
     });
 
     it("shows ASAP claim warning when within 3 months of SPA", () => {
@@ -52,12 +65,12 @@ describe("Claiming page", () => {
         ).toBeInTheDocument();
     });
 
-    it("shows general 3-month deadline guidance when SPA is further away", () => {
+    it("shows general no-invitation-letter guidance when SPA is further away", () => {
         currentUrl = `https://ukspcal.vercel.app/claiming?spaDate=${isoInDays(180)}`;
         const { getByText } = render(ClaimingPage);
 
         expect(
-            getByText(/call the relevant number above as soon as possible/i)
+            getByText(/you can request an invitation code on GOV\.UK or call the relevant number above to claim/i)
         ).toBeInTheDocument();
     });
 });

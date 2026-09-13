@@ -1,5 +1,6 @@
 // Types for date formatting and input persistence
 import type { DateFormat } from "./dateFormatting";
+import { MAX_NUMBER_OF_YEARS } from "../config";
 
 /**
  * The shape of user inputs persisted to storage.
@@ -111,7 +112,7 @@ export function parsePersistedInputsObject(
     const sy = toYear(parsed.startYear);
     if (sy !== null) out.startYear = sy;
     const ny = toInt(parsed.numberOfYears);
-    if (ny !== null && ny > 0 && ny <= 50) out.numberOfYears = ny;
+    if (ny !== null && ny > 0 && ny <= MAX_NUMBER_OF_YEARS) out.numberOfYears = ny;
 
     const cd = toInt(parsed.cycleDays);
     if (cd !== null && options.allowedCycleDays.has(cd)) out.cycleDays = cd;

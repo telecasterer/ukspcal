@@ -16,40 +16,79 @@ export type NagerHoliday = {
 };
 
 /**
- * Fetch public holidays for a given country and year
+ * Thrown when Nager.Date doesn't cover the requested year (HTTP 400). It only serves
+ * a fixed window of years (1976–2076 as of Sept 2026).
+ */
+export class UnsupportedHolidayYearError extends Error {
+    readonly year: number;
+
+    constructor(countryCode: string, year: number) {
+        super(`Holiday data for ${countryCode} ${year} is not available`);
+        this.name = "UnsupportedHolidayYearError";
+        this.year = year;
+    }
+}
+
+/**
+ * Thrown by fetchHolidaysForCountryAndYears when one or more years have no data:
+ * `failedYears` couldn't be loaded (network/server error) and may work on retry;
+ * `unsupportedYears` are outside the range Nager.Date covers. Carries the holidays
+ * from the years that did load.
+ */
+export class HolidayFetchError extends Error {
+    readonly holidays: Record<string, string>;
+    readonly failedYears: number[];
+    readonly unsupportedYears: number[];
+
+    constructor(
+        holidays: Record<string, string>,
+        failedYears: number[],
+        unsupportedYears: number[] = []
+    ) {
+        super(
+            `Failed to fetch holidays for ${[...failedYears, ...unsupportedYears].join(", ")}`
+        );
+        this.name = "HolidayFetchError";
+        this.holidays = holidays;
+        this.failedYears = failedYears;
+        this.unsupportedYears = unsupportedYears;
+    }
+}
+
+/**
+ * Fetch public holidays for a given country and year.
+ * Throws UnsupportedHolidayYearError for a year outside Nager.Date's range, and a
+ * plain Error on a network error, other non-OK response or malformed body, so
+ * callers can tell "no holidays" apart from "couldn't load".
  */
 export async function fetchHolidaysForCountryAndYear(
     countryCode: string,
     year: number
 ): Promise<NagerHoliday[]> {
-    try {
-        const response = await fetch(
-            `https://date.nager.at/api/v3/PublicHolidays/${year}/${countryCode}`
-        );
-        if (!response.ok) {
-            console.error(
-                `Failed to fetch holidays for ${countryCode} ${year}:`,
-                response.statusText
-            );
-            return [];
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(
-            `Error fetching holidays for ${countryCode} ${year}:`,
-            error
-        );
-        return [];
+    const response = await fetch(
+        `https://date.nager.at/api/v3/PublicHolidays/${year}/${countryCode}`
+    );
+    if (response.status === 400) {
+        throw new UnsupportedHolidayYearError(countryCode, year);
     }
+    if (!response.ok) {
+        throw new Error(
+            `Failed to fetch holidays for ${countryCode} ${year}: ${response.statusText}`
+        );
+    }
+    const data: unknown = await response.json();
+    if (!Array.isArray(data)) {
+        throw new Error(`Unexpected holiday response for ${countryCode} ${year}`);
+    }
+    return data as NagerHoliday[];
 }
 
 /**
- * Fetch public holidays for a given country across multiple years
- */
-/**
  * Fetch public holidays for a given country and region across multiple years
  * For UK, regionCode should be one of: GB-ENG, GB-SCT, GB-NIR
+ *
+ * Throws HolidayFetchError if any year fails or is unsupported, carrying the holidays
+ * from the years that loaded.
  */
 export async function fetchHolidaysForCountryAndYears(
     countryCode: string,
@@ -57,13 +96,23 @@ export async function fetchHolidaysForCountryAndYears(
     regionCode?: string | string[]
 ): Promise<Record<string, string>> {
     const holidays: Record<string, string> = {};
+    const failedYears: number[] = [];
+    const unsupportedYears: number[] = [];
 
-    const results = await Promise.all(
+    const results = await Promise.allSettled(
         years.map((year) => fetchHolidaysForCountryAndYear(countryCode, year))
     );
 
-    for (const yearHolidays of results) {
-        for (const holiday of yearHolidays) {
+    results.forEach((result, i) => {
+        if (result.status === "rejected") {
+            if (result.reason instanceof UnsupportedHolidayYearError) {
+                unsupportedYears.push(years[i]);
+            } else {
+                failedYears.push(years[i]);
+            }
+            return;
+        }
+        for (const holiday of result.value) {
             // For UK, filter by region/county if specified
             if (countryCode === "GB" && regionCode) {
                 // Support passing a single region code, an array of region codes,
@@ -107,9 +156,11 @@ export async function fetchHolidaysForCountryAndYears(
                 holidays[holiday.date] = holiday.name;
             }
         }
-    }
+    });
 
-    // Production: do not log matched holiday counts here.
+    if (failedYears.length > 0 || unsupportedYears.length > 0) {
+        throw new HolidayFetchError(holidays, failedYears, unsupportedYears);
+    }
 
     return holidays;
 }

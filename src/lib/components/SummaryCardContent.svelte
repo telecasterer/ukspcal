@@ -481,7 +481,7 @@ pre { white-space: pre-wrap; font-size: 14px; line-height: 1.45; margin: 0; }
             </div>
             {#if isWithinThreeMonthsOfSpa}
                 <p class="mt-1 text-xs min-[390px]:text-sm text-red-800 dark:text-red-300">
-                    You are within 3 months of your State Pension age. If you have not claimed yet, claim as soon as possible.
+                    You are within 3 months of your State Pension age. If you have not claimed yet, claim as soon as possible. No invitation letter? You can request an invitation code on GOV.UK.
                 </p>
             {/if}
             <a

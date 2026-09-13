@@ -22,6 +22,7 @@
     import CsvExportModal from "./CsvExportModal.svelte";
     import IcsExportModal from "./IcsExportModal.svelte";
     import CountryHolidaySelector from "./CountryHolidaySelector.svelte";
+    import { MAX_NUMBER_OF_YEARS } from "$lib/config";
 
     // --- Constants ---
     const pageSize = 6; // Number of months to show at once
@@ -50,6 +51,7 @@
         additionalHolidays: Record<string, string>;
         isLoadingAdditionalHolidays?: boolean;
         additionalHolidaysError?: string;
+        ukHolidaysWarnings?: string[];
         onCountryChange?: (country: string) => void;
         detectedCountry?: string;
     };
@@ -76,6 +78,7 @@
         additionalHolidays,
         isLoadingAdditionalHolidays = false,
         additionalHolidaysError = "",
+        ukHolidaysWarnings = [],
         onCountryChange,
         detectedCountry = "none",
     }: Props = $props();
@@ -382,7 +385,7 @@
                             class="w-24"
                             classes={{ select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
                         >
-                            {#each Array.from({ length: 50 }, (_, i) => i + 1) as y}
+                            {#each Array.from({ length: MAX_NUMBER_OF_YEARS }, (_, i) => i + 1) as y}
                                 <option value={String(y)}>{y} years</option>
                             {/each}
                         </Select>
@@ -408,6 +411,11 @@
                     {onPersist}
                 />
             </div>
+            {#each ukHolidaysWarnings as warning (warning)}
+                <p class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300" role="alert">
+                    {warning}
+                </p>
+            {/each}
         </div>
     </div>
 

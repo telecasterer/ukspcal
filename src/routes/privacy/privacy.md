@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: April 20, 2026
+Last updated: 13 September 2026
 
 UK State Pension Calendar is designed to work primarily on your device. This page explains what data is used by the app and why.
 
@@ -10,7 +10,7 @@ You may enter the last 3 characters of your NI number and your date of birth to 
 
 ## Local storage on your device
 
-The app stores settings, recent inputs, and any saved profiles (which may include your NI number suffix and date of birth) in your browser local storage so your preferences can be restored when you return. You can clear this data at any time using the app's *Restore Defaults* button or your browser/site settings.
+The app stores settings, recent inputs, and any saved profiles (which may include your NI number suffix and date of birth) in your browser local storage so your preferences can be restored when you return. It also stores the public holiday data it downloads, so payment dates can still be adjusted when you're offline; this contains no personal information. You can clear this data at any time using the app's *Restore Defaults* button or your browser/site settings.
 
 ## Analytics and technical data
 
@@ -20,7 +20,7 @@ The app does not require account registration, and we do not collect or share yo
 
 ## Holiday data providers
 
-To show bank holidays and optional country holiday overlays, the app requests public holiday data from third-party APIs. Requests may include country and year parameters needed for those results.
+To show bank holidays and optional country holiday overlays, the app requests public holiday data from [Nager.Holidays](https://nagerholidays.com) (formerly Nager.Date). Requests include only the country and year needed for those results, never your NI number suffix or date of birth.
 
 ## Exports and sharing
 

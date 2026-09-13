@@ -1,24 +1,24 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 const PERSIST_KEY = "ukspcal.inputs.v1";
 
+// Snapshot of date.nager.at responses, so the screenshot doesn't depend on the network.
+const HOLIDAY_FIXTURES: Record<string, string> = {
+    "2022/GB": readFileSync(new URL("./fixtures/nager-2022-GB.json", import.meta.url), "utf8"),
+    "2022/FR": readFileSync(new URL("./fixtures/nager-2022-FR.json", import.meta.url), "utf8"),
+};
+
 test.beforeEach(async ({ page }) => {
-    await page.route("https://date.nager.at/api/v3/PublicHolidays/2026/FR", async (route) => {
+    // Freeze "today" just after this DOB's SPA (15 Mar 2022). The calendar range grows
+    // to reach today once SPA has passed, so a live clock would change the screenshot.
+    await page.clock.setFixedTime(new Date("2022-03-20T12:00:00Z"));
+
+    await page.route("https://date.nager.at/api/v3/PublicHolidays/**", async (route) => {
+        const key = new URL(route.request().url()).pathname.split("/").slice(-2).join("/");
         await route.fulfill({
             contentType: "application/json",
-            body: JSON.stringify([
-                {
-                    date: "2026-07-14",
-                    localName: "Fete nationale francaise",
-                    name: "Bastille Day",
-                    countryCode: "FR",
-                    fixed: true,
-                    global: true,
-                    counties: null,
-                    launchYear: null,
-                    type: "Public",
-                },
-            ]),
+            body: HOLIDAY_FIXTURES[key] ?? "[]",
         });
     });
 

@@ -30,7 +30,7 @@
     import { migrateLegacyUkRegion } from "$lib/utils/persistedInputsMigration";
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
     import { clearAllAppStorage } from "$lib/utils/clearAllAppStorage";
-    import { loadAdditionalHolidays } from "$lib/utils/loadAdditionalHolidays";
+    import { loadHolidays } from "$lib/utils/loadHolidays";
     import { detectCountryFromTimezone } from "$lib/utils/timezoneDetection";
     import {
         subtractMonthsFromIso,
@@ -42,9 +42,9 @@
         ANDROID_PLAY_STORE_URL,
         ALLOWED_CYCLE_DAYS,
         ALLOWED_DATE_FORMATS,
+        MAX_NUMBER_OF_YEARS,
     } from "$lib/config";
     import { goto } from "$app/navigation";
-    import { fetchHolidaysForCountryAndYears } from "$lib/services/nagerHolidayService";
     import {
         computeIsStandalone,
         getDisplayModeStandalone,
@@ -52,7 +52,7 @@
         shouldShowIosInstallHelp,
         type BeforeInstallPromptEvent,
     } from "$lib/utils/pwaInstall";
-    import { onMount } from "svelte";
+    import { onMount, untrack } from "svelte";
     import { todayStore } from "$lib/utils/todayStore.svelte";
     import "../styles/calendarPrint.css";
 
@@ -120,6 +120,9 @@
     let lastAdditionalHolidaysKey: string = $state("");
     let ukHolidaysRequestSeq = 0;
     let additionalHolidaysRequestSeq = 0;
+    let ukHolidaysMissingYears: number[] = $state([]);
+    let ukHolidaysUnsupportedYears: number[] = $state([]);
+    let holidayRetryCount: number = $state(0);
 
     // --- State: PWA install ---
     let darkMode: boolean = $state(readDarkModeFromStorage());
@@ -212,6 +215,28 @@
         isAndroid ? "Get the Android app on Google Play" : "Install app"
     );
 
+    function formatYearRange(years: number[]): string {
+        const sorted = [...years].sort((a, b) => a - b);
+        const first = sorted[0];
+        const last = sorted[sorted.length - 1];
+        return first === last ? String(first) : `${first}–${last}`;
+    }
+
+    const ukHolidaysWarnings = $derived.by(() => {
+        const warnings: string[] = [];
+        if (ukHolidaysUnsupportedYears.length > 0) {
+            warnings.push(
+                `There's no UK bank holiday data for ${formatYearRange(ukHolidaysUnsupportedYears)}, so payments in those years are only moved for weekends, not bank holidays.`
+            );
+        }
+        if (ukHolidaysMissingYears.length > 0) {
+            warnings.push(
+                `Couldn't load UK bank holidays for ${formatYearRange(ukHolidaysMissingYears)}, so payments due on a bank holiday may show on the wrong day. Check your connection and reload to try again.`
+            );
+        }
+        return warnings;
+    });
+
     // --- Lifecycle ---
     onMount(() => {
         const ua = navigator.userAgent ?? "";
@@ -248,8 +273,17 @@
             computeStandalone();
         };
 
+        // Retry holidays that failed to load once the connection is back.
+        const onOnline = () => {
+            if (ukHolidaysMissingYears.length > 0) holidayRetryCount += 1;
+            if (selectedCountry !== "none" && additionalHolidaysError) {
+                handleCountryChange(selectedCountry);
+            }
+        };
+
         window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
         window.addEventListener("appinstalled", onAppInstalled);
+        window.addEventListener("online", onOnline);
 
         // On iOS there's no `beforeinstallprompt`. Offer help instead.
         showIosInstallHelp = shouldShowIosInstallHelp({ userAgent: ua, isStandalone });
@@ -284,6 +318,7 @@
             mq?.removeEventListener?.("change", onMqChange);
             window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
             window.removeEventListener("appinstalled", onAppInstalled);
+            window.removeEventListener("online", onOnline);
         };
     });
 
@@ -299,17 +334,39 @@
         numberOfYearsInput = String(numberOfYears);
     });
 
-    // Fetch UK bank holidays for the selected region and year range.
+    // Load UK bank holidays (cached, with an offline fallback) for the selected region
+    // and year range. Re-runs when `holidayRetryCount` is bumped (back online).
     // Note: `ukRegion` is intentionally NOT persisted — always defaults to GB-ENG+GB-WLS.
     $effect.pre(() => {
         if (!ukRegion || !hasLoadedPersistedInputs) return;
-        const yrs = Array.from({ length: numberOfYears }, (_, i) => startYear + i);
+        void holidayRetryCount;
+        const region = ukRegion;
+        const firstYear = startYear;
+        const yearCount = numberOfYears;
         const requestId = ++ukHolidaysRequestSeq;
         (async () => {
-            const holidays = await fetchHolidaysForCountryAndYears("GB", yrs, ukRegion);
-            if (requestId !== ukHolidaysRequestSeq) return;
-            bankHolidays = holidays;
+            const loaded = await loadHolidays(
+                region,
+                firstYear,
+                yearCount,
+                requestId,
+                () => ukHolidaysRequestSeq
+            );
+            if (loaded === null) return; // superseded by a newer request
+            bankHolidays = loaded.holidays;
+            ukHolidaysMissingYears = loaded.missingYears;
+            ukHolidaysUnsupportedYears = loaded.unsupportedYears;
         })();
+    });
+
+    // The holiday fetch above is async, so it can resolve after persisted inputs have
+    // already generated the schedule (slow network / TWA cold start). Re-adjust the
+    // existing payments when holidays change, without moving the calendar view.
+    $effect.pre(() => {
+        void bankHolidays;
+        untrack(() => {
+            if (result) result = computeResult(result.ni, result.cycleDays);
+        });
     });
 
     // Fetch additional (non-UK) holidays when year range or country changes
@@ -362,6 +419,20 @@
         });
     }
 
+    function computeResult(niCode: string, cycle: number): PensionResult {
+        const generated = generatePayments(
+            niCode,
+            startYear,
+            startYear + numberOfYears - 1,
+            cycle,
+            bankHolidays
+        );
+        const filteredPayments = minPaymentIso
+            ? generated.payments.filter((p) => p.paid >= minPaymentIso!)
+            : generated.payments;
+        return { ...generated, payments: filteredPayments };
+    }
+
     function generate() {
         error = "";
         if (!/^\d{2}[A-D]$/i.test(ni)) {
@@ -370,17 +441,7 @@
             result = null;
             return;
         }
-        const generated = generatePayments(
-            ni,
-            startYear,
-            startYear + numberOfYears - 1,
-            cycleDays,
-            bankHolidays
-        );
-        const filteredPayments = minPaymentIso
-            ? generated.payments.filter((p) => p.paid >= minPaymentIso!)
-            : generated.payments;
-        result = { ...generated, payments: filteredPayments };
+        result = computeResult(ni, cycleDays);
         // Reset calendar to the requested focus date (if set), otherwise first payment.
         if (result.payments.length > 0) {
             const focusIso = pendingCalendarFocusIso ?? result.payments[0].paid;
@@ -413,6 +474,8 @@
         lastAdditionalHolidaysKey = "";
         additionalHolidaysRequestSeq = 0;
         ukHolidaysRequestSeq = 0;
+        ukHolidaysMissingYears = [];
+        ukHolidaysUnsupportedYears = [];
         pendingCalendarFocusIso = null;
         minPaymentIso = null;
         lastFirstPaymentAfterSpaKey = null;
@@ -437,7 +500,7 @@
 
     function applyNumberOfYears() {
         const n = Number.parseInt(numberOfYearsInput, 10);
-        if (Number.isFinite(n) && n > 0 && n <= 50) {
+        if (Number.isFinite(n) && n > 0 && n <= MAX_NUMBER_OF_YEARS) {
             numberOfYears = n;
             persistInputs();
             generate();
@@ -445,7 +508,7 @@
     }
 
     function extendNumberOfYearsByOne(): boolean {
-        if (numberOfYears >= 50) return false;
+        if (numberOfYears >= MAX_NUMBER_OF_YEARS) return false;
         pendingCalendarFocusIso = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, "0")}-01`;
         numberOfYears += 1;
         numberOfYearsInput = String(numberOfYears);
@@ -468,16 +531,19 @@
 
         const requestId = ++additionalHolidaysRequestSeq;
         isLoadingAdditionalHolidays = true;
-        const result = await loadAdditionalHolidays(
+        const loaded = await loadHolidays(
             country,
             startYear,
             numberOfYears,
             requestId,
             () => additionalHolidaysRequestSeq
         );
-        if (result === null) return; // superseded by a newer request
-        additionalHolidays = result.holidays;
-        additionalHolidaysError = result.error;
+        if (loaded === null) return; // superseded by a newer request
+        additionalHolidays = loaded.holidays;
+        additionalHolidaysError =
+            loaded.missingYears.length > 0
+                ? "Couldn't load additional holidays right now. Try again."
+                : "";
         isLoadingAdditionalHolidays = false;
     }
 
@@ -504,9 +570,16 @@
             // reachable via Next/Previous) — never shrinks an existing
             // larger range. The user can still navigate back to the SPA
             // month manually.
+            // Capped at MAX_NUMBER_OF_YEARS so a very early SPA can't generate
+            // centuries of payments (and one holiday request per year); if today is
+            // then out of range, focus the first payment instead.
             const todayYear = Number(todayStore.iso.slice(0, 4));
-            numberOfYears = Math.max(numberOfYears, todayYear - startYear + 1);
-            pendingCalendarFocusIso = todayStore.iso;
+            numberOfYears = Math.min(
+                MAX_NUMBER_OF_YEARS,
+                Math.max(numberOfYears, todayYear - startYear + 1)
+            );
+            pendingCalendarFocusIso =
+                todayYear < startYear + numberOfYears ? todayStore.iso : payment.paid;
         } else {
             pendingCalendarFocusIso = payment.paid;
         }
@@ -708,6 +781,7 @@
                             {additionalHolidays}
                             {isLoadingAdditionalHolidays}
                             {additionalHolidaysError}
+                            {ukHolidaysWarnings}
                             onCountryChange={handleCountryChange}
                             {detectedCountry}
                         />

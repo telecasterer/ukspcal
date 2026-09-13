@@ -33,7 +33,8 @@
 
 - Holiday data is fetched from Nager.Date; no manual updates needed.
 - If holiday rules change, update `src/lib/pensionEngine.ts` and tests accordingly.
-- For non-UK holidays, update `src/lib/services/nagerHolidayService.ts` or `src/lib/utils/loadAdditionalHolidays.ts` (caching and fetch logic).
+- Holiday fetching lives in `src/lib/services/nagerHolidayService.ts`; caching and the offline fallback in `src/lib/utils/loadHolidays.ts` and `src/lib/utils/holidayCache.ts`.
+- Nager.Date only serves a fixed window of years (1976–2076 as of Sept 2026). Years outside it are reported as unsupported and shown to users as a warning.
 
 ## Backup & data retention
 

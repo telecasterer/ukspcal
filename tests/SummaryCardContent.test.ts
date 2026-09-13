@@ -165,7 +165,7 @@ describe("SummaryCardContent", () => {
 
         expect(
             await findByText(
-                "You are within 3 months of your State Pension age. If you have not claimed yet, claim as soon as possible."
+                "You are within 3 months of your State Pension age. If you have not claimed yet, claim as soon as possible. No invitation letter? You can request an invitation code on GOV.UK."
             )
         ).toBeInTheDocument();
     });

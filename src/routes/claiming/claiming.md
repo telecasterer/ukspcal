@@ -6,44 +6,59 @@ You will not receive your State Pension automatically. You need to make a claim.
 
 If you are more than 4 months away from your State Pension age and want to check your State Pension forecast:
 
-**Check online:** [GOV.UK: Check your State Pension forecast](https://www.gov.uk/check-state-pension) — you will need your National Insurance number and a Government Gateway or One Login account.
+**Check online:** [GOV.UK: Check your State Pension forecast](https://www.gov.uk/check-state-pension) — you will need to sign in (you can create sign-in details if you do not have them), and you may be asked to prove your identity with photo ID such as a passport or driving licence. You can also check your forecast in the HMRC app. The online service is not available if you are already getting your State Pension or have deferred it.
 
-If you cannot use the online service, contact the Future Pension Centre (DWP).
+If you cannot use the online service, contact the Future Pension Centre (DWP). They can post a forecast to you if your State Pension age is more than 30 days away.
 
 **Call:** [0800 731 0175](tel:08007310175) (UK, free) / [+44 191 218 3600](tel:+441912183600) (international)
 
+Monday to Friday, 8am to 6pm. Relay UK: 18001 then 0800 731 0175.
+
 ## What to have ready when making your claim
 
-- Your National Insurance number
-- Your bank or building society account details
-- If you want payment to a non-UK account: the IBAN and BIC/SWIFT code
-- Your marriage or civil partnership details (if relevant)
+- The date of your most recent marriage, civil partnership or divorce (if relevant)
 - Dates you lived or worked abroad, if relevant
 - Any social security numbers used for overseas state pensions, if relevant
-- Your invitation/claim code, if you have one
+- Your bank or building society account details
+- If you want payment to a non-UK account: the IBAN and BIC/SWIFT code
+- The invitation code from your letter, if you are claiming online
 
-## If you live in the UK
+## If you live in England, Scotland or Wales
 
-**Invitation letter:** You should receive a letter with a claim code around 4 months before your State Pension age. If you are within 3 months of State Pension age and do not have a code, [GOV.UK](https://www.gov.uk/get-state-pension) explains how to request one.
+**Invitation letter:** DWP sends a letter with an invitation code for claiming online. If you have not received one and you are within 3 months of your State Pension age, [GOV.UK](https://www.gov.uk/get-state-pension) explains how to request an invitation code.
 
-**Claim online:** [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension) offers online, phone, and post claims. If you have your invitation code, the online form is usually the simplest route.
+**Claim online:** [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension). If you have your invitation code, the online form is usually the simplest route.
 
-**Claim by phone:** The Pension Service (DWP).
+**Claim by phone:** The Pension Service (DWP). You can also call to ask for a claim form to be posted to you.
 
 **Call:** [0800 731 7898](tel:08007317898)
 
 **Welsh language:** [0800 731 7936](tel:08007317936)
 
+Monday to Friday, 8am to 6pm (except public holidays). Relay UK: 18001 then 0800 731 7898.
+
+## If you live in Northern Ireland
+
+State Pension claims in Northern Ireland are handled by the Northern Ireland Pension Centre (Department for Communities).
+
+**Claim online:** [nidirect: Get your State Pension](https://www.nidirect.gov.uk/services/get-your-state-pension). You will need the invitation code from your letter. If you have not received one and you are within 3 months of your State Pension age, nidirect explains how to request one.
+
+**Claim by phone:** Northern Ireland Pension Centre State Pension claim line.
+
+**Call:** [0808 100 2658](tel:08081002658)
+
+Monday to Friday, 9am to 4pm (closed weekends and bank holidays). Relay UK: 18001 then 0808 100 2658.
+
 ## If you live elsewhere (Non-UK residents)
 
-**Do not wait for a code:** Many people overseas do not receive an invitation letter. You do not need one to start your claim.
+**Do not wait for a code:** Many people overseas do not receive an invitation letter. You do not need one to start your claim. You must be within 4 months of your State Pension age.
 
-**Local route:** Official guidance may direct you to claim through the pension authority in your country of residence. In some cases this route can take longer.
-
-**Claim by phone:** International Pension Centre (DWP).
+**How to claim:** Contact the International Pension Centre (DWP), or send them the international claim form. See [GOV.UK: Claim if you retire abroad](https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim).
 
 **Call:** [+44 191 218 7777](tel:+441912187777)
 
-**Official non-UK claim guidance:** [GOV.UK: Claim if you retire abroad](https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim).
+Monday to Friday, 8am to 6pm (UK time). Relay UK: +44 151 494 1260 then 0191 218 7777.
+
+**Pensions from other countries:** If you also lived or worked abroad, the pension authority in the country you live in may be able to pass your details to the state pension schemes in the countries where you lived or worked.
 
 **Tip:** Ask the agent for a callback to reduce international phone charges.

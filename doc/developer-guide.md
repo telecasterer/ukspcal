@@ -76,7 +76,7 @@ app/build/outputs/bundle/release/app-release.aab
 
 ## How data flows
 
-1. **Layout/load** (`src/routes/+layout.ts`) exposes initial holiday data to the app.
+1. **Holiday data** is loaded in the browser by `src/lib/utils/loadHolidays.ts` (Nager.Date, cached in local storage with an offline fallback). It arrives after the schedule is first generated, so the page recalculates payments whenever `bankHolidays` changes.
 2. **Main page** (`src/routes/+page.svelte`) loads persisted inputs and wires together the input and summary components.
 3. **PensionInputsCard** computes a mini SPA-year schedule internally and emits `SpaPreviewData` upward via the `onSpaPreviewData` callback. The page stores this and passes it to `SummaryCard` → `SummaryCardContent`, so the summary panel shows State Pension age and first/second payment details as soon as a valid NI code and date of birth are entered — before the full schedule is generated.
 4. The page calls `generatePayments` from `src/lib/pensionEngine.ts` to produce the full schedule, which is passed as `result` to `SummaryCard` and the calendar components.
@@ -87,7 +87,7 @@ app/build/outputs/bundle/release/app-release.aab
 
 - `src/lib/pensionEngine.ts` — Payment schedule rules and holiday adjustment logic.
 - `src/lib/config.ts` — Shared app constants (persist key, allowed cycle days/date formats, Play Store URL).
-- `src/lib/services/nagerHolidayService.ts` — Holiday overlay using Nager.Date.
+- `src/lib/services/nagerHolidayService.ts` — Fetches UK bank holidays and holiday overlays from Nager.Date, reporting failed and unsupported years.
 - `src/lib/utils/isoDateHelpers.ts` — Shared ISO date utilities used across routes and components.
 - `src/lib/utils/loadAdditionalHolidays.ts` — Cache-aware fetch of non-UK public holidays with race-condition guard.
 - `src/lib/utils/` — Date formatting, export helpers, persistence, and PWA helpers.

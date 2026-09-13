@@ -22,6 +22,7 @@
         showRestoreModal = false;
     }
     import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
+    import { MIN_DOB_ISO } from "$lib/config";
     import { generatePayments, type Payment } from "$lib/pensionEngine";
     import { loadSavedProfiles, saveProfiles, generateId, type SavedProfile } from "$lib/utils/profilePersistence";
     import { onMount } from "svelte";
@@ -561,7 +562,7 @@
                         id="dob"
                         name="dob"
                         bind:value={dob}
-                        min="1900-01-01"
+                        min={MIN_DOB_ISO}
                         max={todayIso}
                         required
                         onchange={() => onPersist?.()}
