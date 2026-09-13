@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2026-09-13 (v0.7.2)
+
+### Fixes
+
+- stop reloads of the claiming page showing "You are offline" (bd7b3de)
+
 ## 2026-09-13 (v0.7.1)
 
 ### Fixes
