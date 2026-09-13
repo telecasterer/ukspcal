@@ -89,7 +89,21 @@ export default defineConfig({
                 clientsClaim: true,
                 skipWaiting: true,
                 cleanupOutdatedCaches: true,
-                navigateFallback: "/offline",
+                // No app-shell fallback: it answers *every* page load that isn't
+                // precached with one cached page, so reloading the server-rendered
+                // /claiming showed "You are offline" even when online. Load pages from
+                // the network and show /offline only when that fails. Must be null, not
+                // omitted, or @vite-pwa/sveltekit defaults it to "/".
+                navigateFallback: null,
+                runtimeCaching: [
+                    {
+                        urlPattern: ({ request }) => request.mode === "navigate",
+                        handler: "NetworkOnly",
+                        options: {
+                            precacheFallback: { fallbackURL: "/offline" },
+                        },
+                    },
+                ],
             },
             manifestFilename: "manifest.webmanifest",
             includeAssets: [
