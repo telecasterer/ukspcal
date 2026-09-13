@@ -25,7 +25,9 @@ describe("Claiming page", () => {
         currentUrl = "https://ukspcal.vercel.app/claiming";
         const { getByText, getByRole } = render(ClaimingPage);
 
-        expect(getByText("Claiming your State Pension")).toBeInTheDocument();
+        expect(
+            getByRole("heading", { level: 1, name: "How to claim your State Pension" })
+        ).toBeInTheDocument();
         expect(
             getByRole("link", { name: "GOV.UK: Get your State Pension" })
         ).toHaveAttribute("href", "https://www.gov.uk/get-state-pension");

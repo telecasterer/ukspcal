@@ -10,7 +10,9 @@ If you are more than 4 months away from your State Pension age and want to check
 
 If you cannot use the online service, contact the Future Pension Centre (DWP). They can post a forecast to you if your State Pension age is more than 30 days away.
 
-**Call:** [0800 731 0175](tel:08007310175) (UK, free) / [+44 191 218 3600](tel:+441912183600) (international)
+**Call:** [0800 731 0175](tel:08007310175) (free from the UK)
+
+**From outside the UK:** [+44 191 218 3600](tel:+441912183600)
 
 Monday to Friday, 8am to 6pm. Relay UK: 18001 then 0800 731 0175.
 
@@ -27,7 +29,7 @@ Monday to Friday, 8am to 6pm. Relay UK: 18001 then 0800 731 0175.
 
 **Invitation letter:** DWP sends a letter with an invitation code for claiming online. If you have not received one and you are within 3 months of your State Pension age, [GOV.UK](https://www.gov.uk/get-state-pension) explains how to request an invitation code.
 
-**Claim online:** [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension). If you have your invitation code, the online form is usually the simplest route.
+**Claim online:** [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension). If you have your invitation code, claiming online is usually the simplest way.
 
 **Claim by phone:** The Pension Service (DWP). You can also call to ask for a claim form to be posted to you.
 
@@ -48,6 +50,8 @@ State Pension claims in Northern Ireland are handled by the Northern Ireland Pen
 **Call:** [0808 100 2658](tel:08081002658)
 
 Monday to Friday, 9am to 4pm (closed weekends and bank holidays). Relay UK: 18001 then 0808 100 2658.
+
+<!-- doc-insert -->
 
 ## If you live elsewhere (Non-UK residents)
 

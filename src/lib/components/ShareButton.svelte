@@ -10,6 +10,7 @@
     export let toastDurationMs = 4000;
     export let size: "xs" | "sm" | "md" | "lg" | "xl" | undefined = undefined;
     export let buttonClass = "";
+    export let buttonLabel = "Share this app";
 
     let shareStatus = "";
     let shareStatusTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -64,8 +65,8 @@
     {size}
     class={buttonClass}
     onclick={handleShare}
-    title="Share this app"
-    aria-label="Share this app"
+    title={buttonLabel}
+    aria-label={buttonLabel}
 >
     <span class="inline-flex items-center gap-1.5">
         <ShareNodesOutline class="h-4 w-4" />

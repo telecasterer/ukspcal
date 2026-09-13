@@ -84,15 +84,6 @@ body {
     }
 }
 
-/* Help markdown heading size overrides */
-.help-markdown h2 {
-    font-size: 1.25rem;
-    /* Tailwind text-xl */
-    font-weight: 700;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
 /* Shared surface/layout tokens */
 .app-page-bg {
     background-image: linear-gradient(
@@ -120,12 +111,6 @@ body {
 
 .page-container-doc {
     max-width: 56rem;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.page-container-help {
-    max-width: 64rem;
     margin-left: auto;
     margin-right: auto;
 }
@@ -160,7 +145,7 @@ body {
 }
 
 /* Shared details/summary styles for custom summary panels used across the app
-   Applies to .custom-details/.custom-summary pattern used in Help and SummaryCardContent
+   Applies to .custom-details/.custom-summary pattern used in SummaryCardContent
 */
 summary::-webkit-details-marker { display: none; }
 summary::marker { display: none; }
@@ -193,88 +178,89 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
     transition: none;
 }
 
-.help-markdown h3 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
+/* Markdown document pages (Help, Claiming, Privacy) — see DocPage.svelte.
+   renderMarkdownDocument drops a leading h1; the page heading comes from DocPage. */
+
+/* No gap or divider above the first block */
+.doc-markdown > :first-child {
+    margin-top: 0;
 }
 
-/* Shared markdown base (help + privacy + claiming) */
-.doc-markdown > h1:first-child,
-.policy-markdown > h1:first-child {
-    display: none;
+.doc-markdown > h2:first-child {
+    border-top: 0;
+    padding-top: 0;
 }
 
 .doc-markdown p,
-.doc-markdown li,
-.policy-markdown p,
-.policy-markdown li {
+.doc-markdown li {
     line-height: 1.65;
 }
 
-.doc-markdown ul,
-.policy-markdown ul {
+.doc-markdown ul {
     margin-top: 0.5rem;
     margin-bottom: 0.75rem;
 }
 
-.doc-markdown a,
-.policy-markdown a {
+.doc-markdown a {
     color: rgb(29 78 216);
     font-weight: 600;
     text-underline-offset: 2px;
 }
 
-.doc-markdown a:hover,
-.policy-markdown a:hover {
+.doc-markdown a:hover {
     text-decoration: underline;
 }
 
-.dark .doc-markdown a,
-.dark .policy-markdown a {
+.dark .doc-markdown a {
     color: rgb(147 197 253);
 }
 
-.doc-markdown strong,
-.policy-markdown strong {
+.doc-markdown strong {
     color: rgb(17 24 39);
 }
 
-.dark .doc-markdown strong,
-.dark .policy-markdown strong {
+.dark .doc-markdown strong {
     color: rgb(255 255 255);
 }
 
-/* Policy/claiming markdown (privacy + claiming pages) */
-.policy-markdown h2 {
+.doc-markdown h2 {
     font-size: 1.1rem;
     font-weight: 700;
-    margin-top: 1.5rem;
-    margin-bottom: 0.6rem;
-    color: rgb(17 24 39);
+    line-height: 1.35;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    padding-top: 1.25rem;
     border-top: 1px solid rgb(229 231 235);
-    padding-top: 1rem;
+    color: rgb(17 24 39);
+    /* Clear the sticky top bar when jumping to a section; its actions wrap
+       below the title on narrow screens. */
+    scroll-margin-top: 7.5rem;
 }
 
-.dark .policy-markdown h2 {
+@media (min-width: 520px) {
+    .doc-markdown h2 {
+        scroll-margin-top: 5rem;
+    }
+}
+
+.dark .doc-markdown h2 {
     color: rgb(243 244 246);
     border-top-color: rgb(55 65 81);
 }
 
-.policy-markdown h3 {
+.doc-markdown h3 {
     font-size: 1rem;
     font-weight: 600;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     margin-bottom: 0.4rem;
     color: rgb(31 41 55);
 }
 
-.dark .policy-markdown h3 {
+.dark .doc-markdown h3 {
     color: rgb(229 231 235);
 }
 
-.policy-markdown a[href^="tel:"] {
+.doc-markdown a[href^="tel:"] {
     display: inline-flex;
     align-items: center;
     border: 1px solid rgb(191 219 254);
@@ -284,17 +270,16 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
     text-decoration: none;
 }
 
-.policy-markdown a[href^="tel:"]:hover {
+.doc-markdown a[href^="tel:"]:hover {
     background: rgb(219 234 254);
 }
 
-.dark .policy-markdown a[href^="tel:"] {
+.dark .doc-markdown a[href^="tel:"] {
     border-color: rgb(30 64 175);
     background: rgb(30 58 138 / 0.35);
 }
 
-/* Help markdown image styling */
-.help-markdown img {
+.doc-markdown img {
     max-width: 100%;
     height: auto;
     display: block;
@@ -305,7 +290,7 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
     box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.22);
 }
 
-.dark .help-markdown img {
+.dark .doc-markdown img {
     border-color: rgb(55 65 81);
     /* gray-700 */
 }
@@ -317,9 +302,9 @@ details[open] > .custom-summary .chev { transform: rotate(180deg); }
 }
 
 /* Tighter app details table spacing */
-.help-markdown dl,
-.help-markdown dt,
-.help-markdown dd {
+.doc-markdown dl,
+.doc-markdown dt,
+.doc-markdown dd {
     margin: 0;
     padding: 0;
 }

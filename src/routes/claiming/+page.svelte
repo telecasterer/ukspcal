@@ -1,19 +1,9 @@
 <script lang="ts">
-    import TopBar from "$lib/components/TopBar.svelte";
-    import AppFooter from "$lib/components/AppFooter.svelte";
-    import { Button } from "flowbite-svelte";
-    import { ArrowLeftOutline, MoonOutline, SunOutline } from "flowbite-svelte-icons";
-    import {
-        applyDarkModeClass,
-        persistDarkModeToStorage,
-        readDarkModeFromStorage,
-    } from "$lib/utils/darkMode";
-    import { goto } from "$app/navigation";
+    import DocPage from "$lib/components/DocPage.svelte";
     import { page } from "$app/state";
-    import { onMount } from "svelte";
-    import claimingMarkdown from "./claiming.md?raw";
-    import { renderMarkdown } from "$lib/markdown";
+    import { renderMarkdownDocument } from "$lib/markdown";
     import { daysUntilIso, isIsoDate } from "$lib/utils/isoDateHelpers";
+    import claimingMarkdown from "./claiming.md?raw";
 
     const spaDateIso = $derived.by(() => {
         const value = page.url.searchParams.get("spaDate") ?? "";
@@ -25,115 +15,57 @@
         const days = daysUntilIso(spaDateIso);
         return days >= 0 && days <= 92;
     });
-    const claimingHtml = renderMarkdown(claimingMarkdown);
 
-    let darkMode: boolean = $state(readDarkModeFromStorage());
+    const { html, headings } = renderMarkdownDocument(claimingMarkdown);
 
-    onMount(() => {
-        applyDarkModeClass(darkMode);
-    });
-
-    $effect.pre(() => {
-        if (typeof window !== "undefined") {
-            persistDarkModeToStorage(darkMode);
-            applyDarkModeClass(darkMode);
-        }
-    });
+    // Share the page itself, without the user's ?spaDate= parameter.
+    const shareUrl = $derived(`${page.url.origin}${page.url.pathname}`);
 </script>
 
-<div class="flex flex-col min-h-screen">
-    <TopBar title="Claiming" showInAppBanner={false}>
-        <svelte:fragment slot="actions">
-            <Button
-                color="light"
-                size="xs"
-                class="toolbar-btn"
-                onclick={() => {
-                    goto("/");
-                }}
-            >
-                <span class="inline-flex items-center gap-1.5">
-                    <ArrowLeftOutline class="h-4 w-4" ariaLabel="Back" />
-                    <span>Back</span>
-                </span>
-            </Button>
-            <Button
-                color="light"
-                size="xs"
-                class="toolbar-icon-btn"
-                onclick={() => {
-                    darkMode = !darkMode;
-                }}
-                title="Toggle dark mode"
-                aria-label="Toggle dark mode"
-            >
-                {#if darkMode}
-                    <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
-                {:else}
-                    <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
-                {/if}
-            </Button>
-        </svelte:fragment>
-    </TopBar>
-
-    <main
-        class="app-page-bg page-bottom-safe-area py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100 flex-1"
-    >
-        <div class="page-container-doc w-full">
-            <header class="mb-6 sm:mb-8 max-w-3xl">
-                <h1
-                    class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-3"
-                >
-                    State Pension Claim Guidance
-                </h1>
-                <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
-                    Claim links and key contact numbers for UK and non-UK residents.
+<DocPage
+    barTitle="How to Claim"
+    heading="How to claim your State Pension"
+    intro="How to claim, and who to contact, in England, Scotland and Wales, Northern Ireland, and overseas."
+    {html}
+    {headings}
+    share={{ text: "How to claim the UK State Pension, with phone numbers for the UK and abroad.", url: shareUrl }}
+>
+    <!-- Rendered at the doc-insert marker in claiming.md: after the Northern Ireland
+         section, since invitation letters don't apply to overseas claims. -->
+    {#snippet insert()}
+        <div
+            role="note"
+            class="not-prose my-6 space-y-2 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm sm:text-base dark:border-amber-700 dark:bg-amber-900/30"
+        >
+            <p class="font-semibold text-amber-900 dark:text-amber-200">
+                No invitation letter? (UK and Northern Ireland)
+            </p>
+            {#if showAsapWarning}
+                <p class="font-medium leading-relaxed text-amber-900 dark:text-amber-200">
+                    You are within 3 months of your State Pension age. If you have not
+                    claimed yet and have not received an invitation letter, request an
+                    invitation code on GOV.UK or call the relevant number above.
                 </p>
-            </header>
-
-            <div class="card-surface w-full p-5 sm:p-6 space-y-5">
-                <section
-                    class="doc-markdown policy-markdown prose prose-sm sm:prose-base prose-blue dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
-                >
-                    {@html claimingHtml}
-                </section>
-
-                <div
-                    class="rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/30 space-y-2"
-                >
-                    <h2 class="text-lg font-semibold text-amber-900 dark:text-amber-200">
-                        No invitation letter?
-                    </h2>
-                    {#if showAsapWarning}
-                        <p class="font-medium text-amber-900 dark:text-amber-200">
-                            You are within 3 months of your State Pension age. If you have not
-                            claimed yet and have not received an invitation letter, request an
-                            invitation code on GOV.UK or call the relevant number above.
-                        </p>
-                    {:else}
-                        <p>
-                            If you are within 3 months of your State Pension age and have not
-                            received an invitation letter, you can request an invitation code on
-                            GOV.UK or call the relevant number above to claim.
-                        </p>
-                    {/if}
-                </div>
-            </div>
+            {:else}
+                <p class="leading-relaxed text-gray-800 dark:text-gray-200">
+                    If you are within 3 months of your State Pension age and have not
+                    received an invitation letter, you can request an invitation code on
+                    GOV.UK or call the relevant number above to claim.
+                </p>
+            {/if}
         </div>
-    </main>
-
-    <AppFooter />
-</div>
+    {/snippet}
+</DocPage>
 
 <svelte:head>
-    <title>Claiming Your UK State Pension</title>
+    <title>How to Claim - UK State Pension Calendar</title>
     <meta
         name="description"
-        content="How to claim your UK State Pension, including UK and international claim routes and key phone numbers."
+        content="How to claim your UK State Pension in the UK or from abroad, with key phone numbers."
     />
     <meta
         property="og:description"
-        content="How to claim your UK State Pension, including UK and international claim routes and key phone numbers."
+        content="How to claim your UK State Pension in the UK or from abroad, with key phone numbers."
     />
     <meta property="og:url" content="https://ukspcal.vercel.app/claiming" />
     <link rel="canonical" href="https://ukspcal.vercel.app/claiming" />

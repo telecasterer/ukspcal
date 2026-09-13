@@ -81,7 +81,7 @@ app/build/outputs/bundle/release/app-release.aab
 3. **PensionInputsCard** computes a mini SPA-year schedule internally and emits `SpaPreviewData` upward via the `onSpaPreviewData` callback. The page stores this and passes it to `SummaryCard` → `SummaryCardContent`, so the summary panel shows State Pension age and first/second payment details as soon as a valid NI code and date of birth are entered — before the full schedule is generated.
 4. The page calls `generatePayments` from `src/lib/pensionEngine.ts` to produce the full schedule, which is passed as `result` to `SummaryCard` and the calendar components.
 5. **Calendar + summary UI** renders payments, highlights early payments, supports CSV/ICS export, and auto-extends duration by one year when `Next` reaches the end of range.
-6. **Help page** (`src/routes/help/+page.svelte`) renders markdown with dynamic build info placeholders (version, release, build date).
+6. **Document pages** (Help, Claiming, Privacy) render their markdown through `src/lib/components/DocPage.svelte`. `renderMarkdownDocument` in `src/lib/markdown.ts` gives each `##` heading an id and returns the headings for the "On this page" list; Help also fills in build info placeholders (version, release, build date).
 
 ## Core logic modules
 

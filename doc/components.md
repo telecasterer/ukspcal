@@ -16,7 +16,8 @@
 - **PensionInputsCard.svelte** — Input form for NI code, date of birth, cycles, and display options. Computes a mini SPA schedule internally and emits the result upward via the `onSpaPreviewData` callback prop; it no longer renders the SPA preview itself.
 - **SummaryCard.svelte** — Summary panel wrapper. Accepts a nullable `result` (renders before a full schedule is generated) and a `spaPreviewData` prop forwarded from the page.
 - **SummaryCardContent.svelte** — Summary panel content. Renders in three layers: (1) SPA details block (age, first/second payment, comprising text) driven by `spaPreviewData`; (2) coloured info grid (NI code, payment day, cycle, next payment) driven by `result`; (3) collapsible payment date list with copy/save/print actions. The panel header also has copy/save/print icon buttons for the full summary.
-- **ShareButton.svelte** — Share/copy action button with optional size.
+- **DocPage.svelte** — Shared layout for the markdown document pages (Help, Claiming, Privacy): top bar with Back, optional Share and dark mode, page heading and intro, optional "On this page" contents list with back-to-top buttons, and the content card. An `insert` snippet renders where `<!-- doc-insert -->` appears in the markdown (used for the claiming page's invitation letter note).
+- **ShareButton.svelte** — Share/copy action button with optional size, share URL and label.
 - **TopBar.svelte** — App header with title, icon, and action slot.
 
 ## Core logic (src/lib)
@@ -51,9 +52,9 @@
 
 - **+layout.ts** — Enables prerendering for all routes (see the Prerendering section of `CLAUDE.md`).
 - **+page.svelte** — Main calculator UI and data flow.
-- **help/+page.svelte** — Help page (markdown rendered with build info placeholders).
-- **claiming/+page.svelte** — State Pension claim guidance with UK and international contact details.
-- **privacy/+page.svelte** — Privacy policy.
+- **help/+page.svelte** — Help page: `help.md` rendered through `DocPage` as a single page with a contents list, with build info placeholders filled in.
+- **claiming/+page.svelte** — How to claim, through `DocPage`: ways to claim and contact numbers for England, Scotland and Wales, Northern Ireland, and overseas, with a contents list and Share button.
+- **privacy/+page.svelte** — Privacy policy, through `DocPage`.
 - **sitemap.xml** — Generated sitemap endpoint.
 
 ## Data flow overview

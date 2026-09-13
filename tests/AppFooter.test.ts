@@ -43,6 +43,13 @@ describe("AppFooter", () => {
         expect(feedbackLink).toHaveTextContent("Send Feedback");
     });
 
+    it("has a claiming guidance link, available whatever the user's SPA", () => {
+        const { container } = render(AppFooter);
+        const claimingLink = container.querySelector('a[href="/claiming"]');
+        expect(claimingLink).toBeInTheDocument();
+        expect(claimingLink).toHaveTextContent("How to Claim");
+    });
+
     it("has a privacy policy link", () => {
         const { container, getByText } = render(AppFooter);
         const privacyLink = container.querySelector('a[href="/privacy"]');

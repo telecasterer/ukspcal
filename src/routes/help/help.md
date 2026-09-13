@@ -113,6 +113,7 @@ Dates and calculations use publicly available information and may change over ti
 
 ## Official Sources
 
+- [How to claim your State Pension](/claiming) — ways to claim and phone numbers for the UK, Northern Ireland and overseas, based on GOV.UK and nidirect guidance
 - [GOV.UK State Pension age guidance](https://www.gov.uk/state-pension-age)
 - [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension)
 - [State Pension age timetable](https://www.gov.uk/government/publications/state-pension-age-timetable/state-pension-age-timetable)
