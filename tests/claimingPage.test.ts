@@ -37,12 +37,23 @@ describe("Claiming page", () => {
             "href",
             "https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim"
         );
-        expect(getByText(/The Pension Service \(DWP\)\./)).toBeInTheDocument();
+        expect(getByText(/Pension Service \(DWP\)/)).toBeInTheDocument();
         expect(
             getByText(/International Pension Centre \(DWP\)/)
         ).toBeInTheDocument();
         expect(getByText(/Future Pension Centre \(DWP\)\./)).toBeInTheDocument();
         expect(getByText(/IBAN and BIC/i)).toBeInTheDocument();
+    });
+
+    it("tells EU, EEA and Swiss residents to start with their local pension authority", () => {
+        currentUrl = "https://ukspcal.vercel.app/claiming";
+        const { getByText } = render(ClaimingPage);
+
+        const advice = getByText(/start your claim with your local pension authority/);
+        expect(advice).toHaveTextContent("EU, EEA or Switzerland");
+        expect(advice).toHaveTextContent(
+            "contact the International Pension Centre again within 4 months of your UK State Pension age"
+        );
     });
 
     it("sends Northern Ireland residents to nidirect and the NI Pension Centre", () => {

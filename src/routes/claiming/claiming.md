@@ -31,7 +31,7 @@ Monday to Friday, 8am to 6pm. Relay UK: 18001 then 0800 731 0175.
 
 **Claim online:** [GOV.UK: Get your State Pension](https://www.gov.uk/get-state-pension). If you have your invitation code, claiming online is usually the simplest way.
 
-**Claim by phone:** The Pension Service (DWP). You can also call to ask for a claim form to be posted to you.
+**Claim by phone:** If you are within 4 months of your State Pension age, call the Pension Service (DWP) and claim during the call, with no form needed. If you would rather claim by post, they can send you a form.
 
 **Call:** [0800 731 7898](tel:08007317898)
 
@@ -55,14 +55,14 @@ Monday to Friday, 9am to 4pm (closed weekends and bank holidays). Relay UK: 1800
 
 ## If you live elsewhere (Non-UK residents)
 
-**Do not wait for a code:** Many people overseas do not receive an invitation letter. You do not need one to start your claim. You must be within 4 months of your State Pension age.
+**Do not wait for a code:** Many people overseas do not receive an invitation letter. You do not need one to claim.
 
-**How to claim:** Contact the International Pension Centre (DWP), or send them the international claim form. See [GOV.UK: Claim if you retire abroad](https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim).
+**If you live in the EU, EEA or Switzerland and have paid into that country's pension system:** start your claim with your local pension authority (for example Carsat in France or INSS in Spain). They should pass your claim on to the pension schemes in the other countries where you lived or worked, including the UK. Local claims often start before UK State Pension age, so DWP may write to say it is too early. If so, contact the International Pension Centre again within 4 months of your UK State Pension age so your UK claim goes ahead.
+
+**Everyone else living abroad:** claim with the International Pension Centre (DWP) within 4 months of your State Pension age. You can claim over the phone with no form needed, or send the international claim form. See [GOV.UK: Claim if you retire abroad](https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim).
 
 **Call:** [+44 191 218 7777](tel:+441912187777)
 
 Monday to Friday, 8am to 6pm (UK time). Relay UK: +44 151 494 1260 then 0191 218 7777.
-
-**Pensions from other countries:** If you also lived or worked abroad, the pension authority in the country you live in may be able to pass your details to the state pension schemes in the countries where you lived or worked.
 
 **Tip:** Ask the agent for a callback to reduce international phone charges.
