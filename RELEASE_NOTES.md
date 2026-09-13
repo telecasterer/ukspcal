@@ -1,5 +1,16 @@
 # Release Notes
 
+## 2026-09-13 (v0.7.0)
+
+### Features
+
+- readable Help, How to Claim and Privacy pages on phones (7737674)
+- default "Save current" to the loaded profile name and calendar to today past SPA (f22ab2a)
+
+### Fixes
+
+- correct payment dates when bank holidays load late, cache UK holidays, refresh claiming advice (40fcb0a)
+
 ## 2026-07-30 (v0.6.4)
 
 ### Performance
