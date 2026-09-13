@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2026-09-13 (v0.7.1)
+
+### Fixes
+
+- correct overseas claiming advice for EU/EEA residents   Residents of the EU, EEA or Switzerland who paid into that country's pension system should start their claim with the local pension authority (e.g. Carsat, INSS), then contact the International Pension Centre within 4 months of UK State Pension age. Also clarify that UK and overseas phone claims need no form. (c3e53f3)
+
 ## 2026-09-13 (v0.7.0)
 
 ### Features
