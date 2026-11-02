@@ -1,5 +1,17 @@
 # Release Notes
 
+## 2026-11-02 (v0.8.0)
+
+### Features
+
+- one-row top bar without a menu and larger controls (3e02056)
+- improve the app on phones (0ee6be4)
+
+### Fixes
+
+- stop duplicate precache entries breaking service worker updates (02d3c17)
+- use local date for today and correct ICS event times; upgrade dependencies (a42b86c)
+
 ## 2026-09-13 (v0.7.2)
 
 ### Fixes
