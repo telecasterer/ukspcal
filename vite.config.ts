@@ -108,17 +108,11 @@ export default defineConfig({
                     ],
                 },
                 manifestFilename: "manifest.webmanifest",
-                includeAssets: [
-                    "robots.txt",
-                    "favicon.svg",
-                    "favicon.ico",
-                    "icon-192.png",
-                    "icon-512.png",
-                    "mobile-home.png",
-                    "mobile-claiming.png",
-                    "mobile-calendar.png",
-                    "desktop-home.png",
-                ],
+                // Only list files the build output doesn't already contain. Listing the images and
+                // icons here as well made Workbox precache each of them twice with different
+                // revisions, which makes it throw at start-up: the service worker never installed
+                // and phones already on an older version never updated (see scripts/check-sw.mjs).
+                includeAssets: ["robots.txt"],
                 manifest: {
                     id: "/",
                     name: APP_NAME,
