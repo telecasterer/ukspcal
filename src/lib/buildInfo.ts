@@ -20,9 +20,7 @@ const fallback: BuildInfo = {
 
 // __BUILD_INFO__ is injected by Vite define() in vite.config.ts.
 export const buildInfo: BuildInfo =
-    typeof __BUILD_INFO__ === "undefined"
-        ? fallback
-        : (__BUILD_INFO__ as BuildInfo);
+    typeof __BUILD_INFO__ === "undefined" ? fallback : (__BUILD_INFO__ as BuildInfo);
 
 // --- Dev-friendly formatting helpers ---
 

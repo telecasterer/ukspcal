@@ -5,9 +5,9 @@
 - **AppFooter.svelte** — Footer with links and disclosures.
 - **CalendarMonth.svelte** — Renders a single month’s payment calendar grid.
 - **CalendarView.svelte** — Main calendar view; handles navigation, layout, and print controls.
-  - `Previous`/`Next` move in 6-month steps.
-  - If `Next` reaches the end of generated months, it requests a one-year extension from the parent and regenerates.
-  - Export and country-selector UI is delegated to sub-components (see below).
+    - `Previous`/`Next` move in 6-month steps.
+    - If `Next` reaches the end of generated months, it requests a one-year extension from the parent and regenerates.
+    - Export and country-selector UI is delegated to sub-components (see below).
 - **CalendarPager.svelte** — Reusable previous/next/today pager row used above and below the month grid.
 - **CountryHolidaySelector.svelte** — Checkbox + country dropdown for optional non-UK holiday overlays, including loading/error states.
 - **CsvExportModal.svelte** — Modal for CSV export with date-format selection.

@@ -112,7 +112,7 @@ Note: UK bank-holiday adjustments use the app default baseline for England & Wal
 ## Configuration notes
 
 - PWA configuration is handled by `@vite-pwa/sveltekit` in `vite.config.ts`.
-- Deployment target is Vercel (adapter in `svelte.config.js`), but the app is static-friendly.
+- Deployment target is Vercel (adapter configured in `vite.config.ts`), but the app is static-friendly.
 - Environment secrets are not required.
 
 ## Contributing

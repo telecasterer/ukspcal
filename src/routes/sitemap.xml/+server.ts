@@ -5,25 +5,21 @@ export async function GET() {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ukspcal.vercel.app</loc>
-    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://ukspcal.vercel.app/help</loc>
-    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ukspcal.vercel.app/claiming</loc>
-    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ukspcal.vercel.app/privacy</loc>
-    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

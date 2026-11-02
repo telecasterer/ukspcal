@@ -58,9 +58,7 @@ describe("CalendarView", () => {
         });
         expect(getByText("Payment calendar")).toBeInTheDocument();
         expect(getByRole("button", { name: "Export" })).toBeInTheDocument();
-        expect(
-            getByRole("button", { name: "Print calendar" })
-        ).toBeInTheDocument();
+        expect(getByRole("button", { name: "Print calendar" })).toBeInTheDocument();
     });
 
     it("opens print unsupported modal for in-app browsers", async () => {
@@ -114,9 +112,7 @@ describe("CalendarView", () => {
         const copyLinkText = await findByText("Copy link");
         await fireEvent.click(copyLinkText.closest("button") ?? copyLinkText);
         expect(
-            await findByText(
-                "Couldn't copy automatically — please copy the address bar URL."
-            )
+            await findByText("Couldn't copy automatically — please copy the address bar URL.")
         ).toBeInTheDocument();
     });
 

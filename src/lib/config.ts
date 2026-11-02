@@ -1,4 +1,4 @@
-import type { DateFormat } from "$lib/utils/dateFormatting";
+import type { DateFormat } from "#lib/utils/dateFormatting";
 
 export const PERSIST_KEY = "ukspcal.inputs.v1";
 

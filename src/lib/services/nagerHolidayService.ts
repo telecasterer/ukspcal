@@ -45,9 +45,7 @@ export class HolidayFetchError extends Error {
         failedYears: number[],
         unsupportedYears: number[] = []
     ) {
-        super(
-            `Failed to fetch holidays for ${[...failedYears, ...unsupportedYears].join(", ")}`
-        );
+        super(`Failed to fetch holidays for ${[...failedYears, ...unsupportedYears].join(", ")}`);
         this.name = "HolidayFetchError";
         this.holidays = holidays;
         this.failedYears = failedYears;
@@ -120,7 +118,10 @@ export async function fetchHolidaysForCountryAndYears(
                 // combined regions (England & Wales).
                 const regionCodes: string[] = Array.isArray(regionCode)
                     ? regionCode
-                    : String(regionCode).split("+").map((s) => s.trim()).filter(Boolean);
+                    : String(regionCode)
+                          .split("+")
+                          .map((s) => s.trim())
+                          .filter(Boolean);
 
                 // Map common GB region codes to the county codes used by Nager.Date
                 const regionMap: Record<string, string> = {

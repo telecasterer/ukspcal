@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
+    import { copyLinkToClipboard as copyLinkToClipboardUtil } from "#lib/utils/clipboard";
     import { Button } from "flowbite-svelte";
     import { ShareNodesOutline } from "flowbite-svelte-icons";
 
     export let shareTitle = "UK State Pension Calendar";
-    export let shareText =
-        "Calculate your State Pension Age and payment calendar.";
+    export let shareText = "Calculate your State Pension Age and payment calendar.";
     export let shareUrl: string | null = null;
     export let toastDurationMs = 4000;
     export let size: "xs" | "sm" | "md" | "lg" | "xl" | undefined = undefined;

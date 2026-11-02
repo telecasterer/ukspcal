@@ -84,6 +84,7 @@ npm run release
 ```
 
 `npm run release` will:
+
 - run checks and tests
 - bump semver in `package.json` (and lockfile)
 - append a new top section to `RELEASE_NOTES.md` from commits since last `v*` tag
@@ -99,4 +100,5 @@ git push origin main --follow-tags
 Vercel will deploy from `main`, and Help page version info will show readable semver + build metadata.
 
 ## License
+
 MIT

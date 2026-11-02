@@ -16,7 +16,7 @@ const PERSIST_KEY = "ukspcal.inputs.v1";
 function basePersistedInputs(overrides: Record<string, unknown> = {}) {
     return {
         ni: "29B",
-        dob: "",
+        dob: "1960-01-01",
         startYear: 2026,
         numberOfYears: 1,
         cycleDays: 28,
@@ -202,9 +202,7 @@ describe("+page route behavior", () => {
             expect(container.textContent).toContain("Payment calendar");
         });
 
-        const additionalHolidaysBefore = getByLabelText(
-            "Additional holidays"
-        ) as HTMLInputElement;
+        const additionalHolidaysBefore = getByLabelText("Additional holidays") as HTMLInputElement;
         expect(additionalHolidaysBefore.checked).toBe(true);
 
         const user = userEvent.setup();
@@ -229,9 +227,42 @@ describe("+page route behavior", () => {
             expect(container.textContent).toContain("Payment calendar");
         });
 
-        const additionalHolidaysAfter = getByLabelText(
-            "Additional holidays"
-        ) as HTMLInputElement;
+        const additionalHolidaysAfter = getByLabelText("Additional holidays") as HTMLInputElement;
         expect(additionalHolidaysAfter.checked).toBe(false);
+    });
+
+    describe("summary visibility", () => {
+        const HINT = "Enter your date of birth to see your State Pension age";
+
+        it("hides the summary on a fresh load, while the date of birth is only the default", () => {
+            const { container } = render(Page, {
+                props: { bankHolidays: {} as Record<string, string> },
+            });
+            expect(container.textContent).toContain(HINT);
+            expect(container.textContent).not.toContain("Add to calendar");
+        });
+
+        it("shows the summary once the user edits the date of birth", async () => {
+            const { container, getByLabelText } = render(Page, {
+                props: { bankHolidays: {} as Record<string, string> },
+            });
+            await fireEvent.input(getByLabelText("Date of birth"), {
+                target: { value: "1958-06-15" },
+            });
+            await waitFor(() => {
+                expect(container.textContent).not.toContain(HINT);
+                expect(container.textContent).toContain("15 June 2024");
+            });
+        });
+
+        it("shows the summary straight away when the date of birth was saved earlier", async () => {
+            localStorage.setItem(PERSIST_KEY, JSON.stringify(basePersistedInputs()));
+            const { container } = render(Page, {
+                props: { bankHolidays: {} as Record<string, string> },
+            });
+            await waitFor(() => {
+                expect(container.textContent).not.toContain(HINT);
+            });
+        });
     });
 });

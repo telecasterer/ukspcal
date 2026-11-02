@@ -1,11 +1,8 @@
-import {
-    loadHolidaysFromCache,
-    saveHolidaysToCache,
-} from "$lib/utils/holidayCache";
+import { loadHolidaysFromCache, saveHolidaysToCache } from "#lib/utils/holidayCache";
 import {
     fetchHolidaysForCountryAndYears,
     type HolidayFetchError,
-} from "$lib/services/nagerHolidayService";
+} from "#lib/services/nagerHolidayService";
 
 export type HolidayLoadResult = {
     holidays: Record<string, string>;
@@ -24,14 +21,9 @@ function isHolidayFetchError(err: unknown): err is HolidayFetchError {
     );
 }
 
-function pickYears(
-    holidays: Record<string, string>,
-    years: number[]
-): Record<string, string> {
+function pickYears(holidays: Record<string, string>, years: number[]): Record<string, string> {
     return Object.fromEntries(
-        Object.entries(holidays).filter(([iso]) =>
-            years.includes(Number(iso.slice(0, 4)))
-        )
+        Object.entries(holidays).filter(([iso]) => years.includes(Number(iso.slice(0, 4))))
     );
 }
 
@@ -64,8 +56,7 @@ export async function loadHolidays(
     // Entries saved before failed years stopped being cached can hold no data at all.
     const cached =
         stored &&
-        (Object.keys(stored.data ?? {}).length > 0 ||
-            (stored.unsupportedYears ?? []).length > 0)
+        (Object.keys(stored.data ?? {}).length > 0 || (stored.unsupportedYears ?? []).length > 0)
             ? stored
             : null;
     const fresh = cached && !cached.expired ? cached : null;
@@ -120,9 +111,7 @@ export async function loadHolidays(
     }
 
     // Failed years fall back to whatever was cached for them, even if expired.
-    const staleYears = cached
-        ? failedYears.filter((y) => cached.years.includes(y))
-        : [];
+    const staleYears = cached ? failedYears.filter((y) => cached.years.includes(y)) : [];
     const staleUnsupported = cached
         ? failedYears.filter((y) => (cached.unsupportedYears ?? []).includes(y))
         : [];
@@ -135,10 +124,8 @@ export async function loadHolidays(
         missingYears: failedYears.filter(
             (y) => !staleYears.includes(y) && !staleUnsupported.includes(y)
         ),
-        unsupportedYears: [
-            ...knownUnsupported,
-            ...unsupportedYears,
-            ...staleUnsupported,
-        ].sort(ascending),
+        unsupportedYears: [...knownUnsupported, ...unsupportedYears, ...staleUnsupported].sort(
+            ascending
+        ),
     };
 }

@@ -1,9 +1,6 @@
 <script lang="ts">
     import { Button } from "flowbite-svelte";
-    import {
-        ArrowLeftOutline,
-        ArrowRightOutline,
-    } from "flowbite-svelte-icons";
+    import { ArrowLeftOutline, ArrowRightOutline } from "flowbite-svelte-icons";
 
     let {
         visibleRangeLabel,

@@ -34,10 +34,7 @@ export function isForceFacebookInAppEnabled(href: string): boolean {
 /**
  * Detect if the current environment is Facebook's in-app browser, using user agent and URL.
  */
-export function detectFacebookInAppBrowser(options: {
-    userAgent: string;
-    href: string;
-}): boolean {
+export function detectFacebookInAppBrowser(options: { userAgent: string; href: string }): boolean {
     return (
         isForceFacebookInAppEnabled(options.href) ||
         isFacebookInAppBrowserUserAgent(options.userAgent)

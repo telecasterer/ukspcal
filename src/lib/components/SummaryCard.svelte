@@ -1,7 +1,7 @@
 <script lang="ts">
     // SummaryCard.svelte: Shows a summary of the generated pension schedule
-    import type { PensionResult } from "$lib/pensionEngine";
-    import SummaryCardContent from "$lib/components/SummaryCardContent.svelte";
+    import type { PensionResult } from "#lib/pensionEngine";
+    import SummaryCardContent from "#lib/components/SummaryCardContent.svelte";
 
     type StatePensionApplyInfo = {
         applyFromIso: string;

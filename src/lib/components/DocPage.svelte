@@ -10,16 +10,16 @@
         SunOutline,
     } from "flowbite-svelte-icons";
     import { goto } from "$app/navigation";
-    import TopBar from "$lib/components/TopBar.svelte";
-    import AppFooter from "$lib/components/AppFooter.svelte";
-    import ShareButton from "$lib/components/ShareButton.svelte";
+    import TopBar from "#lib/components/TopBar.svelte";
+    import AppFooter from "#lib/components/AppFooter.svelte";
+    import ShareButton from "#lib/components/ShareButton.svelte";
     import {
         applyDarkModeClass,
         persistDarkModeToStorage,
         readDarkModeFromStorage,
-    } from "$lib/utils/darkMode";
-    import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
-    import { DOC_INSERT_MARKER, type MarkdownHeading } from "$lib/markdown";
+    } from "#lib/utils/darkMode";
+    import { detectFacebookInAppBrowserFromWindow } from "#lib/utils/inAppBrowser";
+    import { DOC_INSERT_MARKER, type MarkdownHeading } from "#lib/markdown";
 
     type Props = {
         /** Short title shown in the top bar. */

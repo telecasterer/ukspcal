@@ -7,17 +7,17 @@
 
     onMount(() => {
         const hostname = window.location.hostname;
-        const isLocalPreview =
-            hostname === "localhost" || hostname === "127.0.0.1";
+        const isLocalPreview = hostname === "localhost" || hostname === "127.0.0.1";
 
         if (!isLocalPreview) {
             injectAnalytics();
         }
+        // The bundled typings omit the optional `reloadPage` argument the runtime accepts.
         const updateSW = registerSW({
             immediate: true,
             onNeedRefresh() {
                 // New service worker is available, activate and reload
-                updateSW(true);
+                (updateSW as (reloadPage?: boolean) => Promise<void>)(true);
             },
             onOfflineReady() {
                 // App is ready to work offline
@@ -47,10 +47,7 @@
 
     <!-- Base Meta Tags -->
     <meta charset="utf-8" />
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
         name="description"
         content="Calculate your UK State Pension age and payment dates from your date of birth and NI number suffix, with UK bank holiday adjustments and CSV/ICS export."
@@ -64,10 +61,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="UK State Pension Calendar" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta
-        name="google-site-verification"
-        content="dcA8PMyEy_4d5j2XzWexJmLUW-vg-bY_AmgNrQHyMBU"
-    />
+    <meta name="google-site-verification" content="dcA8PMyEy_4d5j2XzWexJmLUW-vg-bY_AmgNrQHyMBU" />
 
     <!-- Open Graph Tags -->
     <meta property="og:type" content="website" />
@@ -100,10 +94,7 @@
                 "target": {
                     "@type": "EntryPoint",
                     "urlTemplate": "https://ukspcal.vercel.app",
-                    "actionPlatform": [
-                        "DesktopWebPlatform",
-                        "MobileWebPlatform"
-                    ]
+                    "actionPlatform": ["DesktopWebPlatform", "MobileWebPlatform"]
                 }
             }
         }

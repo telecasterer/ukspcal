@@ -16,9 +16,7 @@ vi.mock("../src/lib/services/nagerHolidayService", () => ({
 }));
 
 vi.mock("../src/lib/utils/inAppBrowser", async (importOriginal) => {
-    const actual = await importOriginal<
-        typeof import("../src/lib/utils/inAppBrowser")
-    >();
+    const actual = await importOriginal<typeof import("../src/lib/utils/inAppBrowser")>();
     return {
         ...actual,
         detectFacebookInAppBrowserFromWindow: vi.fn(() => false),
@@ -83,8 +81,8 @@ describe("+page toolbar and install", () => {
                 queryByText(/In Safari, tap the Share button, then choose/i)
             ).toBeInTheDocument();
         });
-        const closeButton = Array.from(document.querySelectorAll("button")).find(
-            (button) => /Close/i.test(button.textContent ?? "")
+        const closeButton = Array.from(document.querySelectorAll("button")).find((button) =>
+            /Close/i.test(button.textContent ?? "")
         );
         expect(closeButton).toBeTruthy();
         await user.click(closeButton!);

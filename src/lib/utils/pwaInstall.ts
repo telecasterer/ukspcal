@@ -14,10 +14,7 @@ export type BeforeInstallPromptEvent = Event & {
  * Returns true if the browser is running in standalone mode (iOS Safari)
  */
 export function getNavigatorStandalone(navigatorLike: unknown): boolean {
-    return Boolean(
-        (navigatorLike as { standalone?: boolean } | null | undefined)
-            ?.standalone
-    );
+    return Boolean((navigatorLike as { standalone?: boolean } | null | undefined)?.standalone);
 }
 
 /**
@@ -37,8 +34,7 @@ export function computeIsStandalone(options: {
     displayModeStandalone: boolean;
     navigatorStandalone: boolean;
 }): boolean {
-    const iosStandalone =
-        isIosUserAgent(options.userAgent) && options.navigatorStandalone;
+    const iosStandalone = isIosUserAgent(options.userAgent) && options.navigatorStandalone;
     return options.displayModeStandalone || iosStandalone;
 }
 

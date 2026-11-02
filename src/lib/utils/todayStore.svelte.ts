@@ -1,8 +1,6 @@
-const REFRESH_INTERVAL_MS = 60_000;
+import { computeTodayIso } from "./isoDateHelpers";
 
-function computeTodayIso(): string {
-    return new Date().toISOString().slice(0, 10);
-}
+const REFRESH_INTERVAL_MS = 60_000;
 
 let todayIso = $state(computeTodayIso());
 
@@ -18,7 +16,7 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * Shared reactive "today" (ISO, UTC). Refreshes periodically and on
+ * Shared reactive "today" (ISO calendar date, device local time). Refreshes periodically and on
  * visibility/focus so long-lived tabs never show a stale date.
  */
 export const todayStore = {

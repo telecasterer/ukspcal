@@ -6,11 +6,7 @@
  * Supported date formats for export and display.
  */
 export type DateFormat =
-    | "dd/mm/yyyy"
-    | "dd-mmm-yyyy"
-    | "yyyy-mm-dd"
-    | "mm/dd/yyyy"
-    | "ddd, d mmmm yyyy";
+    "dd/mm/yyyy" | "dd-mmm-yyyy" | "yyyy-mm-dd" | "mm/dd/yyyy" | "ddd, d mmmm yyyy";
 
 /**
  * Format a date string (ISO yyyy-mm-dd) for CSV export, using the given format.

@@ -35,8 +35,8 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 
 - **UK holidays:** Show or hide UK bank holidays used for early-payment adjustments.
 - **Additional holidays:** Optionally show another country/region’s holidays for reference.
-  - These additional holidays are informational only and do not change DWP payment dates.
-  - They can still be useful if your bank account is outside the UK and local holidays may affect when funds appear.
+    - These additional holidays are informational only and do not change DWP payment dates.
+    - They can still be useful if your bank account is outside the UK and local holidays may affect when funds appear.
 
 ### Profiles
 
@@ -49,14 +49,14 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 
 The summary panel shows your SPA date, first payment date, and related information. From here you can:
 
-- **Export SPA date** or **Export claiming date** as a single-event ICS file to add to your calendar app.
+- Use **Add to calendar** next to your SPA date, first payment or claiming date to download a single-event ICS file for your calendar app.
 - **Copy**, **Save**, or **Print** the summary text or payment list.
 
 ### Exporting and Printing
 
 - Use **Export** in the calendar toolbar to download:
-  - **CSV** for spreadsheet apps.
-  - **ICS** for calendar apps (Apple, Google, Outlook, etc.).
+    - **CSV** for spreadsheet apps.
+    - **ICS** for calendar apps (Apple, Google, Outlook, etc.).
 - Use **Print** for a paper/PDF version of the calendar.
 
 When exporting ICS from the calendar toolbar:
@@ -132,9 +132,9 @@ Useful details to include:
 
 ## Version Information
 
-|                 |                           |
-| --------------- | ------------------------- |
-| **Developer**   | Paul Robins               |
-| **Release**     | {{BUILDINFO_RELEASE}}     |
-| **Build**       | {{BUILDINFO_SUMMARY}}     |
-| **Build date**  | {{BUILDINFO_BUILD_TIME}}  |
+|                |                          |
+| -------------- | ------------------------ |
+| **Developer**  | Paul Robins              |
+| **Release**    | {{BUILDINFO_RELEASE}}    |
+| **Build**      | {{BUILDINFO_SUMMARY}}    |
+| **Build date** | {{BUILDINFO_BUILD_TIME}} |

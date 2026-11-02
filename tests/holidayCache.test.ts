@@ -58,9 +58,7 @@ describe("holidayCache", () => {
             const stored = localStorage.getItem("holiday_cache_DE");
             expect(stored).toBeNull();
             // Should not throw
-            expect(() =>
-                saveHolidaysToCache("DE", { "2026-01-01": "Test" }, [2026])
-            ).not.toThrow();
+            expect(() => saveHolidaysToCache("DE", { "2026-01-01": "Test" }, [2026])).not.toThrow();
         });
     });
 
@@ -126,10 +124,7 @@ describe("holidayCache", () => {
                 timestamp: Date.now() - 10 * 24 * 60 * 60 * 1000, // 10 days ago
                 years: [2026],
             };
-            localStorage.setItem(
-                "holiday_cache_DE",
-                JSON.stringify(recentCache)
-            );
+            localStorage.setItem("holiday_cache_DE", JSON.stringify(recentCache));
 
             const loaded = loadHolidaysFromCache("DE");
             expect(loaded?.data).toEqual(holidays);

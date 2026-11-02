@@ -1,4 +1,4 @@
-import { MIN_DOB_ISO } from "$lib/config";
+import { MIN_DOB_ISO } from "#lib/config";
 
 /**
  * Result of state pension age calculation.
@@ -65,11 +65,7 @@ function daysInMonthUTC(year: number, month0: number): number {
 /**
  * Add years and months to a UTC date, clamping day to end of month if needed.
  */
-function addYearsMonthsClampedUTC(
-    dob: Date,
-    years: number,
-    months: number
-): Date {
+function addYearsMonthsClampedUTC(dob: Date, years: number, months: number): Date {
     const y = dob.getUTCFullYear();
     const m = dob.getUTCMonth();
     const day = dob.getUTCDate();
@@ -370,4 +366,12 @@ export function calculateStatePensionAge(dobIso: string): SpaResult {
 
     // Should never happen due to final catch-all rule.
     throw new Error("Unable to calculate State Pension age");
+}
+
+/**
+ * Label for the age at State Pension age, e.g. "Age 66 years 9 months", or
+ * "Age 66" when there are no extra months.
+ */
+export function formatSpaAge(years: number, months: number): string {
+    return months ? `Age ${years} years ${months} months` : `Age ${years}`;
 }

@@ -1,4 +1,4 @@
-import { clearAllHolidayCache } from "$lib/utils/holidayCache";
+import { clearAllHolidayCache } from "#lib/utils/holidayCache";
 
 // Utility to clear all app-specific persisted values
 export function clearAllAppStorage() {

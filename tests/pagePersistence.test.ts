@@ -59,9 +59,7 @@ describe("+page persistence", () => {
         await tick();
 
         // Persistence should not write on mount; only on blur/change commits.
-        const callsForPersistKey = setItemSpy.mock.calls.filter(
-            ([key]) => key === PERSIST_KEY
-        );
+        const callsForPersistKey = setItemSpy.mock.calls.filter(([key]) => key === PERSIST_KEY);
         expect(callsForPersistKey.length).toBe(0);
 
         // And the final value in storage should match persisted inputs.
@@ -102,8 +100,9 @@ describe("+page persistence", () => {
         });
 
         const getHeaderText = () =>
-            container.textContent?.match(/\d+\s+payments\s+·\s+[A-Za-z]{3}\s+\d{4}\s+–\s+[A-Za-z]{3}\s+\d{4}/)?.[0] ??
-            "";
+            container.textContent?.match(
+                /\d+\s+payments\s+·\s+[A-Za-z]{3}\s+\d{4}\s+–\s+[A-Za-z]{3}\s+\d{4}/
+            )?.[0] ?? "";
         const endYearFrom = (text: string): number => {
             const m = text.match(/–\s+[A-Za-z]{3}\s+(\d{4})/);
             return m ? Number.parseInt(m[1], 10) : Number.NaN;

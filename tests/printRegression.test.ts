@@ -41,15 +41,9 @@ describe("print regression guards", () => {
 
     it("keeps highlighted print day numbers inheriting the cell colour", () => {
         expect(printCss).toContain("color: inherit !important;");
-        expect(printCss).toContain(
-            ".calendar-day.payment .calendar-day-number"
-        );
-        expect(printCss).toContain(
-            ".calendar-day.early-payment .calendar-day-number"
-        );
-        expect(printCss).toContain(
-            ".calendar-day.holiday .calendar-day-number"
-        );
+        expect(printCss).toContain(".calendar-day.payment .calendar-day-number");
+        expect(printCss).toContain(".calendar-day.early-payment .calendar-day-number");
+        expect(printCss).toContain(".calendar-day.holiday .calendar-day-number");
         expect(printCss).toContain("color: #fff !important;");
         expect(printCss).toContain("background: transparent !important;");
     });

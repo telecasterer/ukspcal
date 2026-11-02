@@ -2,7 +2,7 @@
     // PensionInputsCard.svelte: Handles user input for pension calculation
     import { Alert, Label, Select, Button, Modal } from "flowbite-svelte";
     import { RefreshOutline } from "flowbite-svelte-icons";
-    import { todayStore } from "$lib/utils/todayStore.svelte";
+    import { todayStore } from "#lib/utils/todayStore.svelte";
 
     // Modal state for restore defaults
     let showRestoreModal = $state(false);
@@ -21,11 +21,11 @@
     function handleRestoreDefaultsCancel() {
         showRestoreModal = false;
     }
-    import { calculateStatePensionAge } from "$lib/utils/statePensionAge";
-    import { MIN_DOB_ISO } from "$lib/config";
-    import { generatePayments, type Payment } from "$lib/pensionEngine";
-    import { loadSavedProfiles, saveProfiles, generateId, type SavedProfile } from "$lib/utils/profilePersistence";
-    import { onMount } from "svelte";
+    import { calculateStatePensionAge } from "#lib/utils/statePensionAge";
+    import { MIN_DOB_ISO } from "#lib/config";
+    import { generatePayments, type Payment } from "#lib/pensionEngine";
+    import type { SavedProfile } from "#lib/utils/profilePersistence";
+    import ProfilesBar from "./ProfilesBar.svelte";
 
     // --- Props ---
 
@@ -61,6 +61,8 @@
         onPersist?: () => void;
         onRecalculate?: () => void;
         onSpaPreviewData?: (data: SpaPreviewData | null) => void;
+        /** Called when the user changes the date of birth or loads a saved profile. */
+        onDobEdited?: () => void;
     };
     let {
         ni = $bindable(),
@@ -75,17 +77,18 @@
         onPersist,
         onRecalculate,
         onSpaPreviewData,
+        onDobEdited,
     }: Props = $props();
 
-    const currentYear: number = new Date().getFullYear();
+    const currentYear = $derived(Number(todayStore.iso.slice(0, 4)));
     const todayIso = $derived(todayStore.iso);
 
     /**
-     * Calculate default DOB as Jan 1 of (current year - 66)
+     * Default DOB is Jan 1 of (current year - 66). Most users are close to State Pension
+     * age, so this saves them paging a phone date picker back more than 65 years.
      */
     function getDefaultDob(): string {
-        const defaultYear = currentYear - 66;
-        return `${defaultYear}-01-01`;
+        return `${currentYear - 66}-01-01`;
     }
 
     // --- Local state for controlled inputs ---
@@ -93,71 +96,15 @@
     let isEditingNi: boolean = $state(false);
     let cycleDaysSelect: string = $state(String(cycleDays ?? 28));
     let dobDate: Date | undefined = $state<Date | undefined>(undefined);
-    let savedProfiles: SavedProfile[] = $state([]);
-    let isNamingProfile: boolean = $state(false);
-    let profileNameDraft: string = $state("");
     let loadedProfileName: string | null = $state(null);
-
-    onMount(() => {
-        savedProfiles = loadSavedProfiles();
-    });
-
-    function startSaveProfile() {
-        profileNameDraft = loadedProfileName ?? "";
-        isNamingProfile = true;
-        // Focus the input after it renders, selecting any default name so
-        // typing replaces it, or Enter re-saves under the same name.
-        queueMicrotask(() => {
-            const el = document.getElementById("profile-name-input");
-            if (el instanceof HTMLInputElement) {
-                el.focus();
-                el.select();
-            }
-        });
-    }
-
-    function commitSaveProfile() {
-        const name = profileNameDraft.trim();
-        if (!name) {
-            isNamingProfile = false;
-            return;
-        }
-        const existing = savedProfiles.find((p) => p.name === name);
-        const newProfile: SavedProfile = {
-            id: existing ? existing.id : generateId(),
-            name,
-            ni,
-            dob
-        };
-        savedProfiles = [...savedProfiles.filter((p) => p.name !== name), newProfile];
-        saveProfiles(savedProfiles);
-        loadedProfileName = name;
-        isNamingProfile = false;
-        profileNameDraft = "";
-    }
-
-    function cancelSaveProfile() {
-        isNamingProfile = false;
-        profileNameDraft = "";
-    }
 
     function loadProfile(p: SavedProfile) {
         ni = p.ni;
         dob = p.dob;
         niDraft = p.ni;
-        loadedProfileName = p.name;
-        isNamingProfile = false;
+        onDobEdited?.();
         onPersist?.();
         onRecalculate?.();
-    }
-
-    function deleteProfile(id: string) {
-        const deleted = savedProfiles.find((p) => p.id === id);
-        if (deleted && deleted.name === loadedProfileName) {
-            loadedProfileName = null;
-        }
-        savedProfiles = savedProfiles.filter(p => p.id !== id);
-        saveProfiles(savedProfiles);
     }
 
     /**
@@ -166,8 +113,7 @@
     function isoToDateLocal(iso: string): Date | null {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
         const [y, m, d] = iso.split("-").map((p) => Number.parseInt(p, 10));
-        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d))
-            return null;
+        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return null;
         return new Date(y, m - 1, d);
     }
 
@@ -190,7 +136,7 @@
         if (!isEditingNi && niDraft !== ni) niDraft = ni;
     });
     $effect.pre(() => {
-        // Set default DOB if empty (Jan 1 of current year - 66)
+        // Pre-fill the default DOB (see getDefaultDob) when empty.
         if (!dob) {
             dob = getDefaultDob();
         }
@@ -256,13 +202,7 @@
         if (!ni || !isValidNiCode(ni)) return null;
 
         const spaYear = Number(spa.spaDate.slice(0, 4));
-        return generatePayments(
-            ni.trim(),
-            spaYear,
-            spaYear + 2,
-            cycleDays,
-            bankHolidays
-        );
+        return generatePayments(ni.trim(), spaYear, spaYear + 2, cycleDays, bankHolidays);
     });
 
     const firstPaymentAfterSpa = $derived.by(() => {
@@ -281,10 +221,7 @@
         return spaSchedule.payments[idx + 1] ?? null;
     });
 
-    function daysBetweenIsoUtcInclusive(
-        startIso: string,
-        endIso: string
-    ): number {
+    function daysBetweenIsoUtcInclusive(startIso: string, endIso: string): number {
         const start = new Date(startIso + "T00:00:00Z");
         const end = new Date(endIso + "T00:00:00Z");
         const ms = end.getTime() - start.getTime();
@@ -303,10 +240,7 @@
 
     const comprisingText = $derived.by(() => {
         if (!spa || !firstPaymentAfterSpa) return "";
-        const days = daysBetweenIsoUtcInclusive(
-            spa.spaDate,
-            firstPaymentAfterSpa.due
-        );
+        const days = daysBetweenIsoUtcInclusive(spa.spaDate, firstPaymentAfterSpa.due);
         const weeks = Math.floor(days / 7);
         const rem = days % 7;
         const pctText = formatPaymentPercentage(days, cycleDays);
@@ -408,11 +342,7 @@
                 Enter your NI number suffix and date of birth to generate your payment schedule.
             </p>
         </div>
-        <Button
-            color="light"
-            size="xs"
-            onclick={handleRestoreDefaultsClick}
-        >
+        <Button color="light" size="xs" onclick={handleRestoreDefaultsClick}>
             <RefreshOutline class="mr-1.5 h-4 w-4" ariaLabel="Restore defaults" />
             Restore defaults
         </Button>
@@ -429,188 +359,101 @@
                 This will reset all inputs to their default settings.
             </p>
             <div class="flex gap-2 justify-end mt-4">
-                <Button color="light" onclick={handleRestoreDefaultsCancel}
-                    >Cancel</Button
-                >
-                <Button color="blue" onclick={handleRestoreDefaultsConfirm}
-                    >Restore defaults</Button
+                <Button color="light" onclick={handleRestoreDefaultsCancel}>Cancel</Button>
+                <Button color="blue" onclick={handleRestoreDefaultsConfirm}>Restore defaults</Button
                 >
             </div>
         </div>
     </Modal>
 
-    <!-- Profiles UI -->
-    {#if savedProfiles.length > 0 || (ni.trim() && dob)}
-        <div class="pb-4 mb-4 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex flex-wrap gap-2 items-center">
-                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide mr-2">Profiles:</span>
-                {#each savedProfiles as p}
-                    <div class="inline-flex rounded-lg shadow-xs">
-                        <button
-                            type="button"
-                            class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-gray-200 rounded-s-lg hover:bg-blue-50 hover:text-blue-800 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-blue-400 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
-                            onclick={() => loadProfile(p)}
-                            title="Load profile: {p.name}"
-                        >
-                            {p.name}
-                        </button>
-                        <button
-                            type="button"
-                            class="px-2 py-1.5 text-xs font-medium text-gray-400 bg-white border border-s-0 border-gray-200 rounded-e-lg hover:bg-red-50 hover:text-red-600 focus:z-10 focus:ring-2 focus:ring-red-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-500"
-                            onclick={() => deleteProfile(p.id)}
-                            title="Delete profile {p.name}"
-                            aria-label="Delete profile {p.name}"
-                        >
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                {/each}
-                {#if ni.trim() && dob && !isNamingProfile}
-                    <button
-                        type="button"
-                        class="px-3 py-1.5 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-                        onclick={startSaveProfile}
-                    >
-                        + Save current
-                    </button>
-                {/if}
-            </div>
-            {#if isNamingProfile}
-                <div class="flex gap-2 items-center mt-2">
-                    <input
-                        id="profile-name-input"
-                        type="text"
-                        bind:value={profileNameDraft}
-                        placeholder="Profile name (e.g. Partner)"
-                        maxlength={30}
-                        class="px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white w-48"
-                        onkeydown={(e) => {
-                            if (e.key === 'Enter') { e.preventDefault(); commitSaveProfile(); }
-                            if (e.key === 'Escape') { e.preventDefault(); cancelSaveProfile(); }
-                        }}
-                    />
-                    <button
-                        type="button"
-                        class="px-2.5 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600"
-                        onclick={commitSaveProfile}
-                    >
-                        Save
-                    </button>
-                    <button
-                        type="button"
-                        class="px-2.5 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
-                        onclick={cancelSaveProfile}
-                    >
-                        Cancel
-                    </button>
-                </div>
-            {/if}
-        </div>
-    {/if}
+    <ProfilesBar {ni} {dob} bind:loadedProfileName onLoad={loadProfile} />
 
     <div class="space-y-3">
-                <!-- NI code input -->
-                <div>
-                    <Label for="ni-code" class="block mb-1 text-sm"
-                        >NI number suffix</Label
-                    >
-                    <input
-                        id="ni-code"
-                        type="text"
-                        bind:value={niDraft}
-                        maxlength={3}
-                        autocomplete="off"
-                        autocapitalize="characters"
-                        spellcheck={false}
-                        placeholder="e.g. 22D"
-                        class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        onfocus={() => {
-                            isEditingNi = true;
-                        }}
-                        onkeydown={(e) => {
-                            if (e.key !== "Enter") return;
-                            e.preventDefault();
-                            commitNi();
-                            // Move focus so users can continue without tapping.
-                            queueMicrotask(focusDobInput);
-                        }}
-                        onblur={() => {
-                            commitNi();
-                        }}
-                    />
-                    <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Last 3 characters of your NI number — 2 digits and a letter A–D, for example 22D.
-                    </p>
-                    {#if niDraft.trim() && !isValidNiCode(niDraft)}
-                        <p
-                            class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300 mt-1"
-                        >
-                            Format: 2 digits then A–D (e.g. 22D).
-                        </p>
-                    {/if}
-                </div>
+        <!-- NI code input -->
+        <div>
+            <Label for="ni-code" class="block mb-1 text-sm">NI number suffix</Label>
+            <input
+                id="ni-code"
+                type="text"
+                bind:value={niDraft}
+                maxlength={3}
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck={false}
+                placeholder="e.g. 22D"
+                class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                onfocus={() => {
+                    isEditingNi = true;
+                }}
+                onkeydown={(e) => {
+                    if (e.key !== "Enter") return;
+                    e.preventDefault();
+                    commitNi();
+                    // Move focus so users can continue without tapping.
+                    queueMicrotask(focusDobInput);
+                }}
+                onblur={() => {
+                    commitNi();
+                }}
+            />
+            <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Last 3 characters of your NI number — 2 digits and a letter A–D, for example 22D.
+            </p>
+            {#if niDraft.trim() && !isValidNiCode(niDraft)}
+                <p class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300 mt-1">
+                    Format: 2 digits then A–D (e.g. 22D).
+                </p>
+            {/if}
+        </div>
 
-                <!-- Date of birth input -->
-                <div>
-                    <Label for="dob" class="block mb-1 text-sm"
-                        >Date of birth</Label
-                    >
-                    <input
-                        type="date"
-                        id="dob"
-                        name="dob"
-                        bind:value={dob}
-                        min={MIN_DOB_ISO}
-                        max={todayIso}
-                        required
-                        onchange={() => onPersist?.()}
-                        class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    />
-                    {#if !dob}
-                        <p
-                            class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300 mt-1"
-                        >
-                            Required to calculate your State Pension age and
-                            calendar start.
-                        </p>
-                    {/if}
-                </div>
+        <!-- Date of birth input -->
+        <div>
+            <Label for="dob" class="block mb-1 text-sm">Date of birth</Label>
+            <input
+                type="date"
+                id="dob"
+                name="dob"
+                bind:value={dob}
+                min={MIN_DOB_ISO}
+                max={todayIso}
+                required
+                oninput={() => onDobEdited?.()}
+                onchange={() => onPersist?.()}
+                class="block w-full sm:max-w-[12rem] p-2.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            />
+            {#if !dob}
+                <p class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300 mt-1">
+                    Required to calculate your State Pension age and calendar start.
+                </p>
+            {/if}
+        </div>
 
-                <!-- Payment frequency select -->
-                <div>
-                    <Label for="cycle-days" class="block mb-1 text-sm"
-                        >Payment frequency</Label
-                    >
-                    <Select
-                        id="cycle-days"
-                        bind:value={cycleDaysSelect}
-                        oninput={applyCycleDays}
-                        onchange={applyCycleDays}
-                        class="w-full sm:max-w-[12rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    >
-                        <option value="7">1 week</option>
-                        <option value="14">2 weeks</option>
-                        <option value="28">4 weeks (default)</option>
-                        <option value="91">13 weeks</option>
-                    </Select>
-                    <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Payment frequency is normally every 4 weeks.
-                    </p>
-                </div>
+        <!-- Payment frequency select -->
+        <div>
+            <Label for="cycle-days" class="block mb-1 text-sm">Payment frequency</Label>
+            <Select
+                id="cycle-days"
+                bind:value={cycleDaysSelect}
+                oninput={applyCycleDays}
+                onchange={applyCycleDays}
+                class="w-full sm:max-w-[12rem] text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+                <option value="7">1 week</option>
+                <option value="14">2 weeks</option>
+                <option value="28">4 weeks (default)</option>
+                <option value="91">13 weeks</option>
+            </Select>
+            <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Payment frequency is normally every 4 weeks.
+            </p>
+        </div>
 
-                
-
-                <!-- Error alert -->
-                {#if error}
-                    <Alert
-                        color="red"
-                        class="dark:bg-red-900 dark:text-red-200 text-sm"
-                    >
-                        <span class="font-medium">Error:</span>
-                        {error}
-                    </Alert>
-                {/if}
+        <!-- Error alert -->
+        {#if error}
+            <Alert color="red" class="dark:bg-red-900 dark:text-red-200 text-sm">
+                <span class="font-medium">Error:</span>
+                {error}
+            </Alert>
+        {/if}
     </div>
 </div>

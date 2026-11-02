@@ -43,6 +43,7 @@ A modern, privacy-focused web app to calculate and export your UK State Pension 
 - [Developer Guide](developer-guide.md): Architecture, data flow, and dev workflow.
 - [Component Reference](components.md): UI components, utilities, services.
 - [Maintenance Guide](maintenance.md): Releases, deployment, and operational care.
+
 ## Release notes
 
 See `RELEASE_NOTES.md` at the repo root for release details.

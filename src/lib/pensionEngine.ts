@@ -101,8 +101,7 @@ function niOffsetDays(ni: string): number {
 
     const rowOffset = rowFromDigits(target.digits) - rowFromDigits(base.digits);
 
-    const colOffset =
-        (target.letter.charCodeAt(0) - base.letter.charCodeAt(0)) * 7;
+    const colOffset = (target.letter.charCodeAt(0) - base.letter.charCodeAt(0)) * 7;
 
     return rowOffset + colOffset;
 }
@@ -148,10 +147,7 @@ export function generatePayments(
         throw new Error(`Invalid cycleDays: ${cycleDays}`);
     }
     // Base due date depends on cycle rules.
-    let d =
-        cycleDays === 14
-            ? fortnightlyBaseDueDate(ni)
-            : addDaysUTC(BASE_DATE, niOffsetDays(ni));
+    let d = cycleDays === 14 ? fortnightlyBaseDueDate(ni) : addDaysUTC(BASE_DATE, niOffsetDays(ni));
     const startBoundary = new Date(Date.UTC(startYear, 0, 1));
     // 2️⃣ Rewind until before the start boundary
     while (d >= startBoundary) {
@@ -174,9 +170,7 @@ export function generatePayments(
     }
     // Derive the "normal" payment weekday for this NI/cycle.
     const normalDayBase =
-        cycleDays === 14
-            ? fortnightlyBaseDueDate(ni)
-            : addDaysUTC(BASE_DATE, niOffsetDays(ni));
+        cycleDays === 14 ? fortnightlyBaseDueDate(ni) : addDaysUTC(BASE_DATE, niOffsetDays(ni));
 
     const normalDay = normalDayBase.toLocaleDateString("en-GB", {
         weekday: "long",

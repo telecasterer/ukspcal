@@ -22,24 +22,27 @@ test.beforeEach(async ({ page }) => {
         });
     });
 
-    await page.addInitScript(([key, value]) => {
-        window.localStorage.setItem(key, JSON.stringify(value));
-    }, [
-        PERSIST_KEY,
-        {
-            ni: "29B",
-            dob: "1956-03-15",
-            startYear: 2026,
-            numberOfYears: 1,
-            cycleDays: 28,
-            showBankHolidays: true,
-            csvDateFormat: "dd/mm/yyyy",
-            icsEventName: "UK State Pension Payment",
-            icsCategory: "Finance",
-            icsColor: "#22c55e",
-            selectedCountry: "FR",
+    await page.addInitScript(
+        ([key, value]: [string, unknown]) => {
+            window.localStorage.setItem(key, JSON.stringify(value));
         },
-    ]);
+        [
+            PERSIST_KEY,
+            {
+                ni: "29B",
+                dob: "1956-03-15",
+                startYear: 2026,
+                numberOfYears: 1,
+                cycleDays: 28,
+                showBankHolidays: true,
+                csvDateFormat: "dd/mm/yyyy",
+                icsEventName: "UK State Pension Payment",
+                icsCategory: "Finance",
+                icsColor: "#22c55e",
+                selectedCountry: "FR",
+            },
+        ] as [string, unknown]
+    );
 });
 
 test("print view hides app chrome and preserves calendar styling", async ({ page }) => {

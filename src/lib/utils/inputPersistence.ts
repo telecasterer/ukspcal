@@ -59,8 +59,7 @@ function toYear(value: unknown): number | null {
  * Parse a value as an integer, or return null if invalid.
  */
 function toInt(value: unknown): number | null {
-    if (typeof value === "number" && Number.isFinite(value))
-        return Math.trunc(value);
+    if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
     if (typeof value === "string") {
         const n = Number.parseInt(value, 10);
         if (Number.isFinite(n)) return n;
@@ -134,8 +133,7 @@ export function parsePersistedInputsObject(
     const color = toHexColor(parsed.icsColor);
     if (color !== null) out.icsColor = color;
 
-    if (typeof parsed.selectedCountry === "string")
-        out.selectedCountry = parsed.selectedCountry;
+    if (typeof parsed.selectedCountry === "string") out.selectedCountry = parsed.selectedCountry;
 
     if (typeof parsed.ukRegion === "string") out.ukRegion = parsed.ukRegion;
 

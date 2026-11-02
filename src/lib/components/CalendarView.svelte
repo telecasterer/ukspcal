@@ -1,28 +1,27 @@
 <script lang="ts">
+    import { todayStore } from "#lib/utils/todayStore.svelte";
     // CalendarView: Renders the multi-month calendar, export, and print controls
+    import { Button, Dropdown, DropdownItem, Label, Modal, Select } from "flowbite-svelte";
     import {
-        Button,
-        Dropdown,
-        DropdownItem,
-        Label,
-        Modal,
-        Select,
-    } from "flowbite-svelte";
-    import { DownloadOutline, PrinterOutline, ArrowLeftOutline, ArrowRightOutline } from "flowbite-svelte-icons";
-    import { previousMonth } from "$lib/utils/calendarHelpers";
+        DownloadOutline,
+        PrinterOutline,
+        ArrowLeftOutline,
+        ArrowRightOutline,
+    } from "flowbite-svelte-icons";
+    import { previousMonth } from "#lib/utils/calendarHelpers";
     import CalendarMonth from "./CalendarMonth.svelte";
     import CalendarPager from "./CalendarPager.svelte";
     import { Checkbox as FlowbiteCheckbox } from "flowbite-svelte";
-    import type { Payment } from "$lib/pensionEngine";
-    import type { PensionResult } from "$lib/pensionEngine";
-    import { copyLinkToClipboard as copyLinkToClipboardUtil } from "$lib/utils/clipboard";
-    import type { DateFormat } from "$lib/utils/dateFormatting";
-    import { detectFacebookInAppBrowserFromWindow } from "$lib/utils/inAppBrowser";
+    import type { Payment } from "#lib/pensionEngine";
+    import type { PensionResult } from "#lib/pensionEngine";
+    import { copyLinkToClipboard as copyLinkToClipboardUtil } from "#lib/utils/clipboard";
+    import type { DateFormat } from "#lib/utils/dateFormatting";
+    import { detectFacebookInAppBrowserFromWindow } from "#lib/utils/inAppBrowser";
     import { onMount, tick } from "svelte";
     import CsvExportModal from "./CsvExportModal.svelte";
     import IcsExportModal from "./IcsExportModal.svelte";
     import CountryHolidaySelector from "./CountryHolidaySelector.svelte";
-    import { MAX_NUMBER_OF_YEARS } from "$lib/config";
+    import { MAX_NUMBER_OF_YEARS } from "#lib/config";
 
     // --- Constants ---
     const pageSize = 6; // Number of months to show at once
@@ -119,10 +118,12 @@
     });
 
     const shortMonthName = (month: number) =>
-        new Date(2000, month, 1).toLocaleDateString("en-GB", { month: "short" });
+        new Date(Date.UTC(2000, month, 1)).toLocaleDateString("en-GB", {
+            month: "short",
+            timeZone: "UTC",
+        });
 
-    const fmtMonth = (m: { month: number; year: number }) =>
-        `${shortMonthName(m.month)} ${m.year}`;
+    const fmtMonth = (m: { month: number; year: number }) => `${shortMonthName(m.month)} ${m.year}`;
 
     const visibleRangeLabel = $derived.by(() => {
         if (!visibleMonths.length) return "";
@@ -143,18 +144,21 @@
     });
 
     const canJumpToToday = $derived.by(() => {
-        const now = new Date();
-        return allMonths.some(
-            (m) => m.month === now.getUTCMonth() && m.year === now.getUTCFullYear()
-        );
+        const month = Number(todayStore.iso.slice(5, 7)) - 1;
+        const year = Number(todayStore.iso.slice(0, 4));
+        return allMonths.some((m) => m.month === month && m.year === year);
     });
 
     // --- Lifecycle ---
     onMount(() => {
         isFacebookInAppBrowser = detectFacebookInAppBrowserFromWindow();
 
-        const onBeforePrint = () => { renderPrintAllMonths = true; };
-        const onAfterPrint = () => { renderPrintAllMonths = false; };
+        const onBeforePrint = () => {
+            renderPrintAllMonths = true;
+        };
+        const onAfterPrint = () => {
+            renderPrintAllMonths = false;
+        };
 
         window.addEventListener("beforeprint", onBeforePrint);
         window.addEventListener("afterprint", onAfterPrint);
@@ -236,9 +240,8 @@
 
     function handleJumpToToday() {
         if (!canJumpToToday) return;
-        const now = new Date();
-        const todayMonth = now.getUTCMonth();
-        const todayYear = now.getUTCFullYear();
+        const todayMonth = Number(todayStore.iso.slice(5, 7)) - 1;
+        const todayYear = Number(todayStore.iso.slice(0, 4));
         currentMonth = todayMonth;
         currentYear = todayYear;
         void scrollTodayMonthIntoView(todayMonth, todayYear);
@@ -248,9 +251,7 @@
         await tick();
         requestAnimationFrame(() => {
             const key = `${year}-${month}`;
-            const monthNode = screenGridEl?.querySelector<HTMLElement>(
-                `[data-month-key="${key}"]`
-            );
+            const monthNode = screenGridEl?.querySelector<HTMLElement>(`[data-month-key="${key}"]`);
             if (!monthNode) return;
             const rect = monthNode.getBoundingClientRect();
             const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
@@ -275,7 +276,9 @@
                         {payments.length} payments · {fullRangeLabel}
                     </p>
                 </div>
-                <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-2">
+                <div
+                    class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-2"
+                >
                     <Button
                         id="export-menu"
                         color="light"
@@ -295,12 +298,18 @@
                     >
                         <DropdownItem
                             class="text-gray-700 dark:text-gray-100"
-                            onclick={() => { exportMenuOpen = false; csvModalOpen = true; }}
-                        >Download spreadsheet (CSV)</DropdownItem>
+                            onclick={() => {
+                                exportMenuOpen = false;
+                                csvModalOpen = true;
+                            }}>Download spreadsheet (CSV)</DropdownItem
+                        >
                         <DropdownItem
                             class="text-gray-700 dark:text-gray-100"
-                            onclick={() => { exportMenuOpen = false; icsModalOpen = true; }}
-                        >Add to calendar (ICS)</DropdownItem>
+                            onclick={() => {
+                                exportMenuOpen = false;
+                                icsModalOpen = true;
+                            }}>Add to calendar (ICS)</DropdownItem
+                        >
                     </Dropdown>
                     <Button
                         onclick={handlePrint}
@@ -318,7 +327,9 @@
             </div>
 
             <!-- Middle Row: Navigation and Settings -->
-            <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div
+                class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-gray-200 dark:border-gray-700"
+            >
                 <!-- Navigation -->
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <Button
@@ -351,7 +362,9 @@
                         color="light"
                         class="w-auto px-3 py-2 text-xs min-[390px]:text-sm"
                         disabled={!canJumpToToday}
-                        title={canJumpToToday ? "Jump to current month" : "Current month is outside this calendar range"}
+                        title={canJumpToToday
+                            ? "Jump to current month"
+                            : "Current month is outside this calendar range"}
                         aria-label="Today"
                     >
                         Today
@@ -361,14 +374,20 @@
                 <!-- Settings -->
                 <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                     <div class="flex items-center gap-2">
-                        <Label for="start-year" class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300">Start year</Label>
+                        <Label
+                            for="start-year"
+                            class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
+                            >Start year</Label
+                        >
                         <Select
                             id="start-year"
                             bind:value={startYearSelect}
                             oninput={applyStartYear}
                             onchange={applyStartYear}
                             class="w-24"
-                            classes={{ select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
+                            classes={{
+                                select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                            }}
                         >
                             {#each years as year}
                                 <option value={String(year)}>{year}</option>
@@ -376,14 +395,20 @@
                         </Select>
                     </div>
                     <div class="flex items-center gap-2">
-                        <Label for="number-of-years" class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300">Duration</Label>
+                        <Label
+                            for="number-of-years"
+                            class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
+                            >Duration</Label
+                        >
                         <Select
                             id="number-of-years"
                             bind:value={numberOfYearsInput}
                             oninput={applyNumberOfYears}
                             onchange={applyNumberOfYears}
                             class="w-24"
-                            classes={{ select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white" }}
+                            classes={{
+                                select: "text-xs min-[390px]:text-sm !h-9 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                            }}
                         >
                             {#each Array.from({ length: MAX_NUMBER_OF_YEARS }, (_, i) => i + 1) as y}
                                 <option value={String(y)}>{y} years</option>
@@ -412,20 +437,17 @@
                 />
             </div>
             {#each ukHolidaysWarnings as warning (warning)}
-                <p class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300" role="alert">
+                <p
+                    class="text-xs min-[390px]:text-sm text-amber-700 dark:text-amber-300"
+                    role="alert"
+                >
                     {warning}
                 </p>
             {/each}
         </div>
     </div>
 
-    <CsvExportModal
-        bind:open={csvModalOpen}
-        {payments}
-        {result}
-        bind:csvDateFormat
-        {onPersist}
-    />
+    <CsvExportModal bind:open={csvModalOpen} {payments} {result} bind:csvDateFormat {onPersist} />
 
     <IcsExportModal
         bind:open={icsModalOpen}

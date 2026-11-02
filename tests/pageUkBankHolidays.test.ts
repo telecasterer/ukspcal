@@ -127,15 +127,13 @@ describe("+page UK bank holidays", () => {
 
     it("warns about years the holiday API has no data for", async () => {
         // Duck-typed HolidayFetchError: the service module is mocked in this file.
-        vi.mocked(fetchHolidaysForCountryAndYears).mockImplementation(
-            async (_country, years) => {
-                throw {
-                    holidays: {},
-                    failedYears: [],
-                    unsupportedYears: years.filter((y) => y > 2076),
-                };
-            }
-        );
+        vi.mocked(fetchHolidaysForCountryAndYears).mockImplementation(async (_country, years) => {
+            throw {
+                holidays: {},
+                failedYears: [],
+                unsupportedYears: years.filter((y) => y > 2076),
+            };
+        });
         localStorage.setItem(
             PERSIST_KEY,
             JSON.stringify({

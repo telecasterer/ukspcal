@@ -8,13 +8,7 @@ describe("generatePayments", () => {
         const endYear = 2026;
         const cycleDays = 28;
         const bankHolidays = {};
-        const result = generatePayments(
-            ni,
-            startYear,
-            endYear,
-            cycleDays,
-            bankHolidays
-        );
+        const result = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
         expect(result.payments.length).toBeGreaterThan(0);
         expect(result.ni).toBe(ni);
         expect(result.payments[0]).toHaveProperty("paid");
@@ -26,13 +20,7 @@ describe("generatePayments", () => {
         const endYear = 2025;
         const cycleDays = 28;
         const bankHolidays = {};
-        const result = generatePayments(
-            ni,
-            startYear,
-            endYear,
-            cycleDays,
-            bankHolidays
-        );
+        const result = generatePayments(ni, startYear, endYear, cycleDays, bankHolidays);
         expect(result.payments.length).toBe(0);
     });
 });

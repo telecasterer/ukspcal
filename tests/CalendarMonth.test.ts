@@ -15,34 +15,22 @@ describe("CalendarMonth", () => {
                 year: 2026,
                 month: 0,
                 showBankHolidays: true,
-                payments: [
-                    { due: "2026-01-05", paid: "2026-01-05", early: false },
-                ],
+                payments: [{ due: "2026-01-05", paid: "2026-01-05", early: false }],
                 bankHolidays: { "2026-01-01": "New Year" },
                 additionalHolidays: { "2026-01-02": "Extra" },
                 selectedCountry: "FR",
             },
         });
 
-        expect(
-            container.querySelector(".calendar-day.payment")
-        ).toBeInTheDocument();
-        expect(
-            container.querySelector(".calendar-day.holiday")
-        ).toBeInTheDocument();
-        expect(
-            container.querySelector(".calendar-day.additional-holiday")
-        ).toBeInTheDocument();
+        expect(container.querySelector(".calendar-day.payment")).toBeInTheDocument();
+        expect(container.querySelector(".calendar-day.holiday")).toBeInTheDocument();
+        expect(container.querySelector(".calendar-day.additional-holiday")).toBeInTheDocument();
         expect(getByText("France Holiday")).toBeInTheDocument();
 
         const paymentCell = getByLabelText(/Payment day\./i);
         expect(paymentCell).toHaveAttribute("tabindex", "0");
-        expect(
-            getByLabelText(/UK bank holiday: New Year\./i)
-        ).toBeInTheDocument();
-        expect(
-            getByLabelText(/France holiday: Extra\./i)
-        ).toBeInTheDocument();
+        expect(getByLabelText(/UK bank holiday: New Year\./i)).toBeInTheDocument();
+        expect(getByLabelText(/France holiday: Extra\./i)).toBeInTheDocument();
     });
 
     it("shows tooltip on mouse hover for hover-capable devices", async () => {
@@ -65,9 +53,7 @@ describe("CalendarMonth", () => {
                 year: 2026,
                 month: 0,
                 showBankHolidays: true,
-                payments: [
-                    { due: "2026-01-05", paid: "2026-01-05", early: false },
-                ],
+                payments: [{ due: "2026-01-05", paid: "2026-01-05", early: false }],
                 bankHolidays: {},
                 additionalHolidays: {},
                 selectedCountry: "none",
@@ -99,9 +85,7 @@ describe("CalendarMonth", () => {
                 year: 2026,
                 month: 0,
                 showBankHolidays: true,
-                payments: [
-                    { due: "2026-01-05", paid: "2026-01-05", early: false },
-                ],
+                payments: [{ due: "2026-01-05", paid: "2026-01-05", early: false }],
                 bankHolidays: {},
                 additionalHolidays: {},
                 selectedCountry: "none",

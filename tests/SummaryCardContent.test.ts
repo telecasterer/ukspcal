@@ -71,9 +71,7 @@ describe("SummaryCardContent", () => {
     });
 
     it("saves payment list as text file", async () => {
-        const createObjectURL = vi
-            .spyOn(URL, "createObjectURL")
-            .mockReturnValue("blob:test-url");
+        const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test-url");
         const revokeObjectURL = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
         const clickSpy = vi
             .spyOn(HTMLAnchorElement.prototype, "click")
@@ -99,9 +97,7 @@ describe("SummaryCardContent", () => {
 
     it("shows popup-blocked status when print window cannot open", async () => {
         const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
-        const createObjectURL = vi
-            .spyOn(URL, "createObjectURL")
-            .mockReturnValue("blob:print-url");
+        const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:print-url");
         const revokeObjectURL = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
 
         const { getByRole, findByText } = render(SummaryCardContent, {
@@ -138,9 +134,7 @@ describe("SummaryCardContent", () => {
         });
 
         expect(
-            getByText(
-                "You can apply from Sunday, 5 April 2026 (40 days to go)."
-            )
+            getByText("You can apply from Sunday, 5 April 2026 (40 days to go).")
         ).toBeInTheDocument();
 
         const link = getByRole("link", { name: /claiming your state pension/i });

@@ -18,10 +18,7 @@ if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
     };
 }
 
-if (
-    typeof globalThis !== "undefined" &&
-    typeof (globalThis as any).ResizeObserver !== "function"
-) {
+if (typeof globalThis !== "undefined" && typeof (globalThis as any).ResizeObserver !== "function") {
     (globalThis as any).ResizeObserver = class {
         observe() {}
         unobserve() {}
@@ -58,10 +55,7 @@ if (
 }
 
 // JSDOM doesn't implement Web Animations; Svelte transitions may call element.animate().
-if (
-    typeof Element !== "undefined" &&
-    typeof (Element.prototype as any).animate !== "function"
-) {
+if (typeof Element !== "undefined" && typeof (Element.prototype as any).animate !== "function") {
     (Element.prototype as any).animate = () => {
         const animation = {
             onfinish: null as null | (() => void),

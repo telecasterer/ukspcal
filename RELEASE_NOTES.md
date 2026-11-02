@@ -10,7 +10,7 @@
 
 ### Fixes
 
-- correct overseas claiming advice for EU/EEA residents   Residents of the EU, EEA or Switzerland who paid into that country's pension system should start their claim with the local pension authority (e.g. Carsat, INSS), then contact the International Pension Centre within 4 months of UK State Pension age. Also clarify that UK and overseas phone claims need no form. (c3e53f3)
+- correct overseas claiming advice for EU/EEA residents Residents of the EU, EEA or Switzerland who paid into that country's pension system should start their claim with the local pension authority (e.g. Carsat, INSS), then contact the International Pension Centre within 4 months of UK State Pension age. Also clarify that UK and overseas phone claims need no form. (c3e53f3)
 
 ## 2026-09-13 (v0.7.0)
 
@@ -60,7 +60,7 @@
 - bump @babel/plugin-transform-modules-systemjs (1b7b611)
 - bump fast-uri from 3.1.0 to 3.1.2 (c8064d6)
 - bump vite from 7.3.1 to 7.3.2 (36cb741)
-- removed  vscode settings file created by error (94d5a1d)
+- removed vscode settings file created by error (94d5a1d)
 - bump lodash from 4.17.23 to 4.18.1 (22b5a56)
 
 ### Other
@@ -317,10 +317,10 @@
 - Updated title in top page (00d14e6)
 - Updated SEO meta tags and schema.org JSON-LD for better search engine optimization. Added prettier configuration for consistent code formatting. Updated tests to (0fdbea8)
 - Added posthog config. More doc updates (50c18b4)
-- fix  Sharebutton size type (e00055f)
+- fix Sharebutton size type (e00055f)
 - Update documentation coverage (a4f33bc)
 - Reduce topbar buttons size (682409a)
-- Code review, depuped, and added tests for the new features. Changed emoji flags to svg flags to support more countries and ensure consistent appearance across platforms.  Added a share ShareButton (7ed962a)
+- Code review, depuped, and added tests for the new features. Changed emoji flags to svg flags to support more countries and ensure consistent appearance across platforms. Added a share ShareButton (7ed962a)
 - Update addtional holidays when duration changes (732b682)
 - fixed persistence for additional countries holidays (4168839)
 - Added optional overlay of another countries public holidays in calendar view. (2298396)
@@ -397,7 +397,7 @@
 - added file vercel.json (adb211f)
 - Fix Vercel build commands (3cd9ca2)
 - vercel config for SvelteKit project (f78fb0d)
-- More updates after rename  to support Vercel deployment (4d4e62f)
+- More updates after rename to support Vercel deployment (4d4e62f)
 - Renamed frontend to web and updated relevant files. (3b06560)
 - Updated package.json and package-lock.json for vercel deployment fix (b883963)
 - Added untracked files, modified files, deleted files, and unmerged paths. (dd17e01)

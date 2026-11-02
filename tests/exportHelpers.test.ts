@@ -35,15 +35,13 @@ it("generateICS includes VALARM when alarm options are set", async () => {
     expect(ics).toContain("TRIGGER:-P2D");
     expect(ics).toContain("SUMMARY:UK State Pension");
     expect(ics).toContain("SUMMARY:Upcoming UK State Pension Payment");
-    expect(ics).toContain(
-        "DESCRIPTION:Your UK state pension payment is due soon."
-    );
+    expect(ics).toContain("DESCRIPTION:Your UK state pension payment is due soon.");
 
     dl.restore();
 });
 // @vitest-environment jsdom
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { exportCSV, exportSingleDateICS, generateICS } from "../src/lib/utils/exportHelpers";
 import type { Payment, PensionResult } from "../src/lib/pensionEngine";
 
@@ -74,9 +72,7 @@ function setupDownloadMocks() {
     (globalThis.URL as any).revokeObjectURL = revokeObjectURL;
 
     // Avoid navigation in jsdom.
-    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(
-        () => undefined
-    );
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
 
     return {
         blobs,
@@ -216,5 +212,47 @@ describe("export helpers", () => {
             expect(dl.blobs.length).toBe(0);
             dl.restore();
         });
+    });
+});
+
+describe("generateICS event times are the same wall-clock time in every time zone", () => {
+    const originalTz = process.env.TZ;
+    afterEach(() => {
+        if (originalTz === undefined) delete process.env.TZ;
+        else process.env.TZ = originalTz;
+    });
+
+    it.each([
+        "UTC",
+        "Europe/London",
+        "America/Los_Angeles",
+        "Pacific/Honolulu",
+        "Asia/Kolkata",
+        "Asia/Tokyo",
+        "Pacific/Auckland",
+        "Pacific/Kiritimati",
+    ])("%s", async (tz) => {
+        process.env.TZ = tz;
+        const dl = setupDownloadMocks();
+        const payments: Payment[] = [
+            { due: "2026-01-02", paid: "2026-01-02", early: false },
+            { due: "2026-01-30", paid: "2026-01-29", early: true, holidays: ["Holiday"] },
+        ];
+        const result: PensionResult = { ni: "29B", normalDay: "Friday", cycleDays: 28, payments };
+
+        generateICS(payments, result, {
+            csvDateFormat: "dd/mm/yyyy",
+            icsEventName: "Pension",
+            icsCategory: "Finance",
+            icsColor: "#22c55e",
+            icsEventTime: "09:30",
+        });
+
+        const ics = await blobToText(dl.blobs[0]!);
+        expect(ics).toContain("DTSTART:20260102T093000");
+        expect(ics).toContain("DTEND:20260102T103000");
+        // The early-payment override keeps its own date and the same time.
+        expect(ics).toContain("DTSTART:20260129T093000");
+        dl.restore();
     });
 });

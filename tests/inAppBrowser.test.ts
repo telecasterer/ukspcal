@@ -9,21 +9,13 @@ import {
 
 describe("inAppBrowser utils", () => {
     it("detects Facebook/Messenger webview UA tokens", () => {
-        expect(
-            isFacebookInAppBrowserUserAgent("Mozilla/5.0 FBAN/FBIOS FBAV/123.0")
-        ).toBe(true);
-        expect(isFacebookInAppBrowserUserAgent("Mozilla/5.0 (iPhone)")).toBe(
-            false
-        );
+        expect(isFacebookInAppBrowserUserAgent("Mozilla/5.0 FBAN/FBIOS FBAV/123.0")).toBe(true);
+        expect(isFacebookInAppBrowserUserAgent("Mozilla/5.0 (iPhone)")).toBe(false);
     });
 
     it("supports forceFbInApp=1 query param", () => {
-        expect(
-            isForceFacebookInAppEnabled("https://example.com/?forceFbInApp=1")
-        ).toBe(true);
-        expect(
-            isForceFacebookInAppEnabled("https://example.com/?forceFbInApp=0")
-        ).toBe(false);
+        expect(isForceFacebookInAppEnabled("https://example.com/?forceFbInApp=1")).toBe(true);
+        expect(isForceFacebookInAppEnabled("https://example.com/?forceFbInApp=0")).toBe(false);
         expect(isForceFacebookInAppEnabled("not-a-url")).toBe(false);
     });
 
@@ -51,25 +43,15 @@ describe("inAppBrowser utils", () => {
     });
 
     it("detects iOS user agents", () => {
-        expect(
-            isIosUserAgent(
-                "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"
-            )
-        ).toBe(true);
-        expect(
-            isIosUserAgent("Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)")
-        ).toBe(true);
+        expect(isIosUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)")).toBe(true);
+        expect(isIosUserAgent("Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)")).toBe(true);
         expect(isIosUserAgent("Mozilla/5.0 (Linux; Android 14)")).toBe(false);
     });
 
     it("detects Android user agents", () => {
-        expect(isAndroidUserAgent("Mozilla/5.0 (Linux; Android 14)")).toBe(
-            true
+        expect(isAndroidUserAgent("Mozilla/5.0 (Linux; Android 14)")).toBe(true);
+        expect(isAndroidUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)")).toBe(
+            false
         );
-        expect(
-            isAndroidUserAgent(
-                "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)"
-            )
-        ).toBe(false);
     });
 });

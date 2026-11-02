@@ -6,7 +6,7 @@
  * Get the number of days in a month (1-based month, 0=Jan).
  */
 function getDaysInMonth(year: number, month: number): number {
-    return new Date(year, month + 1, 0).getDate();
+    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 }
 
 /**
@@ -22,18 +22,16 @@ function getFirstDayOfMonth(year: number, month: number): number {
  * Get the full month name for a given month index (0=Jan).
  */
 export function monthName(month: number): string {
-    return new Date(2000, month, 1).toLocaleDateString("en-GB", {
+    return new Date(Date.UTC(2000, month, 1)).toLocaleDateString("en-GB", {
         month: "long",
+        timeZone: "UTC",
     });
 }
 
 /**
  * Generate an array of days for a calendar month, with nulls for leading blanks.
  */
-export function generateCalendarDays(
-    year: number,
-    month: number
-): (number | null)[] {
+export function generateCalendarDays(year: number, month: number): (number | null)[] {
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = getFirstDayOfMonth(year, month);
     const days: (number | null)[] = [];
@@ -51,10 +49,7 @@ export function generateCalendarDays(
 /**
  * Get the previous month/year, wrapping around January.
  */
-export function previousMonth(
-    month: number,
-    year: number
-): { month: number; year: number } {
+export function previousMonth(month: number, year: number): { month: number; year: number } {
     if (month === 0) {
         return { month: 11, year: year - 1 };
     }
@@ -64,10 +59,7 @@ export function previousMonth(
 /**
  * Get the next month/year, wrapping around December.
  */
-export function nextMonth(
-    month: number,
-    year: number
-): { month: number; year: number } {
+export function nextMonth(month: number, year: number): { month: number; year: number } {
     if (month === 11) {
         return { month: 0, year: year + 1 };
     }

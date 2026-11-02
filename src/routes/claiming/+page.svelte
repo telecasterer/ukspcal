@@ -1,8 +1,8 @@
 <script lang="ts">
-    import DocPage from "$lib/components/DocPage.svelte";
+    import DocPage from "#lib/components/DocPage.svelte";
     import { page } from "$app/state";
-    import { renderMarkdownDocument } from "$lib/markdown";
-    import { daysUntilIso, isIsoDate } from "$lib/utils/isoDateHelpers";
+    import { renderMarkdownDocument } from "#lib/markdown";
+    import { daysUntilIso, isIsoDate } from "#lib/utils/isoDateHelpers";
     import claimingMarkdown from "./claiming.md?raw";
 
     const spaDateIso = $derived.by(() => {
@@ -28,7 +28,10 @@
     intro="How to claim, and who to contact, in England, Scotland and Wales, Northern Ireland, and overseas."
     {html}
     {headings}
-    share={{ text: "How to claim the UK State Pension, with phone numbers for the UK and abroad.", url: shareUrl }}
+    share={{
+        text: "How to claim the UK State Pension, with phone numbers for the UK and abroad.",
+        url: shareUrl,
+    }}
 >
     <!-- Rendered at the doc-insert marker in claiming.md: after the Northern Ireland
          section, since invitation letters don't apply to overseas claims. -->
@@ -42,15 +45,15 @@
             </p>
             {#if showAsapWarning}
                 <p class="font-medium leading-relaxed text-amber-900 dark:text-amber-200">
-                    You are within 3 months of your State Pension age. If you have not
-                    claimed yet and have not received an invitation letter, request an
-                    invitation code on GOV.UK or call the relevant number above.
+                    You are within 3 months of your State Pension age. If you have not claimed yet
+                    and have not received an invitation letter, request an invitation code on GOV.UK
+                    or call the relevant number above.
                 </p>
             {:else}
                 <p class="leading-relaxed text-gray-800 dark:text-gray-200">
-                    If you are within 3 months of your State Pension age and have not
-                    received an invitation letter, you can request an invitation code on
-                    GOV.UK or call the relevant number above to claim.
+                    If you are within 3 months of your State Pension age and have not received an
+                    invitation letter, you can request an invitation code on GOV.UK or call the
+                    relevant number above to claim.
                 </p>
             {/if}
         </div>

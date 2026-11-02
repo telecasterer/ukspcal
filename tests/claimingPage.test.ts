@@ -28,19 +28,16 @@ describe("Claiming page", () => {
         expect(
             getByRole("heading", { level: 1, name: "How to claim your State Pension" })
         ).toBeInTheDocument();
-        expect(
-            getByRole("link", { name: "GOV.UK: Get your State Pension" })
-        ).toHaveAttribute("href", "https://www.gov.uk/get-state-pension");
-        expect(
-            getByRole("link", { name: "GOV.UK: Claim if you retire abroad" })
-        ).toHaveAttribute(
+        expect(getByRole("link", { name: "GOV.UK: Get your State Pension" })).toHaveAttribute(
+            "href",
+            "https://www.gov.uk/get-state-pension"
+        );
+        expect(getByRole("link", { name: "GOV.UK: Claim if you retire abroad" })).toHaveAttribute(
             "href",
             "https://www.gov.uk/state-pension-if-you-retire-abroad/how-to-claim"
         );
         expect(getByText(/Pension Service \(DWP\)/)).toBeInTheDocument();
-        expect(
-            getByText(/International Pension Centre \(DWP\)/)
-        ).toBeInTheDocument();
+        expect(getByText(/International Pension Centre \(DWP\)/)).toBeInTheDocument();
         expect(getByText(/Future Pension Centre \(DWP\)\./)).toBeInTheDocument();
         expect(getByText(/IBAN and BIC/i)).toBeInTheDocument();
     });
@@ -60,9 +57,10 @@ describe("Claiming page", () => {
         currentUrl = "https://ukspcal.vercel.app/claiming";
         const { getByRole } = render(ClaimingPage);
 
-        expect(
-            getByRole("link", { name: "nidirect: Get your State Pension" })
-        ).toHaveAttribute("href", "https://www.nidirect.gov.uk/services/get-your-state-pension");
+        expect(getByRole("link", { name: "nidirect: Get your State Pension" })).toHaveAttribute(
+            "href",
+            "https://www.nidirect.gov.uk/services/get-your-state-pension"
+        );
         expect(getByRole("link", { name: "0808 100 2658" })).toHaveAttribute(
             "href",
             "tel:08081002658"
@@ -83,7 +81,9 @@ describe("Claiming page", () => {
         const { getByText } = render(ClaimingPage);
 
         expect(
-            getByText(/you can request an invitation code on GOV\.UK or call the relevant number above to claim/i)
+            getByText(
+                /you can request an invitation code on GOV\.UK or call the relevant number above to claim/i
+            )
         ).toBeInTheDocument();
     });
 });

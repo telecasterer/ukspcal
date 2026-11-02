@@ -1,9 +1,9 @@
 import tailwindcss from "@tailwindcss/vite";
-import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vitest/config";
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
-import { SvelteKitPWA } from "@vite-pwa/sveltekit";
+import adapter from "@sveltejs/adapter-vercel";
+import { withPwa } from "@vite-pwa/sveltekit";
 const isVitest = Boolean(process.env.VITEST);
 const APP_NAME = "UK State Pension Calendar";
 
@@ -45,8 +45,7 @@ function getBuildInfo() {
     const envSha = (vercelSha ?? githubSha)?.trim();
     const envCommit = envSha ? envSha.slice(0, 7) : undefined;
 
-    const commit =
-        envCommit ?? safeExec("git rev-parse --short HEAD") ?? "unknown";
+    const commit = envCommit ?? safeExec("git rev-parse --short HEAD") ?? "unknown";
 
     const commitCountRaw = safeExec("git rev-list --count HEAD");
     const commitCount = commitCountRaw ? Number(commitCountRaw) : 0;
@@ -55,15 +54,12 @@ function getBuildInfo() {
     const vercelCommitTimestamp = process.env.VERCEL_GIT_COMMIT_TIMESTAMP;
     const githubCommitTimestamp = process.env.GITHUB_COMMIT_TIMESTAMP;
     const envCommitDate =
-        parseEpochToIso(vercelCommitTimestamp) ??
-        parseEpochToIso(githubCommitTimestamp);
+        parseEpochToIso(vercelCommitTimestamp) ?? parseEpochToIso(githubCommitTimestamp);
 
-    const commitDate =
-        envCommitDate ?? safeExec("git show -s --format=%cI HEAD") ?? "unknown";
+    const commitDate = envCommitDate ?? safeExec("git show -s --format=%cI HEAD") ?? "unknown";
 
     const isCI = Boolean(process.env.VERCEL) || Boolean(process.env.CI);
-    const dirty =
-        !isCI && (safeExec("git status --porcelain") ?? "").length > 0;
+    const dirty = !isCI && (safeExec("git status --porcelain") ?? "").length > 0;
 
     return {
         version: packageJsonVersion,
@@ -78,145 +74,152 @@ function getBuildInfo() {
 export default defineConfig({
     plugins: [
         tailwindcss(),
-        sveltekit(),
-        SvelteKitPWA({
-            registerType: "autoUpdate",
-            devOptions: {
-                enabled: false,
-                suppressWarnings: true,
+        withPwa(
+            {
+                adapter: adapter(),
+                prerender: {
+                    entries: ["*", "/sitemap.xml"],
+                },
             },
-            workbox: {
-                clientsClaim: true,
-                skipWaiting: true,
-                cleanupOutdatedCaches: true,
-                // No app-shell fallback: it answers *every* page load that isn't
-                // precached with one cached page, so reloading the server-rendered
-                // /claiming showed "You are offline" even when online. Load pages from
-                // the network and show /offline only when that fails. Must be null, not
-                // omitted, or @vite-pwa/sveltekit defaults it to "/".
-                navigateFallback: null,
-                runtimeCaching: [
-                    {
-                        urlPattern: ({ request }) => request.mode === "navigate",
-                        handler: "NetworkOnly",
-                        options: {
-                            precacheFallback: { fallbackURL: "/offline" },
+            {
+                registerType: "autoUpdate",
+                devOptions: {
+                    enabled: false,
+                    suppressWarnings: true,
+                },
+                generateSW: {
+                    clientsClaim: true,
+                    skipWaiting: true,
+                    cleanupOutdatedCaches: true,
+                    // No app-shell fallback: it answers *every* page load that isn't
+                    // precached with one cached page, so reloading the server-rendered
+                    // /claiming showed "You are offline" even when online. Load pages from
+                    // the network and show /offline only when that fails. Must be null, not
+                    // omitted, or @vite-pwa/sveltekit defaults it to "/".
+                    navigateFallback: null,
+                    runtimeCaching: [
+                        {
+                            urlPattern: ({ request }) => request.mode === "navigate",
+                            handler: "NetworkOnly",
+                            options: {
+                                precacheFallback: { fallbackURL: "/offline" },
+                            },
                         },
-                    },
+                    ],
+                },
+                manifestFilename: "manifest.webmanifest",
+                includeAssets: [
+                    "robots.txt",
+                    "favicon.svg",
+                    "favicon.ico",
+                    "icon-192.png",
+                    "icon-512.png",
+                    "mobile-home.png",
+                    "mobile-claiming.png",
+                    "mobile-calendar.png",
+                    "desktop-home.png",
                 ],
-            },
-            manifestFilename: "manifest.webmanifest",
-            includeAssets: [
-                "robots.txt",
-                "favicon.svg",
-                "favicon.ico",
-                "icon-192.png",
-                "icon-512.png",
-                "mobile-home.png",
-                "mobile-claiming.png",
-                "mobile-calendar.png",
-                "desktop-home.png",
-            ],
-            manifest: {
-                id: "/",
-                name: APP_NAME,
-                short_name: APP_NAME,
-                description:
-                    "UK State Pension age and payments calendar. Show your State Pension age and let you print or export your payments calendar.",
-                start_url: "/",
-                scope: "/",
-                lang: "en-GB",
-                dir: "ltr",
-                display: "standalone",
-                display_override: ["standalone", "minimal-ui", "browser"],
-                background_color: "#ffffff",
-                theme_color: "#2563eb",
-                prefer_related_applications: false,
-                categories: ["finance", "utilities", "productivity"],
-                icons: [
-                    {
-                        src: "/icon-192.png",
-                        sizes: "192x192",
-                        type: "image/png",
-                        purpose: "any",
-                    },
-                    {
-                        src: "/icon-192.png",
-                        sizes: "192x192",
-                        type: "image/png",
-                        purpose: "maskable",
-                    },
-                    {
-                        src: "/icon-512.png",
-                        sizes: "512x512",
-                        type: "image/png",
-                        purpose: "any",
-                    },
-                    {
-                        src: "/icon-512.png",
-                        sizes: "512x512",
-                        type: "image/png",
-                        purpose: "maskable",
-                    },
-                    {
-                        src: "/favicon.svg",
-                        sizes: "any",
-                        type: "image/svg+xml",
-                        purpose: "any",
-                    },
-                    {
-                        src: "/favicon.svg",
-                        sizes: "any",
-                        type: "image/svg+xml",
-                        purpose: "maskable",
-                    },
-                ],
-                shortcuts: [
-                    {
-                        name: "Open Pension Calendar",
-                        short_name: "Calendar",
-                        description: "Open the pension payment calendar",
-                        url: "/",
-                    },
-                    {
-                        name: "Help",
-                        short_name: "Help",
-                        description: "Open help and install guidance",
-                        url: "/help",
-                    },
-                ],
-                screenshots: [
-                    {
-                        src: "/mobile-home.png",
-                        sizes: "800x1600",
-                        type: "image/png",
-                        form_factor: "narrow",
-                        label: "Home screen with pension input form",
-                    },
-                    {
-                        src: "/mobile-claiming.png",
-                        sizes: "800x1600",
-                        type: "image/png",
-                        form_factor: "narrow",
-                        label: "Claiming your pension guidance",
-                    },
-                    {
-                        src: "/mobile-calendar.png",
-                        sizes: "800x1600",
-                        type: "image/png",
-                        form_factor: "narrow",
-                        label: "Monthly payment calendar view",
-                    },
-                    {
-                        src: "/desktop-home.png",
-                        sizes: "1920x1080",
-                        type: "image/png",
-                        form_factor: "wide",
-                        label: "Desktop layout overview",
-                    },
-                ],
-            },
-        }),
+                manifest: {
+                    id: "/",
+                    name: APP_NAME,
+                    short_name: APP_NAME,
+                    description:
+                        "UK State Pension age and payments calendar. Show your State Pension age and let you print or export your payments calendar.",
+                    start_url: "/",
+                    scope: "/",
+                    lang: "en-GB",
+                    dir: "ltr",
+                    display: "standalone",
+                    display_override: ["standalone", "minimal-ui", "browser"],
+                    background_color: "#ffffff",
+                    theme_color: "#2563eb",
+                    prefer_related_applications: false,
+                    categories: ["finance", "utilities", "productivity"],
+                    icons: [
+                        {
+                            src: "/icon-192.png",
+                            sizes: "192x192",
+                            type: "image/png",
+                            purpose: "any",
+                        },
+                        {
+                            src: "/icon-192.png",
+                            sizes: "192x192",
+                            type: "image/png",
+                            purpose: "maskable",
+                        },
+                        {
+                            src: "/icon-512.png",
+                            sizes: "512x512",
+                            type: "image/png",
+                            purpose: "any",
+                        },
+                        {
+                            src: "/icon-512.png",
+                            sizes: "512x512",
+                            type: "image/png",
+                            purpose: "maskable",
+                        },
+                        {
+                            src: "/favicon.svg",
+                            sizes: "any",
+                            type: "image/svg+xml",
+                            purpose: "any",
+                        },
+                        {
+                            src: "/favicon.svg",
+                            sizes: "any",
+                            type: "image/svg+xml",
+                            purpose: "maskable",
+                        },
+                    ],
+                    shortcuts: [
+                        {
+                            name: "Open Pension Calendar",
+                            short_name: "Calendar",
+                            description: "Open the pension payment calendar",
+                            url: "/",
+                        },
+                        {
+                            name: "Help",
+                            short_name: "Help",
+                            description: "Open help and install guidance",
+                            url: "/help",
+                        },
+                    ],
+                    screenshots: [
+                        {
+                            src: "/mobile-home.png",
+                            sizes: "800x1600",
+                            type: "image/png",
+                            form_factor: "narrow",
+                            label: "Home screen with pension input form",
+                        },
+                        {
+                            src: "/mobile-claiming.png",
+                            sizes: "800x1600",
+                            type: "image/png",
+                            form_factor: "narrow",
+                            label: "Claiming your pension guidance",
+                        },
+                        {
+                            src: "/mobile-calendar.png",
+                            sizes: "800x1600",
+                            type: "image/png",
+                            form_factor: "narrow",
+                            label: "Monthly payment calendar view",
+                        },
+                        {
+                            src: "/desktop-home.png",
+                            sizes: "1920x1080",
+                            type: "image/png",
+                            form_factor: "wide",
+                            label: "Desktop layout overview",
+                        },
+                    ],
+                },
+            }
+        ),
     ],
     define: {
         __BUILD_INFO__: JSON.stringify(getBuildInfo()),
@@ -230,10 +233,7 @@ export default defineConfig({
         : undefined,
     test: {
         environment: "jsdom",
-        include: [
-            "tests/**/*.{test,spec}.{js,ts}",
-            "src/**/*.{test,spec}.{js,ts}",
-        ],
+        include: ["tests/**/*.{test,spec}.{js,ts}", "src/**/*.{test,spec}.{js,ts}"],
         setupFiles: ["tests/setup.ts"],
         coverage: {
             provider: "v8",

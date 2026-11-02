@@ -43,14 +43,14 @@ Chrome/`CHROME_PATH` requirement as the screenshot script above.
 
 1. Deploy latest `main` to production.
 2. Confirm `https://ukspcal.vercel.app/manifest.webmanifest` loads and includes:
-   - `id`, `scope`, `start_url`
-   - PNG `any` and `maskable` icons
-   - screenshots and shortcuts
+    - `id`, `scope`, `start_url`
+    - PNG `any` and `maskable` icons
+    - screenshots and shortcuts
 3. Confirm service worker is active in production (DevTools Application tab).
 4. Confirm install works from:
-   - Desktop Chrome/Edge
-   - Android Chrome
-   - iOS Safari (Add to Home Screen flow)
+    - Desktop Chrome/Edge
+    - Android Chrome
+    - iOS Safari (Add to Home Screen flow)
 
 ## Android (Play Store via TWA)
 
@@ -71,10 +71,10 @@ This project does not generate Android packages with PWABuilder. The Android wra
 2. Confirm `https://ukspcal.vercel.app/manifest.webmanifest` is valid and matches current branding, colors, scope, and icons.
 3. Confirm `https://ukspcal.vercel.app/.well-known/assetlinks.json` matches the Play signing certificate fingerprint and package ID.
 4. Update Android version metadata:
-   - `app/build.gradle` -> `versionCode`, `versionName`
-   - `twa-manifest.json` -> `appVersionCode`, `appVersionName`, `appVersion`
+    - `app/build.gradle` -> `versionCode`, `versionName`
+    - `twa-manifest.json` -> `appVersionCode`, `appVersionName`, `appVersion`
 5. Ensure local Android SDK configuration exists. Preferred local file:
-   - `local.properties` with `sdk.dir=/home/paul/.bubblewrap/android_sdk`
+    - `local.properties` with `sdk.dir=/home/paul/.bubblewrap/android_sdk`
 6. Build the release AAB with the Bubblewrap JDK:
 
 ```bash
@@ -97,14 +97,14 @@ app/build/outputs/bundle/release/app-release.aab
 An Android App Bundle (`.aab`) is not installed directly on a device. Use one of these approaches:
 
 1. Play Console internal testing.
-   - Upload `app/build/outputs/bundle/release/app-release.aab` to an Internal testing track.
-   - Add tester accounts.
-   - Install the build from the Play test link.
-   - This is the closest match to the production delivery path.
+    - Upload `app/build/outputs/bundle/release/app-release.aab` to an Internal testing track.
+    - Add tester accounts.
+    - Install the build from the Play test link.
+    - This is the closest match to the production delivery path.
 
 2. Local device testing with `bundletool`.
-   - Build a device-specific `.apks` archive from the `.aab`.
-   - Install the generated APK set onto a connected test device.
+    - Build a device-specific `.apks` archive from the `.aab`.
+    - Install the generated APK set onto a connected test device.
 
 Example:
 

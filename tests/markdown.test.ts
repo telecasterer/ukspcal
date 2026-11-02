@@ -9,7 +9,9 @@ describe("markdown", () => {
     it("gives h2 headings ids derived from their text", () => {
         const html = renderMarkdown("## Data Privacy & Disclaimer\n\nText.\n\n### Not linked\n");
 
-        expect(html).toContain('<h2 id="data-privacy-and-disclaimer">Data Privacy &amp; Disclaimer</h2>');
+        expect(html).toContain(
+            '<h2 id="data-privacy-and-disclaimer">Data Privacy &amp; Disclaimer</h2>'
+        );
         expect(html).toContain("<h3>Not linked</h3>");
     });
 

@@ -47,9 +47,7 @@ describe("PensionInputsCard", () => {
     it("commits NI and focuses DoB on Enter", async () => {
         const { getByLabelText } = renderCard();
         const niInput = getByLabelText(/NI number suffix/i) as HTMLInputElement;
-        const dobInput = document.getElementById(
-            "dob"
-        ) as HTMLInputElement | null;
+        const dobInput = document.getElementById("dob") as HTMLInputElement | null;
         expect(dobInput).toBeTruthy();
 
         await fireEvent.focus(niInput);
@@ -110,7 +108,9 @@ describe("PensionInputsCard", () => {
         });
 
         it("cancels naming and hides the input", async () => {
-            const { getByText, getByPlaceholderText, queryByPlaceholderText } = renderCard({ props: VALID_PROPS } as any);
+            const { getByText, getByPlaceholderText, queryByPlaceholderText } = renderCard({
+                props: VALID_PROPS,
+            } as any);
             await tick();
 
             await fireEvent.click(getByText("+ Save current"));
@@ -123,12 +123,16 @@ describe("PensionInputsCard", () => {
         });
 
         it("removes a profile pill after clicking its delete button", async () => {
-            const { getByText, getByPlaceholderText, queryByText, getByLabelText } = renderCard({ props: VALID_PROPS } as any);
+            const { getByText, getByPlaceholderText, queryByText, getByLabelText } = renderCard({
+                props: VALID_PROPS,
+            } as any);
             await tick();
 
             await fireEvent.click(getByText("+ Save current"));
             await tick();
-            await fireEvent.input(getByPlaceholderText(/Profile name/i), { target: { value: "Rose" } });
+            await fireEvent.input(getByPlaceholderText(/Profile name/i), {
+                target: { value: "Rose" },
+            });
             await fireEvent.click(getByText("Save"));
             await tick();
 
@@ -197,5 +201,4 @@ describe("PensionInputsCard", () => {
         expect(arg).toHaveProperty("due");
         expect(arg).toHaveProperty("paid");
     });
-
 });

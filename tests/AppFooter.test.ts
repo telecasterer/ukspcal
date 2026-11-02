@@ -26,19 +26,13 @@ describe("AppFooter", () => {
                 'a[href="https://www.gov.uk/government/publications/state-pension-age-timetable/state-pension-age-timetable"]'
             )
         ).toBeNull();
-        expect(
-            container.querySelector('a[href="https://www.gov.uk/bank-holidays"]')
-        ).toBeNull();
-        expect(
-            container.querySelector('a[href="https://nagerholidays.com"]')
-        ).toBeNull();
+        expect(container.querySelector('a[href="https://www.gov.uk/bank-holidays"]')).toBeNull();
+        expect(container.querySelector('a[href="https://nagerholidays.com"]')).toBeNull();
     });
 
     it("has a feedback link", () => {
         const { container } = render(AppFooter);
-        const feedbackLink = container.querySelector(
-            'a[href="https://tally.so/r/q4Vbq2"]'
-        );
+        const feedbackLink = container.querySelector('a[href="https://tally.so/r/q4Vbq2"]');
         expect(feedbackLink).toBeInTheDocument();
         expect(feedbackLink).toHaveTextContent("Send Feedback");
     });
@@ -59,9 +53,7 @@ describe("AppFooter", () => {
 
     it("feedback link opens in new tab", () => {
         const { container } = render(AppFooter);
-        const feedbackLink = container.querySelector(
-            'a[href="https://tally.so/r/q4Vbq2"]'
-        );
+        const feedbackLink = container.querySelector('a[href="https://tally.so/r/q4Vbq2"]');
         expect(feedbackLink).toHaveAttribute("target", "_blank");
         expect(feedbackLink).toHaveAttribute("rel", "noopener noreferrer");
     });

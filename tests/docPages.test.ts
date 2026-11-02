@@ -109,7 +109,10 @@ describe("document pages", () => {
 
         const { callback, targets } = observers.at(-1)!;
         callback(
-            targets.map((target) => ({ target, isIntersecting: false })) as unknown as IntersectionObserverEntry[],
+            targets.map((target) => ({
+                target,
+                isIntersecting: false,
+            })) as unknown as IntersectionObserverEntry[],
             {} as IntersectionObserver
         );
 

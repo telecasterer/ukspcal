@@ -31,8 +31,6 @@ if (
 const re = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore)(\([a-z0-9._/-]+\))?(!)?: .+/i;
 if (!re.test(firstLine)) {
     console.error("commit-msg check failed.");
-    console.error(
-        "Use Conventional Commits, e.g. `feat(calendar): add today highlight`."
-    );
+    console.error("Use Conventional Commits, e.g. `feat(calendar): add today highlight`.");
     process.exit(1);
 }

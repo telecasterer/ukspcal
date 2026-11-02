@@ -54,9 +54,7 @@ describe("nagerHolidayService", () => {
                 statusText: "Not Found",
             });
 
-            await expect(fetchHolidaysForCountryAndYear("XX", 2026)).rejects.toThrow(
-                "Not Found"
-            );
+            await expect(fetchHolidaysForCountryAndYear("XX", 2026)).rejects.toThrow("Not Found");
         });
 
         it("throws UnsupportedHolidayYearError for a year outside the API's range", async () => {
@@ -72,9 +70,7 @@ describe("nagerHolidayService", () => {
         });
 
         it("throws on network error", async () => {
-            global.fetch = vi
-                .fn()
-                .mockRejectedValueOnce(new Error("Network error"));
+            global.fetch = vi.fn().mockRejectedValueOnce(new Error("Network error"));
 
             await expect(fetchHolidaysForCountryAndYear("FR", 2026)).rejects.toThrow(
                 "Network error"
@@ -143,10 +139,7 @@ describe("nagerHolidayService", () => {
                     json: async () => mockHolidays2027,
                 });
 
-            const result = await fetchHolidaysForCountryAndYears(
-                "US",
-                [2026, 2027]
-            );
+            const result = await fetchHolidaysForCountryAndYears("US", [2026, 2027]);
 
             expect(result).toEqual({
                 "2026-01-01": "New Year",
@@ -177,10 +170,9 @@ describe("nagerHolidayService", () => {
                     statusText: "Not Found",
                 });
 
-            const error = await fetchHolidaysForCountryAndYears(
-                "ES",
-                [2026, 2027]
-            ).catch((e: unknown) => e);
+            const error = await fetchHolidaysForCountryAndYears("ES", [2026, 2027]).catch(
+                (e: unknown) => e
+            );
 
             expect(error).toBeInstanceOf(HolidayFetchError);
             expect((error as HolidayFetchError).holidays).toEqual({
@@ -201,10 +193,9 @@ describe("nagerHolidayService", () => {
                 )
             ) as unknown as typeof fetch;
 
-            const error = await fetchHolidaysForCountryAndYears(
-                "GB",
-                [2075, 2076, 2077]
-            ).catch((e: unknown) => e);
+            const error = await fetchHolidaysForCountryAndYears("GB", [2075, 2076, 2077]).catch(
+                (e: unknown) => e
+            );
 
             expect(error).toBeInstanceOf(HolidayFetchError);
             expect((error as HolidayFetchError).failedYears).toEqual([2076]);
@@ -212,14 +203,11 @@ describe("nagerHolidayService", () => {
         });
 
         it("throws with every year failed when all requests fail", async () => {
-            global.fetch = vi
-                .fn()
-                .mockRejectedValue(new Error("Network error"));
+            global.fetch = vi.fn().mockRejectedValue(new Error("Network error"));
 
-            const error = await fetchHolidaysForCountryAndYears(
-                "IT",
-                [2026, 2027]
-            ).catch((e: unknown) => e);
+            const error = await fetchHolidaysForCountryAndYears("IT", [2026, 2027]).catch(
+                (e: unknown) => e
+            );
 
             expect(error).toBeInstanceOf(HolidayFetchError);
             expect((error as HolidayFetchError).holidays).toEqual({});
@@ -266,10 +254,7 @@ describe("nagerHolidayService", () => {
                     ],
                 });
 
-            const result = await fetchHolidaysForCountryAndYears(
-                "US",
-                [2026, 2026]
-            );
+            const result = await fetchHolidaysForCountryAndYears("US", [2026, 2026]);
 
             // Last one wins in the aggregation
             expect(result["2026-12-25"]).toBe("Christmas Day");

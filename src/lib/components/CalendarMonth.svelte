@@ -1,12 +1,9 @@
 <script lang="ts">
     // CalendarMonth.svelte: Renders a single month grid with payment and holiday highlights
-    import {
-        generateCalendarDays,
-        monthName,
-    } from "$lib/utils/calendarHelpers";
-    import { getFlagSvg } from "$lib/utils/countryFlags";
-    import { todayStore } from "$lib/utils/todayStore.svelte";
-    import type { Payment } from "$lib/pensionEngine";
+    import { generateCalendarDays, monthName } from "#lib/utils/calendarHelpers";
+    import { getFlagSvg } from "#lib/utils/countryFlags";
+    import { todayStore } from "#lib/utils/todayStore.svelte";
+    import type { Payment } from "#lib/pensionEngine";
     import { onMount } from "svelte";
 
     // --- Props ---
@@ -29,9 +26,7 @@
         selectedCountry = "none",
     }: Props = $props();
     let monthEl: HTMLDivElement | null = null;
-    let tooltipInfo = $state<{ dateLabel: string; items: string[] } | null>(
-        null
-    );
+    let tooltipInfo = $state<{ dateLabel: string; items: string[] } | null>(null);
     let tooltipStyle = $state("");
     let tooltipTimeout: ReturnType<typeof setTimeout> | null = null;
     let supportsHoverTooltip = $state(false);
@@ -107,9 +102,7 @@
 
         if (payment) {
             if (payment.early && payment.paid !== payment.due) {
-                parts.push(
-                    `Early payment. Due ${formatIsoForAria(payment.due)}.`
-                );
+                parts.push(`Early payment. Due ${formatIsoForAria(payment.due)}.`);
             } else {
                 parts.push("Payment day.");
             }
@@ -212,9 +205,7 @@
             payment && !payment.early ? "payment" : "",
             payment?.early ? "early-payment" : "",
             holiday && !payment ? "holiday" : "",
-            additionalHoliday && !payment && !holiday
-                ? "additional-holiday"
-                : "",
+            additionalHoliday && !payment && !holiday ? "additional-holiday" : "",
         ]
             .filter(Boolean)
             .join(" ");
@@ -365,9 +356,7 @@
     bind:this={monthEl}
 >
     <!-- Month Header -->
-    <div
-        class="bg-gray-50/90 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700 p-3"
-    >
+    <div class="bg-gray-50/90 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700 p-3">
         <h4 class="text-center font-bold text-gray-900 dark:text-white">
             {monthName(month)}
             {year}
@@ -396,9 +385,7 @@
         {#each calendarDays as day}
             {@const payment = day ? getPaymentForDate(day) : null}
             {@const holiday = day ? (showBankHolidays ? getBankHolidayForDate(day) : null) : null}
-            {@const additionalHoliday = day
-                ? getAdditionalHolidayForDate(day)
-                : null}
+            {@const additionalHoliday = day ? getAdditionalHolidayForDate(day) : null}
             {@const weekend = day ? isWeekendDay(day) : false}
             {@const isToday = day ? getIsoForDay(day) === todayIso : false}
 
@@ -411,13 +398,7 @@
                       ? additionalHoliday
                       : undefined}
                 role="gridcell"
-                aria-label={buildDayAriaLabel(
-                    day,
-                    payment,
-                    holiday,
-                    additionalHoliday,
-                    weekend
-                )}
+                aria-label={buildDayAriaLabel(day, payment, holiday, additionalHoliday, weekend)}
                 tabindex={day ? 0 : undefined}
                 aria-hidden={day ? undefined : "true"}
                 onclick={(event) =>
@@ -426,9 +407,7 @@
                         payment,
                         holiday,
                         additionalHoliday,
-                        event.currentTarget instanceof HTMLElement
-                            ? event.currentTarget
-                            : null
+                        event.currentTarget instanceof HTMLElement ? event.currentTarget : null
                     )}
                 onmouseenter={(event) =>
                     handleDayMouseEnter(
@@ -436,23 +415,19 @@
                         payment,
                         holiday,
                         additionalHoliday,
-                        event.currentTarget instanceof HTMLElement
-                            ? event.currentTarget
-                            : null
+                        event.currentTarget instanceof HTMLElement ? event.currentTarget : null
                     )}
                 onmouseleave={handleDayMouseLeave}
                 onkeydown={(event) =>
-                    handleDayKeyDown(
-                        event,
-                        day,
-                        payment,
-                        holiday,
-                        additionalHoliday
-                    )}
+                    handleDayKeyDown(event, day, payment, holiday, additionalHoliday)}
             >
                 {#if day}
                     <div class="flex items-start">
-                        <div class={`calendar-day-number text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0 ${isToday ? "today-number" : ""}`}>{day}</div>
+                        <div
+                            class={`calendar-day-number text-xs min-[390px]:text-sm font-semibold min-w-[1.25rem] flex-shrink-0 ${isToday ? "today-number" : ""}`}
+                        >
+                            {day}
+                        </div>
                     </div>
                     {#if payment}
                         <svg
@@ -468,8 +443,8 @@
                                 font-family="'Helvetica Neue',Helvetica,Arial,sans-serif"
                                 font-weight="bold"
                                 font-size="13"
-                                fill="currentColor"
-                            >£</text>
+                                fill="currentColor">£</text
+                            >
                         </svg>
                     {/if}
                     {#if additionalHoliday && !payment && flagSvg}

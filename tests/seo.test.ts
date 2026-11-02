@@ -49,28 +49,20 @@ describe("SEO - Meta Tags and Schema", () => {
     });
 
     it("should have page-specific title on main page", () => {
-        expect(mainPageContent).toContain(
-            "<title>UK State Pension Calendar</title>"
-        );
+        expect(mainPageContent).toContain("<title>UK State Pension Calendar</title>");
     });
 
     it("should have page-specific title on help page", () => {
-        expect(helpPageContent).toContain(
-            "<title>Help - UK State Pension Calendar"
-        );
+        expect(helpPageContent).toContain("<title>Help - UK State Pension Calendar");
     });
 
     it("should have page-specific title on privacy page", () => {
-        expect(privacyPageContent).toContain(
-            "<title>Privacy Policy - UK State Pension Calendar"
-        );
+        expect(privacyPageContent).toContain("<title>Privacy Policy - UK State Pension Calendar");
     });
 
     it("should have Open Graph title on main page", () => {
         expect(mainPageContent).toContain('property="og:title"');
-        expect(mainPageContent).toContain(
-            "UK State Pension Calendar"
-        );
+        expect(mainPageContent).toContain("UK State Pension Calendar");
     });
 
     it("should have Open Graph description on main page", () => {

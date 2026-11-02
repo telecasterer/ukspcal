@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-    getFlagSvg,
-    countryCodeToFlagSvg,
-} from "../src/lib/utils/countryFlags";
+import { getFlagSvg, countryCodeToFlagSvg } from "../src/lib/utils/countryFlags";
 
 describe("countryFlags", () => {
     describe("countryCodeToFlagSvg", () => {

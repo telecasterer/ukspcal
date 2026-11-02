@@ -15,12 +15,8 @@ describe("pwaInstall utils", () => {
     });
 
     it("getDisplayModeStandalone reads matchMedia result", () => {
-        expect(
-            getDisplayModeStandalone({ matches: true } as MediaQueryList)
-        ).toBe(true);
-        expect(
-            getDisplayModeStandalone({ matches: false } as MediaQueryList)
-        ).toBe(false);
+        expect(getDisplayModeStandalone({ matches: true } as MediaQueryList)).toBe(true);
+        expect(getDisplayModeStandalone({ matches: false } as MediaQueryList)).toBe(false);
         expect(getDisplayModeStandalone(null)).toBe(false);
     });
 
@@ -37,8 +33,7 @@ describe("pwaInstall utils", () => {
     it("computeIsStandalone returns true for iOS navigator.standalone", () => {
         expect(
             computeIsStandalone({
-                userAgent:
-                    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+                userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
                 displayModeStandalone: false,
                 navigatorStandalone: true,
             })
@@ -58,16 +53,14 @@ describe("pwaInstall utils", () => {
     it("shouldShowIosInstallHelp only on iOS when not standalone", () => {
         expect(
             shouldShowIosInstallHelp({
-                userAgent:
-                    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+                userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
                 isStandalone: false,
             })
         ).toBe(true);
 
         expect(
             shouldShowIosInstallHelp({
-                userAgent:
-                    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
+                userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)",
                 isStandalone: true,
             })
         ).toBe(false);

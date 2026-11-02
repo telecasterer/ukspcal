@@ -23,9 +23,7 @@ describe("ShareButton", () => {
         const { getByText, findByText } = render(ShareButton);
         await fireEvent.click(getByText("Share"));
         expect(
-            await findByText(
-                "Couldn't copy automatically — please copy the address bar URL."
-            )
+            await findByText("Couldn't copy automatically — please copy the address bar URL.")
         ).toBeInTheDocument();
     });
 
@@ -41,9 +39,7 @@ describe("ShareButton", () => {
 
     it("shows cancelled status when native share is aborted", async () => {
         Object.assign(navigator, {
-            share: vi
-                .fn()
-                .mockRejectedValue(new DOMException("cancelled", "AbortError")),
+            share: vi.fn().mockRejectedValue(new DOMException("cancelled", "AbortError")),
         });
         const { getByText, findByText } = render(ShareButton);
         await fireEvent.click(getByText("Share"));

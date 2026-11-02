@@ -9,7 +9,7 @@
 ## Environments & configuration
 
 - No sensitive environment variables are required.
- - Bank holiday and regional overlays are fetched from Nager.Date via `src/lib/services/nagerHolidayService.ts`.
+- Bank holiday and regional overlays are fetched from Nager.Date via `src/lib/services/nagerHolidayService.ts`.
 
 ## Release checklist
 
@@ -20,8 +20,8 @@
 5. Verify the help page content/version info renders correctly.
 6. Confirm build output locally when needed: `npm run build`.
 7. Smoke-test calendar navigation:
-   - Change `Duration` and verify the header range updates.
-   - Click `Next` at the end of range and verify duration auto-extends by 1 year.
+    - Change `Duration` and verify the header range updates.
+    - Click `Next` at the end of range and verify duration auto-extends by 1 year.
 
 ## Dependency updates
 

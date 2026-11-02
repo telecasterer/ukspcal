@@ -56,9 +56,7 @@ describe("Calendar options", () => {
 
         const firstMonth = container.querySelector(".calendar-month") as HTMLElement | null;
         expect(firstMonth).toBeTruthy();
-        expect(
-            within(firstMonth as HTMLElement).getByText("UK Holiday")
-        ).toBeInTheDocument();
+        expect(within(firstMonth as HTMLElement).getByText("UK Holiday")).toBeInTheDocument();
     });
 
     it("hides UK Holiday legend when bank holidays are disabled", () => {
@@ -69,9 +67,7 @@ describe("Calendar options", () => {
 
         const firstMonth = container.querySelector(".calendar-month") as HTMLElement | null;
         expect(firstMonth).toBeTruthy();
-        expect(
-            within(firstMonth as HTMLElement).queryByText("UK Holiday")
-        ).toBeNull();
+        expect(within(firstMonth as HTMLElement).queryByText("UK Holiday")).toBeNull();
     });
 
     it("toggles holiday legend when the UK holidays checkbox is clicked", async () => {
@@ -86,8 +82,6 @@ describe("Calendar options", () => {
         const checkbox = getByLabelText("UK holidays") as HTMLInputElement;
         // Click to disable bank holidays
         await fireEvent.click(checkbox);
-        expect(
-            within(firstMonth as HTMLElement).queryByText("UK Holiday")
-        ).toBeNull();
+        expect(within(firstMonth as HTMLElement).queryByText("UK Holiday")).toBeNull();
     });
 });

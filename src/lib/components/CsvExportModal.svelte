@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Button, Label, Modal, Select } from "flowbite-svelte";
-    import { DATE_FORMAT_OPTIONS, type DateFormat } from "$lib/utils/dateFormatting";
-    import { exportCSV } from "$lib/utils/exportHelpers";
-    import type { Payment, PensionResult } from "$lib/pensionEngine";
+    import { DATE_FORMAT_OPTIONS, type DateFormat } from "#lib/utils/dateFormatting";
+    import { exportCSV } from "#lib/utils/exportHelpers";
+    import type { Payment, PensionResult } from "#lib/pensionEngine";
 
     type Props = {
         open: boolean;

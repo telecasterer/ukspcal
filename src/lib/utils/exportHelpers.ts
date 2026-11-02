@@ -1,14 +1,13 @@
 // Default values for ICS alarm
 export const DEFAULT_ICS_ALARM_TITLE = "Upcoming UK State Pension Payment";
-export const DEFAULT_ICS_ALARM_DESCRIPTION =
-    "Your UK state pension payment is due soon.";
+export const DEFAULT_ICS_ALARM_DESCRIPTION = "Your UK state pension payment is due soon.";
 /**
  * Export utilities for CSV, ICS, and print functionality
  *
  * Includes helpers for formatting dates, escaping text, and folding lines for iCalendar export.
  */
 
-import type { PensionResult, Payment } from "$lib/pensionEngine";
+import type { PensionResult, Payment } from "#lib/pensionEngine";
 import { formatDateForCSV, type DateFormat } from "./dateFormatting";
 
 /**
@@ -118,9 +117,8 @@ function getPaymentStatus(payment: Payment, result: PensionResult): string {
     // If holiday names are available on the payment, return a friendly phrase
     // like "(3 days early due to Christmas Day)". Otherwise, fall back to
     // weekend-aware or generic phrasing.
-    const holidayNames = payment.holidays && payment.holidays.length
-        ? payment.holidays.join(", ")
-        : null;
+    const holidayNames =
+        payment.holidays && payment.holidays.length ? payment.holidays.join(", ") : null;
     const plural = daysEarly === 1 ? "day" : "days";
     if (holidayNames) {
         return `Early (${daysEarly} ${plural} early due to ${holidayNames})`;
@@ -128,10 +126,8 @@ function getPaymentStatus(payment: Payment, result: PensionResult): string {
 
     // If the due date itself falls on a weekend, indicate that.
     const dueDow = dueDate.getUTCDay();
-    if (dueDow === 0)
-        return `Early (${daysEarly} ${plural} early due to Sunday)`;
-    if (dueDow === 6)
-        return `Early (${daysEarly} ${plural} early due to Saturday)`;
+    if (dueDow === 0) return `Early (${daysEarly} ${plural} early due to Sunday)`;
+    if (dueDow === 6) return `Early (${daysEarly} ${plural} early due to Saturday)`;
 
     return `Early (${daysEarly} ${plural} early)`;
 }
@@ -153,19 +149,12 @@ export function exportCSV(
         const status = payment.early ? "Early" : "On Time";
         const notes = getPaymentStatus(payment, result);
 
-        rows.push([
-            formatDateForCSV(payment.paid, csvDateFormat),
-            dayName,
-            status,
-            notes,
-        ]);
+        rows.push([formatDateForCSV(payment.paid, csvDateFormat), dayName, status, notes]);
     });
 
     const csvContent = [
         headers.join(","),
-        ...rows.map((row) =>
-            row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")
-        ),
+        ...rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -190,9 +179,7 @@ export function generateICS(
     result: PensionResult,
     options: ExportOptions
 ): void {
-    const sortedPayments = [...payments].sort((a, b) =>
-        a.paid.localeCompare(b.paid)
-    );
+    const sortedPayments = [...payments].sort((a, b) => a.paid.localeCompare(b.paid));
     const standardPayments = sortedPayments.filter((p) => !p.early);
     const earlyPayments = sortedPayments.filter((p) => p.early);
 
@@ -214,9 +201,7 @@ export function generateICS(
 
     const firstPayment = new Date(standardPayments[0].paid + "T00:00:00Z");
     const lastPayment = standardPayments[standardPayments.length - 1];
-    const endDate = formatDateYYYYMMDD(
-        new Date(lastPayment.paid + "T00:00:00Z")
-    );
+    const endDate = formatDateYYYYMMDD(new Date(lastPayment.paid + "T00:00:00Z"));
 
     // Parse event time (HH:mm) or default to 12:00
     let eventTime = options.icsEventTime || "12:00";
@@ -229,9 +214,7 @@ export function generateICS(
     // Use the actual early payment dates as EXDATEs.
     // This matches the legacy GAS export and avoids edge-cases where inferring a "due date"
     // from neighbouring payments can be wrong (e.g. consecutive early payments).
-    const exdates = earlyPayments.map((p) =>
-        formatDateYYYYMMDD(new Date(p.paid + "T00:00:00Z"))
-    );
+    const exdates = earlyPayments.map((p) => formatDateYYYYMMDD(new Date(p.paid + "T00:00:00Z")));
 
     const eventName = escapeICSText((options.icsEventName ?? "").trim());
     const category = escapeICSText((options.icsCategory ?? "").trim());
@@ -248,23 +231,24 @@ export function generateICS(
     dtStartDate.setUTCHours(eventHour, eventMinute, 0, 0);
     const dtEndDate = new Date(dtStartDate.getTime() + 60 * 60 * 1000); // 1 hour event
     function formatLocalTimeICS(date: Date) {
-        // YYYYMMDDTHHMMSS (no Z, no TZID)
+        // YYYYMMDDTHHMMSS (no Z, no TZID): a "floating" time that each calendar app
+        // shows as the same wall-clock time wherever the user is. `date` was built
+        // from UTC components (payment date + chosen time), so read them back as UTC;
+        // the local getters would shift the date and time for anyone not on UTC.
         const pad = (n: number) => n.toString().padStart(2, "0");
         return (
-            date.getFullYear().toString() +
-            pad(date.getMonth() + 1) +
-            pad(date.getDate()) +
+            date.getUTCFullYear().toString() +
+            pad(date.getUTCMonth() + 1) +
+            pad(date.getUTCDate()) +
             "T" +
-            pad(date.getHours()) +
-            pad(date.getMinutes()) +
-            pad(date.getSeconds())
+            pad(date.getUTCHours()) +
+            pad(date.getUTCMinutes()) +
+            pad(date.getUTCSeconds())
         );
     }
     icsLines.push(`DTSTART:${formatLocalTimeICS(dtStartDate)}`);
     icsLines.push(`DTEND:${formatLocalTimeICS(dtEndDate)}`);
-    icsLines.push(
-        `RRULE:FREQ=DAILY;INTERVAL=${result.cycleDays};UNTIL=${endDate}`
-    );
+    icsLines.push(`RRULE:FREQ=DAILY;INTERVAL=${result.cycleDays};UNTIL=${endDate}`);
     icsLines.push(`SUMMARY:${eventName || "UK State Pension"}`);
 
     if (category) {
@@ -284,17 +268,11 @@ export function generateICS(
     }
 
     // --- Add VALARM for recurring event if enabled ---
-    if (
-        options.icsAlarmEnabled &&
-        options.icsAlarmDaysBefore &&
-        options.icsAlarmDaysBefore > 0
-    ) {
+    if (options.icsAlarmEnabled && options.icsAlarmDaysBefore && options.icsAlarmDaysBefore > 0) {
         const trigger = `-P${options.icsAlarmDaysBefore}D`;
         icsLines.push("BEGIN:VALARM");
         icsLines.push("ACTION:DISPLAY");
-        icsLines.push(
-            `DESCRIPTION:${escapeICSText(DEFAULT_ICS_ALARM_DESCRIPTION)}`
-        );
+        icsLines.push(`DESCRIPTION:${escapeICSText(DEFAULT_ICS_ALARM_DESCRIPTION)}`);
         icsLines.push(`SUMMARY:${escapeICSText(DEFAULT_ICS_ALARM_TITLE)}`);
         icsLines.push(`TRIGGER:${trigger}`);
         icsLines.push("END:VALARM");
@@ -319,9 +297,7 @@ export function generateICS(
         const dtEndDate = new Date(dtStartDate.getTime() + 60 * 60 * 1000);
         icsLines.push(`DTSTART:${formatLocalTimeICS(dtStartDate)}`);
         icsLines.push(`DTEND:${formatLocalTimeICS(dtEndDate)}`);
-        icsLines.push(
-            `SUMMARY:${(eventName || "UK State Pension") + " (paid early)"}`
-        );
+        icsLines.push(`SUMMARY:${(eventName || "UK State Pension") + " (paid early)"}`);
         icsLines.push(`DESCRIPTION:${escapeICSText(note)}`);
 
         if (category) {
@@ -340,9 +316,7 @@ export function generateICS(
             const trigger = `-P${options.icsAlarmDaysBefore}D`;
             icsLines.push("BEGIN:VALARM");
             icsLines.push("ACTION:DISPLAY");
-            icsLines.push(
-                `DESCRIPTION:${escapeICSText(DEFAULT_ICS_ALARM_DESCRIPTION)}`
-            );
+            icsLines.push(`DESCRIPTION:${escapeICSText(DEFAULT_ICS_ALARM_DESCRIPTION)}`);
             icsLines.push(`SUMMARY:${escapeICSText(DEFAULT_ICS_ALARM_TITLE)}`);
             icsLines.push(`TRIGGER:${trigger}`);
             icsLines.push("END:VALARM");
@@ -366,11 +340,7 @@ export function printCalendar(): void {
 /**
  * Generate a single-event ICS file (for SPA or Claiming Date)
  */
-export function exportSingleDateICS(
-    dateIso: string,
-    eventName: string,
-    description: string
-): void {
+export function exportSingleDateICS(dateIso: string, eventName: string, description: string): void {
     if (!dateIso) return;
     const date = new Date(dateIso + "T00:00:00Z");
     if (isNaN(date.getTime())) return;
@@ -392,7 +362,7 @@ export function exportSingleDateICS(
         `SUMMARY:${escapeICSText(eventName)}`,
         `DESCRIPTION:${escapeICSText(description)}`,
         "END:VEVENT",
-        "END:VCALENDAR"
+        "END:VCALENDAR",
     ];
 
     const safeName = eventName.toLowerCase().replace(/[^a-z0-9]+/g, "-");

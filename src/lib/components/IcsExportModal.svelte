@@ -1,14 +1,14 @@
 <script lang="ts">
     import { Button, Label, Modal, Input } from "flowbite-svelte";
-    import { generateICS } from "$lib/utils/exportHelpers";
+    import { generateICS } from "#lib/utils/exportHelpers";
     import {
         loadIcsAlarmSettings,
         saveIcsAlarmSettings,
         type IcsAlarmSettings,
-    } from "$lib/utils/icsAlarmPersistence";
-    import { loadIcsEventTime, saveIcsEventTime } from "$lib/utils/icsEventTimePersistence";
-    import type { Payment, PensionResult } from "$lib/pensionEngine";
-    import type { DateFormat } from "$lib/utils/dateFormatting";
+    } from "#lib/utils/icsAlarmPersistence";
+    import { loadIcsEventTime, saveIcsEventTime } from "#lib/utils/icsEventTimePersistence";
+    import type { Payment, PensionResult } from "#lib/pensionEngine";
+    import type { DateFormat } from "#lib/utils/dateFormatting";
     import IcsReminderDialog from "./IcsAlarmDialog.svelte";
 
     type Props = {
@@ -35,7 +35,9 @@
 
     // Persistent ICS event time (default midday)
     let icsEventTime = $state(loadIcsEventTime());
-    $effect(() => { if (icsEventTime) saveIcsEventTime(icsEventTime); });
+    $effect(() => {
+        if (icsEventTime) saveIcsEventTime(icsEventTime);
+    });
 
     // Reminder dialog state
     let reminderDialogOpen = $state(false);
@@ -49,9 +51,15 @@
     let isEditingIcsCategory = $state(false);
     let isEditingIcsColorText = $state(false);
 
-    $effect(() => { if (!isEditingIcsEventName) icsEventNameDraft = icsEventName; });
-    $effect(() => { if (!isEditingIcsCategory) icsCategoryDraft = icsCategory; });
-    $effect(() => { if (!isEditingIcsColorText) icsColorDraft = icsColor; });
+    $effect(() => {
+        if (!isEditingIcsEventName) icsEventNameDraft = icsEventName;
+    });
+    $effect(() => {
+        if (!isEditingIcsCategory) icsCategoryDraft = icsCategory;
+    });
+    $effect(() => {
+        if (!isEditingIcsColorText) icsColorDraft = icsColor;
+    });
 
     function handleExport() {
         generateICS(payments, result, {
@@ -79,7 +87,9 @@
             <Input
                 id="ics-name"
                 bind:value={icsEventNameDraft}
-                onfocus={() => { isEditingIcsEventName = true; }}
+                onfocus={() => {
+                    isEditingIcsEventName = true;
+                }}
                 onblur={() => {
                     isEditingIcsEventName = false;
                     icsEventName = icsEventNameDraft;
@@ -93,7 +103,9 @@
             <Input
                 id="ics-category"
                 bind:value={icsCategoryDraft}
-                onfocus={() => { isEditingIcsCategory = true; }}
+                onfocus={() => {
+                    isEditingIcsCategory = true;
+                }}
                 onblur={() => {
                     isEditingIcsCategory = false;
                     icsCategory = icsCategoryDraft;
@@ -107,12 +119,7 @@
         </div>
         <div>
             <Label for="ics-event-time" class="block mb-2 text-sm">Event time</Label>
-            <Input
-                id="ics-event-time"
-                type="time"
-                bind:value={icsEventTime}
-                class="w-28 mb-4"
-            />
+            <Input id="ics-event-time" type="time" bind:value={icsEventTime} class="w-28 mb-4" />
         </div>
         <div>
             <Label class="block mb-2 text-sm">Colour</Label>
@@ -127,7 +134,9 @@
                 <Input
                     type="text"
                     bind:value={icsColorDraft}
-                    onfocus={() => { isEditingIcsColorText = true; }}
+                    onfocus={() => {
+                        isEditingIcsColorText = true;
+                    }}
                     onblur={() => {
                         isEditingIcsColorText = false;
                         icsColor = icsColorDraft;
@@ -138,12 +147,14 @@
                 />
             </div>
             <p class="mt-1 text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
-                Best-effort: Apple Calendar may use this; Google Calendar often ignores event
-                colour from ICS imports.
+                Best-effort: Apple Calendar may use this; Google Calendar often ignores event colour
+                from ICS imports.
             </p>
         </div>
         <div>
-            <Button color="light" onclick={() => (reminderDialogOpen = true)}>Reminder settings</Button>
+            <Button color="light" onclick={() => (reminderDialogOpen = true)}
+                >Reminder settings</Button
+            >
             {#if reminderSettings.alarmEnabled}
                 <span class="ml-2 text-xs min-[390px]:text-sm text-green-600 dark:text-green-400">
                     Reminder: {reminderSettings.daysBefore} day(s) before

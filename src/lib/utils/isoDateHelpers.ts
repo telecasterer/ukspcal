@@ -37,21 +37,42 @@ export function formatIsoDateLong(iso: string): string {
 }
 
 /**
- * Return the number of whole days from today (UTC) until the given ISO date.
+ * Return the number of whole days from today until the given ISO date,
+ * counting from `todayIso` (defaults to the device's local date).
  * Returns 0 if the date is today or in the past.
  */
-export function daysUntilIso(iso: string): number {
-    const now = new Date();
-    const todayUtc = Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate()
-    );
+export function daysUntilIso(iso: string, todayIso: string = computeTodayIso()): number {
+    const now = new Date(todayIso + "T00:00:00Z");
+    const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
     const target = new Date(iso + "T00:00:00Z");
-    const targetUtc = Date.UTC(
-        target.getUTCFullYear(),
-        target.getUTCMonth(),
-        target.getUTCDate()
-    );
+    const targetUtc = Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate());
     return Math.max(0, Math.ceil((targetUtc - todayUtc) / 86400000));
+}
+
+/**
+ * Describe a number of days as a short phrase: "today", "tomorrow", "in 5 days"
+ * or "in 2 weeks, 3 days".
+ */
+export function formatDaysAway(days: number): string {
+    if (days <= 0) return "today";
+    if (days === 1) return "tomorrow";
+    if (days < 7) return `in ${days} days`;
+    const weeks = Math.floor(days / 7);
+    const rest = days % 7;
+    const weeksText = `${weeks} week${weeks === 1 ? "" : "s"}`;
+    return rest === 0 ? `in ${weeksText}` : `in ${weeksText}, ${rest} day${rest === 1 ? "" : "s"}`;
+}
+
+/**
+ * Today's calendar date (yyyy-mm-dd) in the device's local time zone.
+ *
+ * Deliberately not `toISOString()`: that is the UTC date, which is a day behind
+ * for users east of UTC after local midnight and a day ahead for users west of
+ * UTC in the evening. Payment dates elsewhere are zone-free calendar dates
+ * (parsed and formatted as UTC), so only "today" needs the local date.
+ */
+export function computeTodayIso(now: Date = new Date()): string {
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${now.getFullYear()}-${month}-${day}`;
 }

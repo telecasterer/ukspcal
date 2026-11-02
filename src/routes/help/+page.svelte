@@ -1,8 +1,8 @@
 <script lang="ts">
-    import DocPage from "$lib/components/DocPage.svelte";
+    import DocPage from "#lib/components/DocPage.svelte";
     import { GithubSolid } from "flowbite-svelte-icons";
-    import { buildInfo, buildInfoFormatted } from "$lib/buildInfo";
-    import { renderMarkdownDocument, replaceMarkdownPlaceholders } from "$lib/markdown";
+    import { buildInfo, buildInfoFormatted } from "#lib/buildInfo";
+    import { renderMarkdownDocument, replaceMarkdownPlaceholders } from "#lib/markdown";
     import helpMarkdown from "./help.md?raw";
 
     // Build info placeholders used in the Version Information section

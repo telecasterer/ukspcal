@@ -34,9 +34,7 @@ function getLatestReleaseTag() {
 
 function getCommitsSince(tag) {
     const range = tag ? `${tag}..HEAD` : "HEAD";
-    const output = runQuiet(
-        `git log ${range} --date=short --pretty=format:%H%x09%ad%x09%s`
-    );
+    const output = runQuiet(`git log ${range} --date=short --pretty=format:%H%x09%ad%x09%s`);
     if (!output) return [];
     return output
         .split("\n")
@@ -76,11 +74,7 @@ function inferBump(commits) {
         const parsed = classifyCommit(c.subject);
         if (parsed.breaking) hasMajor = true;
         if (parsed.type === "feat") hasMinor = true;
-        if (
-            ["fix", "perf", "refactor", "revert", "build", "ci"].includes(
-                parsed.type
-            )
-        ) {
+        if (["fix", "perf", "refactor", "revert", "build", "ci"].includes(parsed.type)) {
             hasPatch = true;
         }
         if (!parsed.conventional) {
@@ -97,9 +91,7 @@ function inferBump(commits) {
 function bumpVersion(currentVersion, bumpType) {
     const m = currentVersion.match(/^(\d+)\.(\d+)\.(\d+)$/);
     if (!m) {
-        throw new Error(
-            `Current version "${currentVersion}" is not semver x.y.z`
-        );
+        throw new Error(`Current version "${currentVersion}" is not semver x.y.z`);
     }
     let major = Number(m[1]);
     let minor = Number(m[2]);
@@ -150,12 +142,10 @@ function updateReleaseNotes(nextVersion, commits) {
             continue;
         }
         if (parsed.type === "feat") grouped.get("Features").push(line);
-        else if (parsed.type === "fix" || parsed.type === "revert")
-            grouped.get("Fixes").push(line);
+        else if (parsed.type === "fix" || parsed.type === "revert") grouped.get("Fixes").push(line);
         else if (parsed.type === "perf") grouped.get("Performance").push(line);
         else if (parsed.type === "refactor") grouped.get("Refactors").push(line);
-        else if (parsed.type === "docs")
-            grouped.get("Documentation").push(line);
+        else if (parsed.type === "docs") grouped.get("Documentation").push(line);
         else if (parsed.type === "test") grouped.get("Tests").push(line);
         else if (parsed.type === "build" || parsed.type === "ci")
             grouped.get("Build & CI").push(line);
@@ -199,9 +189,7 @@ function main() {
     const doTag = args.has("--tag");
 
     if (hasChanges()) {
-        throw new Error(
-            "Working tree is not clean. Commit/stash changes before running release."
-        );
+        throw new Error("Working tree is not clean. Commit/stash changes before running release.");
     }
 
     const lastTag = getLatestReleaseTag();
