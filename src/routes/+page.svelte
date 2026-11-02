@@ -2,7 +2,7 @@
     // --- Imports ---
     import { generatePayments, type Payment, type PensionResult } from "#lib/pensionEngine";
     import { Button, Card } from "flowbite-svelte";
-    import { MoonOutline, SunOutline } from "flowbite-svelte-icons";
+    import { MoonOutline, QuestionCircleOutline, SunOutline } from "flowbite-svelte-icons";
     import SummaryCard from "#lib/components/SummaryCard.svelte";
     import PensionInputsCard from "#lib/components/PensionInputsCard.svelte";
     import CalendarView from "#lib/components/CalendarView.svelte";
@@ -10,6 +10,7 @@
     import TopBar from "#lib/components/TopBar.svelte";
     import ShareButton from "#lib/components/ShareButton.svelte";
     import type { DateFormat } from "#lib/utils/dateFormatting";
+    import type { SpaPreviewData } from "#lib/utils/summaryDocuments";
     import {
         applyDarkModeClass,
         persistDarkModeToStorage,
@@ -24,6 +25,7 @@
     import {
         subtractMonthsFromIso,
         formatIsoDateLong,
+        formatIsoDateShort,
         daysUntilIso,
         formatDaysAway,
     } from "#lib/utils/isoDateHelpers";
@@ -44,24 +46,6 @@
     // --- Props ---
     type PageProps = { bankHolidays?: Record<string, string> };
 
-    type SpaPreviewData = {
-        spaDateFormatted: string;
-        spaAgeYears: number;
-        spaAgeMonths: number;
-        spaSource: string;
-        showPre2016Warning: boolean;
-        firstPayment: {
-            dueFormatted: string;
-            paidFormatted: string;
-            isEarly: boolean;
-            comprisingText: string;
-        } | null;
-        secondPayment: {
-            dueFormatted: string;
-            paidFormatted: string;
-            isEarly: boolean;
-        } | null;
-    };
     const { bankHolidays: initialBankHolidays = {} }: PageProps = $props();
 
     // --- State: core inputs ---
@@ -88,7 +72,6 @@
 
     // --- State: calendar navigation ---
     const currentYear = $derived(Number(todayStore.iso.slice(0, 4)));
-    const years = $derived(Array.from({ length: 50 }, (_, i) => currentYear - 15 + i));
     let startYearSelect: string = $state("");
     let numberOfYearsInput: string = $state("");
     let currentCalendarMonth: number = $state(Number(todayStore.iso.slice(5, 7)) - 1);
@@ -125,24 +108,17 @@
         }
     });
 
+    // Start-year choices. Payments before State Pension age are never shown, so the list
+    // starts at the SPA year (or the saved start year, if that is earlier).
+    const years = $derived.by(() => {
+        const first = Math.min(startYear, spaDateIso ? isoYear(spaDateIso) : currentYear - 15);
+        const last = Math.max(currentYear, first) + 35;
+        return Array.from({ length: last - first + 1 }, (_, i) => first + i);
+    });
+
     const hasPassedSpa = $derived.by(() => {
         if (!spaDateIso) return false;
         return todayStore.iso >= spaDateIso;
-    });
-
-    const firstPaymentDateFormatted = $derived.by(() => {
-        if (!result || result.payments.length === 0) return "";
-        try {
-            const d = new Date(result.payments[0].paid + "T00:00:00Z");
-            return d.toLocaleDateString("en-GB", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                timeZone: "UTC",
-            });
-        } catch {
-            return "";
-        }
     });
 
     const nextPaymentDateFormatted = $derived.by(() => {
@@ -150,18 +126,7 @@
         const todayIso = todayStore.iso;
         const nextPayment = result.payments.find((p) => p.paid >= todayIso);
         if (!nextPayment) return "";
-        try {
-            const d = new Date(nextPayment.paid + "T00:00:00Z");
-            const formatted = d.toLocaleDateString("en-GB", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                timeZone: "UTC",
-            });
-            return `${formatted} (${formatDaysAway(daysUntilIso(nextPayment.paid, todayIso))})`;
-        } catch {
-            return "";
-        }
+        return `${formatIsoDateShort(nextPayment.paid)} (${formatDaysAway(daysUntilIso(nextPayment.paid, todayIso))})`;
     });
 
     const statePensionApplyInfo = $derived.by(() => {
@@ -509,27 +474,23 @@
 </script>
 
 <!-- --- Navigation Bar --- -->
-<TopBar title="UK State Pension Calendar" showInAppBanner={pwaInstall.isFacebookInAppBrowser}>
-    <svelte:fragment slot="actions">
-        <Button color="light" size="xs" class="toolbar-btn" onclick={handleHelpClick}>Help</Button>
+<TopBar
+    title="UK State Pension Calendar"
+    shortTitle="Pension Calendar"
+    showInAppBanner={pwaInstall.isFacebookInAppBrowser}
+>
+    {#snippet menu()}
+        <Button color="light" size="xs" class="toolbar-btn" onclick={handleHelpClick}>
+            <span class="inline-flex items-center gap-1.5">
+                <QuestionCircleOutline class="h-4 w-4" />
+                <span>Help</span>
+            </span>
+        </Button>
         <ShareButton
             shareText="Calculate your State Pension Age and payment calendar, including bank holiday adjustments."
             size="xs"
             buttonClass="toolbar-btn"
         />
-        {#if pwaInstall.showInstallCta}
-            <Button
-                color="blue"
-                size="xs"
-                class="toolbar-btn"
-                onclick={pwaInstall.handleInstallClick}
-                title={pwaInstall.buttonTitle}
-                aria-label={pwaInstall.buttonTitle}
-            >
-                {pwaInstall.buttonLabel}
-            </Button>
-        {/if}
-        <!-- Dark mode toggle button -->
         <Button
             color="light"
             size="xs"
@@ -540,13 +501,31 @@
             title="Toggle dark mode"
             aria-label="Toggle dark mode"
         >
-            {#if darkMode}
-                <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
-            {:else}
-                <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
-            {/if}
+            <span class="inline-flex items-center gap-1.5">
+                {#if darkMode}
+                    <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
+                {:else}
+                    <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
+                {/if}
+                <span class="min-[520px]:hidden">{darkMode ? "Light mode" : "Dark mode"}</span>
+            </span>
         </Button>
-    </svelte:fragment>
+    {/snippet}
+    {#snippet actions()}
+        {#if pwaInstall.showInstallCta}
+            <Button
+                color="blue"
+                size="xs"
+                class="toolbar-btn"
+                onclick={pwaInstall.handleInstallClick}
+                title={pwaInstall.buttonTitle}
+                aria-label={pwaInstall.buttonTitle}
+            >
+                <span class="min-[520px]:hidden">{pwaInstall.shortButtonLabel}</span>
+                <span class="hidden min-[520px]:inline">{pwaInstall.buttonLabel}</span>
+            </Button>
+        {/if}
+    {/snippet}
 </TopBar>
 
 {#if pwaInstall.showInstallHelpModal}
@@ -555,14 +534,14 @@
 
 <!-- --- Main Content --- -->
 <div
-    class="app-page-bg page-bottom-safe-area min-h-screen py-6 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
+    class="app-page-bg page-bottom-safe-area min-h-screen py-4 sm:py-8 px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-gray-100"
 >
     <div class="page-container-app">
         <!-- Header section -->
-        <div class="mb-6 sm:mb-8 print-hide max-w-3xl">
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3">
+        <div class="mb-4 sm:mb-8 print-hide max-w-3xl">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2 sm:mb-3">
                 <h1
-                    class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white"
+                    class="text-xl min-[390px]:text-2xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white"
                 >
                     UK State Pension Calendar
                 </h1>
@@ -572,7 +551,7 @@
                     Unofficial
                 </span>
             </div>
-            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-2">
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                 Calculate your State Pension age and generate a personalised payment schedule. All
                 data stays safely on your device.
             </p>
@@ -614,7 +593,9 @@
                         spaPreviewData={dobConfirmed ? spaPreviewData : null}
                     />
                     {#if !dobConfirmed}
-                        <p class="px-6 pb-6 text-sm text-gray-600 dark:text-gray-300">
+                        <p
+                            class="px-4 pb-4 sm:px-6 sm:pb-6 text-sm text-gray-600 dark:text-gray-300"
+                        >
                             Enter your date of birth to see your State Pension age and payment
                             summary.
                         </p>

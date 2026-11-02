@@ -109,6 +109,10 @@ export function createPwaInstall() {
         get buttonLabel() {
             return isAndroid ? "Get Android app" : "Install";
         },
+        /** Fits the one-row top bar on phones. */
+        get shortButtonLabel() {
+            return isAndroid ? "Get app" : "Install";
+        },
         get buttonTitle() {
             return isAndroid ? "Get the Android app on Google Play" : "Install app";
         },

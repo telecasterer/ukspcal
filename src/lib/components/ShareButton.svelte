@@ -3,15 +3,27 @@
     import { Button } from "flowbite-svelte";
     import { ShareNodesOutline } from "flowbite-svelte-icons";
 
-    export let shareTitle = "UK State Pension Calendar";
-    export let shareText = "Calculate your State Pension Age and payment calendar.";
-    export let shareUrl: string | null = null;
-    export let toastDurationMs = 4000;
-    export let size: "xs" | "sm" | "md" | "lg" | "xl" | undefined = undefined;
-    export let buttonClass = "";
-    export let buttonLabel = "Share this app";
+    type Props = {
+        shareTitle?: string;
+        shareText?: string;
+        shareUrl?: string | null;
+        toastDurationMs?: number;
+        size?: "xs" | "sm" | "md" | "lg" | "xl";
+        buttonClass?: string;
+        buttonLabel?: string;
+    };
 
-    let shareStatus = "";
+    let {
+        shareTitle = "UK State Pension Calendar",
+        shareText = "Calculate your State Pension Age and payment calendar.",
+        shareUrl = null,
+        toastDurationMs = 4000,
+        size = undefined,
+        buttonClass = "",
+        buttonLabel = "Share this app",
+    }: Props = $props();
+
+    let shareStatus = $state("");
     let shareStatusTimeout: ReturnType<typeof setTimeout> | null = null;
 
     async function handleShare(): Promise<void> {

@@ -10,6 +10,7 @@
         onPrevious,
         onNext,
         onToday,
+        inline = false,
     }: {
         visibleRangeLabel: string;
         canJumpToToday: boolean;
@@ -18,10 +19,16 @@
         onPrevious: () => void;
         onNext: () => void;
         onToday: () => void;
+        /** Inside the calendar controls box, without the spacing used below the months. */
+        inline?: boolean;
     } = $props();
 </script>
 
-<div class="w-full flex items-center justify-center pt-2 pb-4 print-hide">
+<div
+    class="w-full flex items-center justify-center print-hide"
+    class:pt-2={!inline}
+    class:pb-4={!inline}
+>
     <div class="flex items-center gap-2 w-full sm:w-auto">
         <Button
             onclick={onPrevious}

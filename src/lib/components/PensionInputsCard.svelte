@@ -335,7 +335,7 @@
     }
 </script>
 
-<div class="p-6 space-y-6">
+<div class="p-4 sm:p-6 space-y-6">
     <div class="flex items-center justify-between mb-2">
         <div>
             <p class="text-sm text-gray-600 dark:text-gray-300">
@@ -356,7 +356,8 @@
     >
         <div class="space-y-4">
             <p class="text-sm text-gray-700 dark:text-gray-200">
-                This will reset all inputs to their default settings.
+                This will reset all inputs and settings to their defaults. Your saved profiles are
+                kept.
             </p>
             <div class="flex gap-2 justify-end mt-4">
                 <Button color="light" onclick={handleRestoreDefaultsCancel}>Cancel</Button>

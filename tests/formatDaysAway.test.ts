@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { daysUntilIso, formatDaysAway } from "#lib/utils/isoDateHelpers";
+import { daysUntilIso, formatDaysAway, formatIsoDateShort } from "#lib/utils/isoDateHelpers";
 
 describe("formatDaysAway", () => {
     it.each([
@@ -19,5 +19,12 @@ describe("daysUntilIso with an explicit today", () => {
     it("counts from the supplied date", () => {
         expect(daysUntilIso("2026-11-20", "2026-11-02")).toBe(18);
         expect(daysUntilIso("2026-11-01", "2026-11-02")).toBe(0);
+    });
+});
+
+describe("formatIsoDateShort", () => {
+    it("formats the calendar date whatever the device time zone", () => {
+        expect(formatIsoDateShort("2026-01-01")).toBe("1 Jan 2026");
+        expect(formatIsoDateShort("2026-12-31")).toBe("31 Dec 2026");
     });
 });

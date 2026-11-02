@@ -37,6 +37,19 @@ export function formatIsoDateLong(iso: string): string {
 }
 
 /**
+ * Format an ISO yyyy-mm-dd date string as a short date (e.g. "1 Jan 2025").
+ */
+export function formatIsoDateShort(iso: string): string {
+    const d = new Date(iso + "T00:00:00Z");
+    return d.toLocaleDateString("en-GB", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+    });
+}
+
+/**
  * Return the number of whole days from today until the given ISO date,
  * counting from `todayIso` (defaults to the device's local date).
  * Returns 0 if the date is today or in the past.

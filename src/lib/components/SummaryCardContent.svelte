@@ -18,23 +18,49 @@
         ClipboardOutline,
         DownloadOutline,
         PrinterOutline,
-        InfoCircleOutline,
     } from "flowbite-svelte-icons";
-    import { Tooltip } from "flowbite-svelte";
     import type { PensionResult } from "#lib/pensionEngine";
     import { copyTextToClipboard } from "#lib/utils/clipboard";
     import { exportSingleDateICS } from "#lib/utils/exportHelpers";
 
-    export let result: PensionResult | null = null;
-    export let nextPaymentDate: string = "";
-    export let statePensionApplyInfo: StatePensionApplyInfo | null = null;
-    export let spaDateIso: string = "";
-    export let isWithinThreeMonthsOfSpa: boolean = false;
-    export let spaPreviewData: SpaPreviewData | null = null;
-    let listActionStatus = "";
+    type Props = {
+        result?: PensionResult | null;
+        nextPaymentDate?: string;
+        statePensionApplyInfo?: StatePensionApplyInfo | null;
+        spaDateIso?: string;
+        isWithinThreeMonthsOfSpa?: boolean;
+        spaPreviewData?: SpaPreviewData | null;
+    };
+
+    let {
+        result = null,
+        nextPaymentDate = "",
+        statePensionApplyInfo = null,
+        spaDateIso = "",
+        isWithinThreeMonthsOfSpa = false,
+        spaPreviewData = null,
+    }: Props = $props();
+
+    let listActionStatus = $state("");
     let listActionStatusTimeout: ReturnType<typeof setTimeout> | null = null;
-    let summaryActionStatus = "";
+    let summaryActionStatus = $state("");
     let summaryActionStatusTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    // The payment list grows with the page instead of scrolling inside it (nested
+    // scrolling is fiddly on phones), so it starts short.
+    const INITIAL_LIST_LENGTH = 8;
+    let showAllPayments = $state(false);
+    const visiblePayments = $derived(
+        result && !showAllPayments
+            ? result.payments.slice(0, INITIAL_LIST_LENGTH)
+            : (result?.payments ?? [])
+    );
+
+    // Labelled buttons at least 44px high, so they are easy to hit with a thumb.
+    const actionButtonClass =
+        "inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700";
+    const calendarLinkClass =
+        "inline-flex min-h-11 shrink-0 items-center -my-2 -mr-2 px-2 text-sm underline underline-offset-2";
 
     // No JS-driven animation for the summary details: rely on native behaviour
     function setListActionStatus(message: string): void {
@@ -100,53 +126,12 @@
     }
 </script>
 
-<div
-    class="mb-3 border-l-4 border-blue-400 dark:border-blue-500 pl-2 flex items-start justify-between gap-2"
->
-    <div>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h3>
-        <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-300">
-            Generated from the payment calendar inputs.
-        </p>
-    </div>
-    {#if spaPreviewData || result}
-        <div class="flex gap-1 shrink-0 pt-0.5">
-            <button
-                onclick={handleCopySummary}
-                title="Copy summary"
-                aria-label="Copy summary"
-                class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-            >
-                <ClipboardOutline class="h-4 w-4" ariaLabel="Copy summary" />
-            </button>
-            <button
-                onclick={handleSaveSummary}
-                title="Save summary"
-                aria-label="Save summary"
-                class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-            >
-                <DownloadOutline class="h-4 w-4" ariaLabel="Save summary" />
-            </button>
-            <button
-                onclick={handlePrintSummary}
-                title="Print summary"
-                aria-label="Print summary"
-                class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-            >
-                <PrinterOutline class="h-4 w-4" ariaLabel="Print summary" />
-            </button>
-        </div>
-    {/if}
-</div>
-{#if summaryActionStatus}
-    <p
-        class="mb-2 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300"
-        role="status"
-        aria-live="polite"
-    >
-        {summaryActionStatus}
+<div class="mb-3 border-l-4 border-blue-400 dark:border-blue-500 pl-2">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Schedule summary</h3>
+    <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-300">
+        Generated from the payment calendar inputs.
     </p>
-{/if}
+</div>
 
 {#if !spaPreviewData && !result}
     <p class="text-xs min-[390px]:text-sm text-gray-500 dark:text-gray-400">
@@ -215,7 +200,7 @@
                             "State Pension Age",
                             "Reached UK State Pension Age"
                         )}
-                    class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-2"
+                    class="{calendarLinkClass} text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                 >
                     Add to calendar
                 </button>
@@ -228,35 +213,20 @@
         {/if}
         {#if spaPreviewData.firstPayment}
             <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center gap-1.5">
-                    <p
-                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
-                    >
-                        First payment
-                    </p>
-                    <button
-                        id="first-payment-info"
-                        type="button"
-                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                    >
-                        <InfoCircleOutline class="w-3.5 h-3.5 outline-none" />
-                        <span class="sr-only">Info about first payment</span>
-                    </button>
-                    <Tooltip
-                        triggeredBy="#first-payment-info"
-                        placement="top"
-                        class="max-w-xs z-50 font-normal text-xs"
-                    >
-                        The UK State Pension is paid in arrears. Your first payment typically
-                        arrives at the end of your first full payment cycle after your State Pension
-                        Age.
-                    </Tooltip>
-                </div>
+                <p
+                    class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                >
+                    First payment
+                </p>
                 <p class="mt-0.5 text-base font-bold text-gray-900 dark:text-white">
                     {spaPreviewData.firstPayment.dueFormatted}
                 </p>
                 <p class="mt-0.5 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300">
                     {spaPreviewData.firstPayment.comprisingText}
+                </p>
+                <p class="mt-0.5 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300">
+                    The State Pension is paid in arrears, so the first payment comes at the end of
+                    your first payment cycle.
                 </p>
                 {#if spaPreviewData.firstPayment.isEarly}
                     <p class="mt-0.5 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300">
@@ -290,23 +260,19 @@
     {#if statePensionApplyInfo.applyNow}
         <!-- Eligible now -->
         <div
-            class="mt-4 p-3 rounded-lg {isWithinThreeMonthsOfSpa
-                ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-                : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}"
+            class="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 {isWithinThreeMonthsOfSpa
+                ? 'border-l-4 border-l-amber-500 dark:border-l-amber-500'
+                : ''}"
         >
             <div class="flex items-start justify-between">
                 <div>
                     <p
-                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide {isWithinThreeMonthsOfSpa
-                            ? 'text-red-800 dark:text-red-400'
-                            : 'text-amber-800 dark:text-amber-400'}"
+                        class="text-xs min-[390px]:text-sm font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-400"
                     >
                         Apply for your State Pension
                     </p>
                     <p
-                        class="mt-1 text-sm min-[390px]:text-base font-medium {isWithinThreeMonthsOfSpa
-                            ? 'text-red-900 dark:text-red-100'
-                            : 'text-amber-900 dark:text-amber-100'}"
+                        class="mt-1 text-sm min-[390px]:text-base font-medium text-amber-900 dark:text-amber-100"
                     >
                         You can apply now (from {statePensionApplyInfo.applyFromFormatted}).
                     </p>
@@ -319,25 +285,21 @@
                                 "Claim UK State Pension",
                                 "Eligible to claim UK State Pension"
                             )}
-                        class="text-xs underline underline-offset-2 shrink-0 ml-2 mt-1 {isWithinThreeMonthsOfSpa
-                            ? 'text-red-700 hover:text-red-900 dark:text-red-400'
-                            : 'text-amber-700 hover:text-amber-900 dark:text-amber-400'}"
+                        class="{calendarLinkClass} ml-2 text-amber-800 hover:text-amber-950 dark:text-amber-400 dark:hover:text-amber-300"
                     >
                         Add to calendar
                     </button>
                 {/if}
             </div>
             {#if isWithinThreeMonthsOfSpa}
-                <p class="mt-1 text-xs min-[390px]:text-sm text-red-800 dark:text-red-300">
+                <p class="mt-1 text-xs min-[390px]:text-sm text-amber-900 dark:text-amber-200">
                     You are within 3 months of your State Pension age. If you have not claimed yet,
                     claim as soon as possible. No invitation letter? You can request an invitation
                     code on GOV.UK.
                 </p>
             {/if}
             <a
-                class="mt-3 inline-block font-medium text-xs min-[390px]:text-sm underline {isWithinThreeMonthsOfSpa
-                    ? 'text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300'
-                    : 'text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300'}"
+                class="mt-1 inline-flex min-h-11 items-center font-medium text-xs min-[390px]:text-sm underline text-amber-800 hover:text-amber-950 dark:text-amber-400 dark:hover:text-amber-300"
                 href={spaDateIso
                     ? `/claiming?spaDate=${encodeURIComponent(spaDateIso)}`
                     : "/claiming"}
@@ -373,14 +335,14 @@
                                 "Claim UK State Pension",
                                 "Eligible to claim UK State Pension from today"
                             )}
-                        class="text-xs text-indigo-700 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 underline underline-offset-2 shrink-0 ml-2 mt-1"
+                        class="{calendarLinkClass} ml-2 text-indigo-700 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                     >
                         Add to calendar
                     </button>
                 {/if}
             </div>
             <a
-                class="mt-3 inline-block font-medium text-xs min-[390px]:text-sm underline text-indigo-700 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+                class="mt-1 inline-flex min-h-11 items-center font-medium text-xs min-[390px]:text-sm underline text-indigo-700 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                 href={spaDateIso
                     ? `/claiming?spaDate=${encodeURIComponent(spaDateIso)}`
                     : "/claiming"}
@@ -390,13 +352,38 @@
         </div>
     {/if}
 {/if}
+{#if spaPreviewData || result}
+    <div class="mt-4 flex gap-2">
+        <button onclick={handleCopySummary} aria-label="Copy summary" class={actionButtonClass}>
+            <ClipboardOutline class="h-4 w-4" />
+            <span>Copy</span>
+        </button>
+        <button onclick={handleSaveSummary} aria-label="Save summary" class={actionButtonClass}>
+            <DownloadOutline class="h-4 w-4" />
+            <span>Save</span>
+        </button>
+        <button onclick={handlePrintSummary} aria-label="Print summary" class={actionButtonClass}>
+            <PrinterOutline class="h-4 w-4" />
+            <span>Print</span>
+        </button>
+    </div>
+    {#if summaryActionStatus}
+        <p
+            class="mt-2 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300"
+            role="status"
+            aria-live="polite"
+        >
+            {summaryActionStatus}
+        </p>
+    {/if}
+{/if}
 {#if result}
     <div class="mt-3">
         <details
             class="custom-details group bg-gray-50/90 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3"
         >
             <summary
-                class="custom-summary flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 list-none hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                class="custom-summary flex min-h-11 items-center justify-between cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 list-none hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
             >
                 <span>Show payment dates</span>
                 <span class="chev" aria-hidden="true">
@@ -405,45 +392,8 @@
             </summary>
 
             <div class="details-content">
-                <div class="mt-2 flex gap-1 justify-end">
-                    <button
-                        onclick={handleCopyPaymentList}
-                        title="Copy list"
-                        aria-label="Copy list"
-                        class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                    >
-                        <ClipboardOutline class="h-4 w-4" ariaLabel="Copy list" />
-                    </button>
-                    <button
-                        onclick={handleSavePaymentList}
-                        title="Save list"
-                        aria-label="Save list"
-                        class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                    >
-                        <DownloadOutline class="h-4 w-4" ariaLabel="Save list" />
-                    </button>
-                    <button
-                        onclick={handlePrintPaymentList}
-                        title="Print list"
-                        aria-label="Print list"
-                        class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-                    >
-                        <PrinterOutline class="h-4 w-4" ariaLabel="Print list" />
-                    </button>
-                </div>
-                {#if listActionStatus}
-                    <p
-                        class="mt-2 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300"
-                        role="status"
-                        aria-live="polite"
-                    >
-                        {listActionStatus}
-                    </p>
-                {/if}
-                <ul
-                    class="mt-2 max-h-64 overflow-auto divide-y divide-gray-200 dark:divide-gray-700"
-                >
-                    {#each result.payments as p}
+                <ul class="mt-2 divide-y divide-gray-200 dark:divide-gray-700">
+                    {#each visiblePayments as p (p.due)}
                         <li class="py-2">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -469,6 +419,53 @@
                         </li>
                     {/each}
                 </ul>
+                {#if result.payments.length > INITIAL_LIST_LENGTH}
+                    <button
+                        type="button"
+                        onclick={() => (showAllPayments = !showAllPayments)}
+                        aria-expanded={showAllPayments}
+                        class="mt-1 inline-flex min-h-11 w-full items-center justify-center text-sm font-medium text-blue-700 underline underline-offset-2 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                        {showAllPayments
+                            ? "Show fewer"
+                            : `Show all ${result.payments.length} payments`}
+                    </button>
+                {/if}
+                <div class="mt-2 flex gap-2">
+                    <button
+                        onclick={handleCopyPaymentList}
+                        aria-label="Copy list"
+                        class={actionButtonClass}
+                    >
+                        <ClipboardOutline class="h-4 w-4" />
+                        <span>Copy</span>
+                    </button>
+                    <button
+                        onclick={handleSavePaymentList}
+                        aria-label="Save list"
+                        class={actionButtonClass}
+                    >
+                        <DownloadOutline class="h-4 w-4" />
+                        <span>Save</span>
+                    </button>
+                    <button
+                        onclick={handlePrintPaymentList}
+                        aria-label="Print list"
+                        class={actionButtonClass}
+                    >
+                        <PrinterOutline class="h-4 w-4" />
+                        <span>Print</span>
+                    </button>
+                </div>
+                {#if listActionStatus}
+                    <p
+                        class="mt-2 text-xs min-[390px]:text-sm text-gray-600 dark:text-gray-300"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        {listActionStatus}
+                    </p>
+                {/if}
             </div>
         </details>
     </div>

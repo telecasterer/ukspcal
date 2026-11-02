@@ -127,6 +127,16 @@ body {
     box-shadow: 0 10px 30px -20px rgb(0 0 0 / 0.65);
 }
 
+/* iOS Safari zooms the whole page when a form field with text under 16px gets focus.
+   Unlayered, so it wins over Tailwind's text-sm on phones; other text is unchanged. */
+@media (max-width: 639.98px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
+
 .toolbar-btn {
     padding-inline: 0.65rem;
     min-height: 2rem;

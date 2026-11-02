@@ -2,45 +2,32 @@
     // SummaryCard.svelte: Shows a summary of the generated pension schedule
     import type { PensionResult } from "#lib/pensionEngine";
     import SummaryCardContent from "#lib/components/SummaryCardContent.svelte";
+    import type { SpaPreviewData, StatePensionApplyInfo } from "#lib/utils/summaryDocuments";
 
-    type StatePensionApplyInfo = {
-        applyFromIso: string;
-        applyFromFormatted: string;
-        countdownDays: number;
-        applyNow: boolean;
+    type Props = {
+        result?: PensionResult | null;
+        embedded?: boolean;
+        nextPaymentDate?: string;
+        statePensionApplyInfo?: StatePensionApplyInfo | null;
+        spaDateIso?: string;
+        isWithinThreeMonthsOfSpa?: boolean;
+        spaPreviewData?: SpaPreviewData | null;
     };
 
-    type SpaPreviewData = {
-        spaDateFormatted: string;
-        spaAgeYears: number;
-        spaAgeMonths: number;
-        spaSource: string;
-        showPre2016Warning: boolean;
-        firstPayment: {
-            dueFormatted: string;
-            paidFormatted: string;
-            isEarly: boolean;
-            comprisingText: string;
-        } | null;
-        secondPayment: {
-            dueFormatted: string;
-            paidFormatted: string;
-            isEarly: boolean;
-        } | null;
-    };
-
-    export let result: PensionResult | null = null;
-    export let embedded: boolean = false;
-    export let nextPaymentDate: string = "";
-    export let statePensionApplyInfo: StatePensionApplyInfo | null = null;
-    export let spaDateIso: string = "";
-    export let isWithinThreeMonthsOfSpa: boolean = false;
-    export let spaPreviewData: SpaPreviewData | null = null;
+    let {
+        result = null,
+        embedded = false,
+        nextPaymentDate = "",
+        statePensionApplyInfo = null,
+        spaDateIso = "",
+        isWithinThreeMonthsOfSpa = false,
+        spaPreviewData = null,
+    }: Props = $props();
 </script>
 
 {#if embedded}
     <!-- Embedded summary (used in main input card) -->
-    <div class="p-6 summary-section">
+    <div class="p-4 sm:p-6 summary-section">
         <SummaryCardContent
             {result}
             {nextPaymentDate}

@@ -102,7 +102,7 @@
 
 <div class="flex flex-col min-h-screen">
     <TopBar title={barTitle} showInAppBanner={isFacebookInAppBrowser}>
-        <svelte:fragment slot="actions">
+        {#snippet actions()}
             <Button color="light" size="xs" class="toolbar-btn" onclick={() => goto("/")}>
                 <span class="inline-flex items-center gap-1.5">
                     <ArrowLeftOutline class="h-4 w-4" ariaLabel="Back" />
@@ -134,7 +134,7 @@
                     <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
                 {/if}
             </Button>
-        </svelte:fragment>
+        {/snippet}
     </TopBar>
 
     <main

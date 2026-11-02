@@ -19,4 +19,12 @@ describe("clearAllAppStorage", () => {
         expect(localStorage.getItem("darkMode")).toBeNull();
         expect(localStorage.getItem("holiday_cache_US")).toBeNull();
     });
+
+    it("keeps saved profiles", () => {
+        localStorage.setItem("ukspcal.profiles.v1", "[]");
+
+        clearAllAppStorage();
+
+        expect(localStorage.getItem("ukspcal.profiles.v1")).toBe("[]");
+    });
 });
