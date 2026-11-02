@@ -91,7 +91,7 @@
                 <div class="inline-flex rounded-lg shadow-xs">
                     <button
                         type="button"
-                        class="px-3 py-1.5 text-xs font-medium text-blue-700 bg-white border border-gray-200 rounded-s-lg hover:bg-blue-50 hover:text-blue-800 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-blue-400 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
+                        class="min-h-10 px-3 py-1.5 text-sm font-medium text-blue-700 bg-white border border-gray-200 rounded-s-lg hover:bg-blue-50 hover:text-blue-800 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-blue-400 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white"
                         onclick={() => loadProfile(p)}
                         title="Load profile: {p.name}"
                     >
@@ -99,13 +99,13 @@
                     </button>
                     <button
                         type="button"
-                        class="px-2 py-1.5 text-xs font-medium text-gray-400 bg-white border border-s-0 border-gray-200 rounded-e-lg hover:bg-red-50 hover:text-red-600 focus:z-10 focus:ring-2 focus:ring-red-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-500"
+                        class="inline-flex min-h-10 min-w-10 items-center justify-center px-2 py-1.5 text-xs font-medium text-gray-400 bg-white border border-s-0 border-gray-200 rounded-e-lg hover:bg-red-50 hover:text-red-600 focus:z-10 focus:ring-2 focus:ring-red-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-500"
                         onclick={() => deleteProfile(p.id)}
                         title="Delete profile {p.name}"
                         aria-label="Delete profile {p.name}"
                     >
                         <svg
-                            class="w-3 h-3"
+                            class="w-4 h-4"
                             aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -125,7 +125,7 @@
             {#if ni.trim() && dob && !isNamingProfile}
                 <button
                     type="button"
-                    class="px-3 py-1.5 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                    class="min-h-10 px-3 py-1.5 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
                     onclick={startSaveProfile}
                 >
                     + Save current
@@ -138,9 +138,10 @@
                     id="profile-name-input"
                     type="text"
                     bind:value={profileNameDraft}
-                    placeholder="Profile name (e.g. Partner)"
+                    placeholder="Name, e.g. Partner"
+                    aria-label="Profile name"
                     maxlength={30}
-                    class="px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white w-48"
+                    class="min-h-10 min-w-0 flex-1 sm:flex-none sm:w-56 px-2.5 py-1.5 text-sm rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                     onkeydown={(e) => {
                         if (e.key === "Enter") {
                             e.preventDefault();
@@ -154,14 +155,14 @@
                 />
                 <button
                     type="button"
-                    class="px-2.5 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600"
+                    class="min-h-10 shrink-0 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600"
                     onclick={commitSaveProfile}
                 >
                     Save
                 </button>
                 <button
                     type="button"
-                    class="px-2.5 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                    class="min-h-10 shrink-0 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
                     onclick={cancelSaveProfile}
                 >
                     Cancel

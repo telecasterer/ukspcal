@@ -85,21 +85,21 @@ describe("PensionInputsCard", () => {
         });
 
         it("shows name input after clicking '+ Save current'", async () => {
-            const { getByText, getByPlaceholderText } = renderCard({ props: VALID_PROPS } as any);
+            const { getByText, getByLabelText } = renderCard({ props: VALID_PROPS } as any);
             await tick();
             await fireEvent.click(getByText("+ Save current"));
             await tick();
-            expect(getByPlaceholderText(/Profile name/i)).toBeInTheDocument();
+            expect(getByLabelText("Profile name")).toBeInTheDocument();
         });
 
         it("saves a profile and shows a pill after committing a name", async () => {
-            const { getByText, getByPlaceholderText } = renderCard({ props: VALID_PROPS } as any);
+            const { getByText, getByLabelText } = renderCard({ props: VALID_PROPS } as any);
             await tick();
 
             await fireEvent.click(getByText("+ Save current"));
             await tick();
 
-            const input = getByPlaceholderText(/Profile name/i);
+            const input = getByLabelText("Profile name");
             await fireEvent.input(input, { target: { value: "Rose" } });
             await fireEvent.click(getByText("Save"));
             await tick();
@@ -108,29 +108,29 @@ describe("PensionInputsCard", () => {
         });
 
         it("cancels naming and hides the input", async () => {
-            const { getByText, getByPlaceholderText, queryByPlaceholderText } = renderCard({
+            const { getByText, getByLabelText, queryByLabelText } = renderCard({
                 props: VALID_PROPS,
             } as any);
             await tick();
 
             await fireEvent.click(getByText("+ Save current"));
             await tick();
-            expect(getByPlaceholderText(/Profile name/i)).toBeInTheDocument();
+            expect(getByLabelText("Profile name")).toBeInTheDocument();
 
             await fireEvent.click(getByText("Cancel"));
             await tick();
-            expect(queryByPlaceholderText(/Profile name/i)).not.toBeInTheDocument();
+            expect(queryByLabelText("Profile name")).not.toBeInTheDocument();
         });
 
         it("removes a profile pill after clicking its delete button", async () => {
-            const { getByText, getByPlaceholderText, queryByText, getByLabelText } = renderCard({
+            const { getByText, queryByText, getByLabelText } = renderCard({
                 props: VALID_PROPS,
             } as any);
             await tick();
 
             await fireEvent.click(getByText("+ Save current"));
             await tick();
-            await fireEvent.input(getByPlaceholderText(/Profile name/i), {
+            await fireEvent.input(getByLabelText("Profile name"), {
                 target: { value: "Rose" },
             });
             await fireEvent.click(getByText("Save"));

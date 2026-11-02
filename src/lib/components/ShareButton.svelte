@@ -81,7 +81,8 @@
 >
     <span class="inline-flex items-center gap-1.5">
         <ShareNodesOutline class="h-4 w-4" />
-        <span>Share</span>
+        <!-- Icon only on phones, so the top bar fits on one row. -->
+        <span class="hidden md:inline">Share</span>
     </span>
 </Button>
 

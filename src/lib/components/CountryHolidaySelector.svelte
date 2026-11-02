@@ -22,7 +22,7 @@
 </script>
 
 <div class="flex flex-wrap items-center gap-2">
-    <Label class="flex items-center gap-2 cursor-pointer text-xs min-[390px]:text-sm">
+    <Label class="flex min-h-10 items-center gap-2 cursor-pointer text-sm">
         <FlowbiteCheckbox
             checked={selectedCountry !== "none"}
             onchange={(e: Event) => {
@@ -48,9 +48,9 @@
                 onCountryChange?.(selectedCountry);
                 onPersist?.();
             }}
-            class="w-40"
+            class="w-44"
             classes={{
-                select: "text-xs min-[390px]:text-sm !h-8 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+                select: "text-xs min-[390px]:text-sm !h-10 !py-0 !px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white",
             }}
         >
             <option value="GB-SCT">Scotland</option>

@@ -56,11 +56,11 @@ body {
     }
 
     .calendar-day.holiday {
-        @apply bg-blue-500 text-white dark:bg-blue-700 dark:text-white;
+        @apply bg-blue-600 text-white dark:bg-blue-700 dark:text-white;
     }
 
     .legend-item.holiday {
-        @apply bg-blue-500 text-white dark:bg-blue-700 dark:text-white;
+        @apply bg-blue-600 text-white dark:bg-blue-700 dark:text-white;
     }
 
     .calendar-day.additional-holiday {
@@ -139,13 +139,13 @@ body {
 
 .toolbar-btn {
     padding-inline: 0.65rem;
-    min-height: 2rem;
+    min-height: 2.5rem;
     font-size: 0.75rem;
 }
 
 .toolbar-icon-btn {
     min-width: 2rem;
-    min-height: 2rem;
+    min-height: 2.5rem;
     padding-inline: 0.5rem;
 }
 

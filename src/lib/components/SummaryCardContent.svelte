@@ -380,10 +380,10 @@
 {#if result}
     <div class="mt-3">
         <details
-            class="custom-details group bg-gray-50/90 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md p-3"
+            class="custom-details group bg-gray-50/90 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md"
         >
             <summary
-                class="custom-summary flex min-h-11 items-center justify-between cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 list-none hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                class="custom-summary flex min-h-11 items-center justify-between px-3 cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 list-none hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
             >
                 <span>Show payment dates</span>
                 <span class="chev" aria-hidden="true">
@@ -391,7 +391,7 @@
                 </span>
             </summary>
 
-            <div class="details-content">
+            <div class="details-content px-3 pb-3">
                 <ul class="mt-2 divide-y divide-gray-200 dark:divide-gray-700">
                     {#each visiblePayments as p (p.due)}
                         <li class="py-2">

@@ -281,7 +281,7 @@
                     <Button
                         id="export-menu"
                         color="light"
-                        class="w-full px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        class="w-full min-h-10 px-2.5 py-2 text-xs min-[390px]:text-sm"
                         title="Export"
                         aria-label="Export"
                     >
@@ -313,7 +313,7 @@
                     <Button
                         onclick={handlePrint}
                         color="light"
-                        class="w-full px-2.5 py-2 text-xs min-[390px]:text-sm"
+                        class="w-full min-h-10 px-2.5 py-2 text-xs min-[390px]:text-sm"
                         title="Print calendar"
                         aria-label="Print calendar"
                     >
@@ -353,9 +353,7 @@
                     <!-- Settings -->
                     <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                         <div class="flex items-center gap-2">
-                            <Label
-                                for="start-year"
-                                class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
+                            <Label for="start-year" class="text-sm text-gray-700 dark:text-gray-300"
                                 >Start year</Label
                             >
                             <Select
@@ -376,8 +374,7 @@
                         <div class="flex items-center gap-2">
                             <Label
                                 for="number-of-years"
-                                class="text-xs min-[390px]:text-sm text-gray-700 dark:text-gray-300"
-                                >Duration</Label
+                                class="text-sm text-gray-700 dark:text-gray-300">Duration</Label
                             >
                             <Select
                                 id="number-of-years"
@@ -397,9 +394,7 @@
                     </div>
                     <!-- Bottom Row: Holiday toggles -->
                     <div class="flex flex-wrap items-center gap-4 pt-1">
-                        <Label
-                            class="flex items-center gap-2 cursor-pointer text-xs min-[390px]:text-sm"
-                        >
+                        <Label class="flex min-h-10 items-center gap-2 cursor-pointer text-sm">
                             <FlowbiteCheckbox
                                 bind:checked={showBankHolidays}
                                 onchange={() => onPersist?.()}

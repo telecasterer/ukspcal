@@ -479,10 +479,10 @@
     shortTitle="Pension Calendar"
     showInAppBanner={pwaInstall.isFacebookInAppBrowser}
 >
-    {#snippet menu()}
+    {#snippet actions()}
         <Button color="light" size="xs" class="toolbar-btn" onclick={handleHelpClick}>
             <span class="inline-flex items-center gap-1.5">
-                <QuestionCircleOutline class="h-4 w-4" />
+                <QuestionCircleOutline class="hidden h-4 w-4 md:inline" />
                 <span>Help</span>
             </span>
         </Button>
@@ -491,6 +491,19 @@
             size="xs"
             buttonClass="toolbar-btn"
         />
+        {#if pwaInstall.showInstallCta}
+            <Button
+                color="blue"
+                size="xs"
+                class="toolbar-btn"
+                onclick={pwaInstall.handleInstallClick}
+                title={pwaInstall.buttonTitle}
+                aria-label={pwaInstall.buttonTitle}
+            >
+                <span class="md:hidden">{pwaInstall.shortButtonLabel}</span>
+                <span class="hidden md:inline">{pwaInstall.buttonLabel}</span>
+            </Button>
+        {/if}
         <Button
             color="light"
             size="xs"
@@ -501,30 +514,12 @@
             title="Toggle dark mode"
             aria-label="Toggle dark mode"
         >
-            <span class="inline-flex items-center gap-1.5">
-                {#if darkMode}
-                    <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
-                {:else}
-                    <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
-                {/if}
-                <span class="min-[520px]:hidden">{darkMode ? "Light mode" : "Dark mode"}</span>
-            </span>
+            {#if darkMode}
+                <SunOutline class="h-4 w-4" ariaLabel="Light mode" />
+            {:else}
+                <MoonOutline class="h-4 w-4" ariaLabel="Dark mode" />
+            {/if}
         </Button>
-    {/snippet}
-    {#snippet actions()}
-        {#if pwaInstall.showInstallCta}
-            <Button
-                color="blue"
-                size="xs"
-                class="toolbar-btn"
-                onclick={pwaInstall.handleInstallClick}
-                title={pwaInstall.buttonTitle}
-                aria-label={pwaInstall.buttonTitle}
-            >
-                <span class="min-[520px]:hidden">{pwaInstall.shortButtonLabel}</span>
-                <span class="hidden min-[520px]:inline">{pwaInstall.buttonLabel}</span>
-            </Button>
-        {/if}
     {/snippet}
 </TopBar>
 
