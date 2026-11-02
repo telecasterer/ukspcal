@@ -10,7 +10,7 @@ You may enter the last 3 characters of your NI number and your date of birth to 
 
 ## Local storage on your device
 
-The app stores settings, recent inputs, and any saved profiles (which may include your NI number suffix and date of birth) in your browser local storage so your preferences can be restored when you return. It also stores the public holiday data it downloads, so payment dates can still be adjusted when you're offline; this contains no personal information. You can clear this data at any time using the app's _Restore Defaults_ button or your browser/site settings.
+The app stores settings, recent inputs, and any saved profiles (which may include your NI number suffix and date of birth) in your browser local storage so your preferences can be restored when you return. It also stores the public holiday data it downloads, so payment dates can still be adjusted when you're offline; this contains no personal information. You can reset your inputs and settings with the app's _Restore defaults_ button, delete each saved profile with the × next to its name, or clear all of this data at any time in your browser or site settings.
 
 ## Analytics and technical data
 

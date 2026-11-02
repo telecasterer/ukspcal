@@ -15,7 +15,7 @@ The tool is designed to help you plan ahead and keep your likely payment dates i
 4. Export as CSV/ICS or print the calendar if you want to keep a copy.
 5. (Optional, recommended) Install the app.
 
-To share the app with someone else, use the **Share** button in the top toolbar.
+To share the app with someone else, use the **Share** button in the top bar (a share icon on phones).
 
 ## Using the App
 
@@ -28,10 +28,12 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 ### Calendar Range and Navigation
 
 - By default, the calendar starts from your first payment month after SPA.
-- Choose how many years to include in the generated schedule.
-- Use the **Previous/Next** controls above or below the calendar grid to move through month blocks.
+- To change the start year or how many years to include, open **Calendar options** above the calendar.
+- Use the **Previous/Next** controls above or below the calendar grid to move through the months: three at a time on phones, six on larger screens. **Today** jumps back to the current month.
 
-### Calendar Display Options
+### Calendar Options
+
+These are in the **Calendar options** section above the calendar. On phones it starts closed: tap it to open.
 
 - **UK holidays:** Show or hide UK bank holidays used for early-payment adjustments.
 - **Additional holidays:** Optionally show another country/region’s holidays for reference.
@@ -41,7 +43,7 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 ### Profiles
 
 - Use **Profiles** in the input form to save and reload your NI number suffix and date of birth.
-- Give each profile a name, then use the load/delete buttons to manage them. Saving a profile with a name that already exists will overwrite the previous entry.
+- Give each profile a name, then tap a profile's name to load it, or the **×** next to it to delete it. Saving a profile with a name that already exists will overwrite the previous entry.
 - Profiles are stored locally in your browser — nothing is sent to a server.
 - Useful if more than one person uses the same device.
 
@@ -50,7 +52,8 @@ To share the app with someone else, use the **Share** button in the top toolbar.
 The summary panel shows your SPA date, first payment date, and related information. From here you can:
 
 - Use **Add to calendar** next to your SPA date, first payment or claiming date to download a single-event ICS file for your calendar app.
-- **Copy**, **Save**, or **Print** the summary text or payment list.
+- Use the **Copy**, **Save** and **Print** buttons below the summary to copy, download or print it.
+- Open **Show payment dates** to see your payment dates. Tap **Show all** for the full list, and use the buttons below the list to copy, download or print it.
 
 ### Exporting and Printing
 
@@ -104,7 +107,8 @@ England & Wales is the default UK holiday set for calculation purposes. Scotland
 
 - **Your data stays on your device.** Nothing you enter is sent to a server.
 - **Settings are saved locally** in your browser storage so the app remembers your choices next time.
-- To remove saved data, use **Restore defaults** in the input form.
+- To reset your inputs and settings, use **Restore defaults** in the input form. Saved profiles are kept: delete each one with the **×** next to its name.
+- To remove everything the app has saved, clear this site's data in your browser settings (or, for the installed app, clear its storage in your device's app settings).
 - Full policy: [Privacy Policy](/privacy).
 
 This is an independent calculator and is **not affiliated with, endorsed by, or connected to DWP, HMRC, or GOV.UK**.

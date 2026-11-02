@@ -13,7 +13,7 @@ A free, privacy-first tool to calculate your UK State Pension payment dates, exp
 
 1. Enter your NI code suffix and date of birth.
 2. Choose your payment cycle (7-day, 14-day, 28-day, or 91-day).
-3. Pick the start year and how many years to show.
+3. Optionally, open **Calendar options** above the calendar to pick the start year and how many years to show.
 4. Review the calendar. Early payments (due to weekends/bank holidays) are highlighted.
 5. Export or print as needed.
 
@@ -27,11 +27,14 @@ The summary panel updates as you type. As soon as you enter a valid NI code and 
 
 Once a full schedule is generated the panel also shows your NI code, payment weekday, cycle length, and next payment date (if you are already past State Pension age).
 
-Use the **copy**, **save**, and **print** icons in the top-right of the panel to export the full summary. The **Show payment dates** section within the panel lists every payment date and has its own copy, save, and print icons.
+Use the **Copy**, **Save** and **Print** buttons below the summary to export it. The **Show payment dates** section below them lists the first eight payment dates, with **Show all** for the rest, and has its own Copy, Save and Print buttons.
+
+A short note under the first payment explains that the State Pension is paid in arrears.
 
 ## Calendar navigation
 
-- `Previous` and `Next` move the calendar in 6-month steps.
+- `Previous` and `Next` move the calendar three months at a time on phones and six months at a time on larger screens. `Today` jumps back to the current month.
+- Start year, duration and the holiday options are in the **Calendar options** section above the calendar. On phones it starts closed.
 - If you click `Next` at the end of the generated range, the app automatically increases duration by 1 year and regenerates the schedule.
 - The duration selector always controls how many years are generated.
 
@@ -64,13 +67,14 @@ The input form supports named profiles for saving and quickly switching between 
 
 ## Sharing
 
-- Use the **Share** button in the top bar to share the app link or copy it to your clipboard.
+- Use the **Share** button in the top bar (a share icon on phones) to share the app link or copy it to your clipboard.
 
 ## Saved settings & privacy
 
 - Inputs are saved in local storage so you don’t need to re-enter them.
 - No data is uploaded to any server.
-- Clearing site data in your browser will reset the saved values.
+- **Restore defaults** in the input form resets your inputs and settings but keeps saved profiles. Delete a profile with the **×** next to its name.
+- Clearing site data in your browser removes everything the app has saved, including profiles.
 
 ## Accessibility & display tips
 
