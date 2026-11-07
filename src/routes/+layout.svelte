@@ -1,6 +1,6 @@
 <script lang="ts">
     import "../app.css";
-    import { injectAnalytics } from "@vercel/analytics/sveltekit";
+    import { inject } from "@vercel/analytics";
     import { onMount } from "svelte";
     import { registerSW } from "virtual:pwa-register";
     let { children } = $props();
@@ -10,7 +10,7 @@
         const isLocalPreview = hostname === "localhost" || hostname === "127.0.0.1";
 
         if (!isLocalPreview) {
-            injectAnalytics();
+            inject({ mode: "production" });
         }
         // The bundled typings omit the optional `reloadPage` argument the runtime accepts.
         const updateSW = registerSW({
