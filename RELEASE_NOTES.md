@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2026-11-07 (v0.8.1)
+
+### Fixes
+
+- restore Vercel Analytics under SvelteKit 3 (c4b5b78)
+
 ## 2026-11-02 (v0.8.0)
 
 ### Features
